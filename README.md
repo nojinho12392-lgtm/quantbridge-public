@@ -2,13 +2,40 @@
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 
-QuantBridge is an open-source investment research and decision-support workspace.
-It combines a Python scoring pipeline, a FastAPI backend, Android/iOS clients,
-and decision-journal UX patterns for individual investors.
+QuantBridge is an open-source investment research and decision-support workspace
+for individual investors who want to slow down before acting. It combines a
+Python scoring pipeline, a FastAPI backend, Android/iOS clients, and
+decision-journal UX patterns that help users record why they watch, wait, or
+walk away.
 
 This repository is designed for education, research, and personal experimentation.
 It does not include market-data credentials, cached market data, brokerage
 credentials, production deployment secrets, or any paid/licensed data.
+
+![QuantBridge social preview](docs/assets/social-preview.png)
+
+> Demo screenshots use synthetic sample data only. They do not show real market
+> data, company logos, brokerage data, or investment advice.
+
+## Demo Screens
+
+<p align="center">
+  <img src="docs/assets/screenshots/home-demo.png" width="180" alt="QuantBridge home demo screen with today's decision cards" />
+  <img src="docs/assets/screenshots/ranking-demo.png" width="180" alt="QuantBridge ranking demo screen with profile-based interpretation" />
+  <img src="docs/assets/screenshots/decision-journal-demo.png" width="180" alt="QuantBridge decision journal demo screen" />
+  <img src="docs/assets/screenshots/judgement-alerts-demo.png" width="180" alt="QuantBridge judgement alert timeline demo screen" />
+</p>
+
+## Product Highlights
+
+- Decision journal first: users write the reason, risk, counter-argument, and
+  personal fit before treating a company as actionable.
+- Profile-based interpretation: the same company can be framed differently for
+  growth, stability, beginner, or short-term impulse profiles.
+- Judgement alerts: watchlist updates are saved as decision changes, not just
+  price movement notifications.
+- Curated coverage posture: the app is designed around analyzable companies and
+  bring-your-own-data workflows instead of redistributing licensed market data.
 
 ## What This Project Is
 

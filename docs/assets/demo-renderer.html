@@ -1,0 +1,797 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>QuantBridge Demo Assets</title>
+  <style>
+    :root {
+      --blue: #2f6cf6;
+      --blue-soft: #eaf1ff;
+      --ink: #141b2d;
+      --muted: #647083;
+      --line: #e6eaf1;
+      --panel: #f6f8fc;
+      --card: #ffffff;
+      --green: #0f9f6e;
+      --red: #dc3b36;
+      --amber: #b87700;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #f4f7fb;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+
+    .phone {
+      width: 390px;
+      height: 844px;
+      overflow: hidden;
+      background: #f8faff;
+      position: relative;
+      padding: 56px 24px 22px;
+    }
+
+    .phone::before {
+      content: "";
+      position: absolute;
+      top: 13px;
+      left: 50%;
+      width: 118px;
+      height: 35px;
+      transform: translateX(-50%);
+      border-radius: 999px;
+      background: #07080b;
+    }
+
+    .status {
+      position: absolute;
+      top: 19px;
+      left: 28px;
+      right: 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 15px;
+      font-weight: 800;
+      color: #080a10;
+    }
+
+    .signal {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      color: #080a10;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 32px;
+      line-height: 1.05;
+      font-weight: 900;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 22px;
+      line-height: 1.18;
+      font-weight: 900;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.25;
+      font-weight: 850;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 0 12px;
+      border-radius: 999px;
+      background: var(--blue-soft);
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .market {
+      min-width: 154px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #ffffff;
+      color: #4c586b;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .icon-button {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      color: var(--ink);
+      font-size: 21px;
+      font-weight: 900;
+    }
+
+    .section {
+      margin-top: 18px;
+    }
+
+    .soft-panel {
+      background: #eef3fb;
+      border: 1px solid #e5ebf4;
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 12px 24px rgba(31, 47, 79, 0.05);
+    }
+
+    .judgement-card {
+      padding: 17px;
+      margin-bottom: 10px;
+    }
+
+    .judgement-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .judgement-title {
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .judgement-copy {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      margin-top: 5px;
+    }
+
+    .button {
+      height: 44px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--blue);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 850;
+    }
+
+    .button.secondary {
+      background: #eef3fb;
+      color: var(--blue);
+    }
+
+    .watch-row,
+    .rank-row,
+    .timeline-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 76px;
+      padding: 14px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      background: #fff;
+      border: 1px solid var(--line);
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      border: 1px solid #e9edf5;
+      background: #f6f8fc;
+      color: var(--blue);
+      font-size: 14px;
+      font-weight: 950;
+    }
+
+    .row-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .row-title {
+      font-size: 16px;
+      font-weight: 900;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .row-sub {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .metric {
+      text-align: right;
+      font-size: 18px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .metric.red {
+      color: var(--red);
+    }
+
+    .metric.blue {
+      color: var(--blue);
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+      height: 68px;
+      padding: 6px;
+      border-radius: 28px;
+      background: #eef2f8;
+      margin-bottom: 14px;
+    }
+
+    .tab {
+      display: grid;
+      place-items: center;
+      border-radius: 23px;
+      color: #687386;
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .tab.active {
+      background: var(--blue);
+      color: #ffffff;
+    }
+
+    .search {
+      height: 48px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: #a1a9b6;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .rank-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin: 18px 0 10px;
+    }
+
+    .rank-row {
+      min-height: 88px;
+    }
+
+    .rank-number {
+      width: 28px;
+      color: var(--blue);
+      text-align: center;
+      font-size: 23px;
+      font-weight: 900;
+    }
+
+    .frame {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      background: rgba(16, 21, 33, 0.3);
+    }
+
+    .sheet {
+      margin-top: auto;
+      height: 820px;
+      background: #f9fbff;
+      border-radius: 32px 32px 0 0;
+      padding: 22px 24px 26px;
+      box-shadow: 0 -18px 35px rgba(20, 27, 45, 0.16);
+    }
+
+    .grabber {
+      width: 52px;
+      height: 6px;
+      border-radius: 999px;
+      background: #ccd3dc;
+      margin: 0 auto 18px;
+    }
+
+    .sheet-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }
+
+    .link-button {
+      min-width: 66px;
+      height: 44px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      color: var(--blue);
+      background: #eef3fb;
+      font-weight: 850;
+      font-size: 16px;
+    }
+
+    .progress {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin: 24px 0 8px;
+    }
+
+    .bar {
+      height: 5px;
+      border-radius: 999px;
+      background: #dde4ee;
+    }
+
+    .bar.active {
+      background: var(--blue);
+    }
+
+    .choice-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .choice {
+      min-height: 62px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      border: 1.3px solid #dbe2ec;
+      border-radius: 8px;
+      background: #fff;
+      color: #273246;
+      font-size: 17px;
+      font-weight: 850;
+    }
+
+    .choice.selected {
+      border-color: #7d8797;
+      background: #f8fafc;
+    }
+
+    .choice-mark {
+      color: #2f394b;
+      font-size: 19px;
+      font-weight: 900;
+    }
+
+    .bottom-actions {
+      position: absolute;
+      left: 24px;
+      right: 24px;
+      bottom: 82px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .timeline-row {
+      align-items: flex-start;
+      min-height: 94px;
+    }
+
+    .timeline-icon {
+      width: 36px;
+      height: 36px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      background: var(--blue-soft);
+      color: var(--blue);
+      font-size: 17px;
+      font-weight: 900;
+    }
+
+    .time {
+      margin-top: 8px;
+      color: #96a0af;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .disclaimer-pill {
+      position: absolute;
+      left: 24px;
+      right: 24px;
+      bottom: 26px;
+      min-height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 14px;
+      border-radius: 999px;
+      background: rgba(238, 243, 251, 0.92);
+      color: #6b7688;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .social {
+      width: 1280px;
+      height: 640px;
+      overflow: hidden;
+      position: relative;
+      background:
+        radial-gradient(circle at 24% 24%, rgba(47, 108, 246, 0.18), transparent 28%),
+        linear-gradient(135deg, #f7faff 0%, #eef3fb 100%);
+      padding: 72px 88px;
+    }
+
+    .social h1 {
+      max-width: 610px;
+      font-size: 72px;
+      line-height: 0.98;
+      letter-spacing: 0;
+    }
+
+    .social .tagline {
+      max-width: 590px;
+      margin-top: 28px;
+      color: #4a5669;
+      font-size: 25px;
+      line-height: 1.38;
+      font-weight: 760;
+    }
+
+    .social .badges {
+      display: flex;
+      gap: 12px;
+      margin-top: 34px;
+    }
+
+    .social .badge {
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid var(--line);
+      color: #334057;
+      font-size: 16px;
+      font-weight: 850;
+    }
+
+    .social .stack {
+      position: absolute;
+      right: 82px;
+      top: 58px;
+      display: flex;
+      align-items: center;
+      gap: 22px;
+    }
+
+    .mini-phone {
+      width: 248px;
+      height: 536px;
+      border-radius: 38px;
+      padding: 16px;
+      background: #111827;
+      box-shadow: 0 28px 62px rgba(31, 47, 79, 0.26);
+    }
+
+    .mini-screen {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      border-radius: 28px;
+      background: #f8faff;
+      transform-origin: top left;
+    }
+
+    .mini-screen .phone {
+      transform: scale(0.553);
+      transform-origin: top left;
+    }
+
+    .mini-phone.second {
+      margin-top: 54px;
+    }
+
+    .social .footer {
+      position: absolute;
+      left: 88px;
+      bottom: 56px;
+      color: #6a7587;
+      font-size: 16px;
+      font-weight: 800;
+    }
+  </style>
+</head>
+<body>
+  <main id="app"></main>
+  <script>
+    const app = document.getElementById("app");
+    const params = new URLSearchParams(location.search);
+    const screen = params.get("screen") || "home";
+
+    const signal = `<div class="signal"><span>5G</span><span>●●●</span><span>▰</span></div>`;
+    const status = `<div class="status"><span>9:41</span>${signal}</div>`;
+
+    function phone(inner) {
+      return `<section class="phone">${status}${inner}<div class="disclaimer-pill">Synthetic sample data · Not investment advice</div></section>`;
+    }
+
+    function home() {
+      return phone(`
+        <div class="header">
+          <h1>홈</h1>
+          <div class="chip">성장형 · 3개월</div>
+        </div>
+        <section class="soft-panel">
+          <h2>오늘의 판단 3개</h2>
+          <div class="judgement-card card">
+            <div class="judgement-top">
+              <div>
+                <p class="judgement-title">Alpha Labs</p>
+                <p class="judgement-copy">점수는 올랐지만 과열 신호도 같이 커졌어요.</p>
+              </div>
+              <span class="chip">확인</span>
+            </div>
+            <div class="button">투자 결정서 작성</div>
+          </div>
+          <div class="judgement-card card">
+            <div class="judgement-top">
+              <div>
+                <p class="judgement-title">Bright Foods</p>
+                <p class="judgement-copy">내 기준으로는 아직 관찰 단계에 가까워요.</p>
+              </div>
+              <span class="chip">관찰</span>
+            </div>
+          </div>
+        </section>
+        <section class="section">
+          <h2>관심종목 변화</h2>
+          <div class="watch-row">
+            <div class="avatar">AL</div>
+            <div class="row-main">
+              <div class="row-title">Alpha Labs</div>
+              <div class="row-sub">실적 전 확인할 리스크 1개 추가</div>
+            </div>
+            <div class="metric red">+2.4%</div>
+          </div>
+          <div class="watch-row">
+            <div class="avatar">TG</div>
+            <div class="row-main">
+              <div class="row-title">Terra Grid</div>
+              <div class="row-sub">성장형 기준 변동성 충돌 감지</div>
+            </div>
+            <div class="metric blue">관찰</div>
+          </div>
+        </section>
+      `);
+    }
+
+    function ranking() {
+      return phone(`
+        <div class="header">
+          <h1>분석</h1>
+          <div class="market">⌁ DEMO 412.6 +0.4%</div>
+          <div class="icon-button">⌕</div>
+        </div>
+        <div class="tabs">
+          <div class="tab active">기업</div>
+          <div class="tab">섹터</div>
+          <div class="tab">ETF</div>
+        </div>
+        <div class="search">⌕  티커, 종목명, 섹터 검색</div>
+        <div class="chip">미국 · 분석 가능 샘플 30개</div>
+        <div class="rank-heading">
+          <h2>기업 순위</h2>
+          <p class="row-sub">내 성향 기준</p>
+        </div>
+        <div class="rank-row">
+          <div class="rank-number">1</div>
+          <div class="avatar">AL</div>
+          <div class="row-main">
+            <div class="row-title">Alpha Labs</div>
+            <div class="row-sub">성장형: 모멘텀 좋지만 고점 추격 주의</div>
+          </div>
+          <div class="metric red">+12.8%</div>
+        </div>
+        <div class="rank-row">
+          <div class="rank-number">2</div>
+          <div class="avatar">BF</div>
+          <div class="row-main">
+            <div class="row-title">Bright Foods</div>
+            <div class="row-sub">안정형: 변동성 낮지만 성장 신호 약함</div>
+          </div>
+          <div class="metric blue">-1.1%</div>
+        </div>
+        <div class="rank-row">
+          <div class="rank-number">3</div>
+          <div class="avatar">TG</div>
+          <div class="row-main">
+            <div class="row-title">Terra Grid</div>
+            <div class="row-sub">초보형: 사업 이해 난이도 확인 필요</div>
+          </div>
+          <div class="metric red">+0.7%</div>
+        </div>
+      `);
+    }
+
+    function decision() {
+      return phone(`
+        <div class="header">
+          <h1 style="font-size: 24px;">Alpha Labs</h1>
+          <div class="icon-button">♡</div>
+        </div>
+        <div class="card" style="height: 176px; padding: 18px; margin-top: 30px;">
+          <div class="row-title">Alpha Labs</div>
+          <div class="row-sub">DEMO · Synthetic company</div>
+          <div style="margin-top: 24px; display: flex; justify-content: space-between;">
+            <div><div class="row-sub">내 기준</div><div class="row-title">성장형 · 3개월</div></div>
+            <div class="metric red">관찰</div>
+          </div>
+        </div>
+        <div class="frame">
+          <div class="sheet">
+            <div class="grabber"></div>
+            <div class="sheet-bar">
+              <div class="link-button">취소</div>
+              <h3>투자 결정서</h3>
+              <div style="width: 66px;"></div>
+            </div>
+            <div class="watch-row" style="border: 0; padding: 0; background: transparent;">
+              <div class="avatar">AL</div>
+              <div class="row-main">
+                <div class="row-title">Alpha Labs</div>
+                <div class="row-sub">DEMO · Sample data</div>
+              </div>
+            </div>
+            <div class="progress">
+              <div class="bar active"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            </div>
+            <p class="row-sub" style="font-size: 15px;">1 / 5</p>
+            <section style="margin-top: 30px;">
+              <h2 style="font-size: 27px;">왜 이 종목을 보나요?</h2>
+              <div class="choice-list">
+                <div class="choice selected"><span>장기 성장</span><span class="choice-mark">✓</span></div>
+                <div class="choice"><span>저평가 가능성</span><span></span></div>
+                <div class="choice selected"><span>실적 개선</span><span class="choice-mark">✓</span></div>
+                <div class="choice"><span>배당 안정성</span><span></span></div>
+                <div class="choice"><span>단기 모멘텀</span><span></span></div>
+              </div>
+            </section>
+            <div class="bottom-actions">
+              <div class="link-button">취소</div>
+              <div class="button" style="width: 92px;">다음</div>
+            </div>
+          </div>
+        </div>
+      `);
+    }
+
+    function alerts() {
+      return phone(`
+        <div class="header">
+          <h1>관심</h1>
+          <div class="icon-button">⚙</div>
+        </div>
+        <section class="soft-panel">
+          <h2>판단 업데이트</h2>
+          <p class="judgement-copy">가격 알림보다 판단 변화와 투자 가정의 흔들림을 기록합니다.</p>
+        </section>
+        <section class="section">
+          <div class="timeline-row">
+            <div class="timeline-icon">!</div>
+            <div class="row-main">
+              <div class="row-title">Alpha Labs</div>
+              <div class="row-sub">점수는 올랐지만 과열 신호도 같이 커졌습니다.</div>
+              <div class="time">오늘 09:10 · 성장형 기준</div>
+            </div>
+          </div>
+          <div class="timeline-row">
+            <div class="timeline-icon">↻</div>
+            <div class="row-main">
+              <div class="row-title">Terra Grid</div>
+              <div class="row-sub">투자 가정 중 매출 성장 항목을 다시 확인해야 합니다.</div>
+              <div class="time">어제 18:30 · 결정서 미작성</div>
+            </div>
+          </div>
+          <div class="timeline-row">
+            <div class="timeline-icon">✓</div>
+            <div class="row-main">
+              <div class="row-title">Bright Foods</div>
+              <div class="row-sub">내 성향 기준으로는 아직 관찰 단계입니다.</div>
+              <div class="time">어제 08:45 · 안정형 기준</div>
+            </div>
+          </div>
+        </section>
+        <div class="button secondary" style="margin-top: 18px;">판단 알림 설정</div>
+      `);
+    }
+
+    function social() {
+      return `
+        <section class="social">
+          <h1>QuantBridge</h1>
+          <p class="tagline">An open-source investment decision-support app for recording why you watch, wait, or walk away.</p>
+          <div class="badges">
+            <div class="badge">Decision journal UX</div>
+            <div class="badge">Synthetic demo data</div>
+            <div class="badge">Apache-2.0</div>
+          </div>
+          <div class="footer">Not investment advice · No market-data redistribution</div>
+          <div class="stack">
+            <div class="mini-phone"><div class="mini-screen">${home()}</div></div>
+            <div class="mini-phone second"><div class="mini-screen">${decision()}</div></div>
+          </div>
+        </section>
+      `;
+    }
+
+    const screens = { home, ranking, decision, alerts, social };
+    app.innerHTML = (screens[screen] || home)();
+  </script>
+</body>
+</html>
