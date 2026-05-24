@@ -4,7 +4,7 @@ gspread
 google-auth
 pandas
 lxml>=5.0
-yfinance>=0.2.40
+yfinance>=1.4.0
 pykrx>=1.0
 requests>=2.31
 python-dotenv>=1.0
