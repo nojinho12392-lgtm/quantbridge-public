@@ -1,5 +1,7 @@
 # QuantBridge
 
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+
 QuantBridge is an open-source investment research and decision-support workspace.
 It combines a Python scoring pipeline, a FastAPI backend, Android/iOS clients,
 and decision-journal UX patterns for individual investors.
@@ -102,6 +104,13 @@ The public version intentionally excludes:
 - Azure/staging secrets and scripts
 
 See `docs/PUBLIC_RELEASE_CHECKLIST.md` before publishing.
+
+## License
+
+The source code in this repository is licensed under the Apache License 2.0.
+Third-party market data, company logos, trademarks, API credentials, and
+provider-specific datasets are not included in that license. Users must follow
+the terms and licensing requirements of any data source or API they connect.
 
 ## Disclaimer
 
