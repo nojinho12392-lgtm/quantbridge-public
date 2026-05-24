@@ -1,0 +1,57 @@
+key.json
+kiwoom_credentials.json
+**/docs_cache/
+data_lake/
+.DS_Store
+Icon?
+._*
+* 2/
+* 2.*
+.venv/
+.pytest_cache/
+.coverage
+htmlcov/
+.claude/
+.codex/
+.idea/
+.gradle/
+cache.db
+cache.db-wal
+cache.db-shm
+*.sqlite3
+*.sqlite3-wal
+*.sqlite3-shm
+__pycache__/
+*.pyc
+.env
+.env.*
+!.env.example
+deploy/azure/staging.env
+.prefect/
+logs/
+artifacts/
+*.pt
+*.parquet
+*.log
+*.apk
+*.aab
+*.ipa
+delete_icon.py
+
+# Android local/build files
+android/.gradle/
+android/.kotlin/
+android/**/build/
+android/local.properties
+andriod/.gradle/
+andriod/.kotlin/
+andriod/**/build/
+andriod/local.properties
+local.properties
+
+# Xcode local state/build files
+Stock Analysis/.git/
+Stock Analysis/**/xcuserdata/
+Stock Analysis/**/*.xcuserstate
+DerivedData/
+.derivedData/

@@ -1,0 +1,19 @@
+FROM python:3.11-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+COPY tools/requirements_research.txt /tmp/requirements_research.txt
+RUN pip install --upgrade pip \
+    && pip install -r /tmp/requirements_research.txt
+
+COPY quantbridge ./quantbridge
+COPY pipeline ./pipeline
+COPY tools ./tools
+COPY sheets_client.py ./sheets_client.py
+COPY cache_manager.py ./cache_manager.py
+COPY kr_sector_map.py ./kr_sector_map.py
+
+CMD ["python", "tools/run_research_quality.py"]

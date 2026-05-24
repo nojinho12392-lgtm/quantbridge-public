@@ -1,0 +1,50 @@
+only_rules:
+  - force_unwrapping
+  - force_cast
+  - force_try
+  - line_length
+  - file_length
+  - type_body_length
+  - function_body_length
+  - cyclomatic_complexity
+  - identifier_name
+  - trailing_whitespace
+
+baseline: SwiftLintBaseline.json
+
+excluded:
+  - Stock Analysis/Generated
+  - Stock Analysis/Assets.xcassets
+  - Stock Analysis.xcodeproj
+
+force_unwrapping:
+  severity: error
+
+force_cast:
+  severity: error
+
+force_try:
+  severity: error
+
+line_length:
+  warning: 200
+
+file_length:
+  warning: 1500
+
+type_body_length:
+  warning: 500
+
+function_body_length:
+  warning: 80
+
+cyclomatic_complexity:
+  warning: 15
+
+identifier_name:
+  excluded:
+    - id
+    - vm
+
+trailing_whitespace:
+  severity: warning

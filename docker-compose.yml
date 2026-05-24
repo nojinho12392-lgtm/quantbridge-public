@@ -1,0 +1,55 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: quantbridge-postgres
+    environment:
+      POSTGRES_DB: quantbridge
+      POSTGRES_USER: quantbridge
+      POSTGRES_PASSWORD: quantbridge
+    ports:
+      - "5432:5432"
+    volumes:
+      - quantbridge_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U quantbridge -d quantbridge"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    container_name: quantbridge-api
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      QUANT_ENABLE_POSTGRES: "true"
+      QUANT_DATABASE_URL: postgresql://quantbridge:quantbridge@postgres:5432/quantbridge
+      QUANT_ENABLE_PARQUET: "false"
+      QUANT_GOOGLE_KEY_PATH: /app/key.json
+      QUANT_SPREADSHEET_ID: YOUR_GOOGLE_SHEET_ID
+      QUANT_SPREADSHEET_NAME: QuantBridge_Demo_Workbook
+      QUANT_API_SQLITE_PATH: /var/lib/quantbridge/quantbridge.sqlite3
+      QUANT_API_CACHE_DIR: /var/lib/quantbridge/api_runtime_cache
+      QUANT_API_AUTO_WARM: "0"
+      QUANT_API_ALLOW_EXTERNAL_FETCH: "false"
+      QUANT_API_ENV: local
+      QUANT_CORS_ORIGINS: "*"
+      QUANT_AUTH_RATE_LIMIT_PER_MINUTE: "20"
+    ports:
+      - "8000:8000"
+    volumes:
+      - quantbridge_api:/var/lib/quantbridge
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/ready', timeout=5).read()\""]
+      interval: 15s
+      timeout: 8s
+      retries: 5
+      start_period: 20s
+volumes:
+  quantbridge_pg:
+    name: quantbridge_public_pg
+  quantbridge_api:
+    name: quantbridge_public_api

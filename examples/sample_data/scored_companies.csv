@@ -1,0 +1,4 @@
+ticker,name,market,sector,score,decision_status,notes
+ACME,Acme Robotics,US,Industrials,82,review,"Synthetic sample only"
+NOVA,Nova Semiconductors,US,Technology,76,watch,"Synthetic sample only"
+HANA,Hana Foods,KR,Consumer Staples,69,hold,"Synthetic sample only"

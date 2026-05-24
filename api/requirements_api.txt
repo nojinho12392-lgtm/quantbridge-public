@@ -1,0 +1,13 @@
+fastapi
+uvicorn[standard]
+gspread
+google-auth
+pandas
+lxml>=5.0
+yfinance>=0.2.40
+pykrx>=1.0
+requests>=2.31
+python-dotenv>=1.0
+pydantic>=2.0
+pydantic-settings>=2.0
+psycopg[binary]>=3.1
