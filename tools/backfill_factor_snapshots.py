@@ -40,12 +40,18 @@ SNAPSHOT_COLS = [
     "Snapshot_Date", "Market", "Ticker", "Name", "Sector",
     "Value_Score", "Quality_Score", "Momentum_Score",
     "Total_Score", "Final_Score", "Score_Neutral", "Combined_Score",
+    "Business_Quality_Score", "Investability_Score", "Persistence_Quality",
     "Snapshot_Source",
 ]
 
 FACTOR_COLS = [
     "Value_Score", "Quality_Score", "Momentum_Score",
     "Total_Score", "Final_Score", "Score_Neutral", "Combined_Score",
+    "Business_Quality_Score", "Investability_Score", "Persistence_Quality",
+]
+STATIC_FACTOR_COLS = [
+    "Value_Score", "Quality_Score",
+    "Business_Quality_Score", "Investability_Score", "Persistence_Quality",
 ]
 
 LOG_COLS = [
@@ -90,28 +96,36 @@ def _read_simple_sheet(name: str) -> pd.DataFrame:
         rows = _spreadsheet().worksheet(name).get_all_values()
     except gspread.exceptions.WorksheetNotFound:
         return pd.DataFrame()
+    except Exception as exc:
+        print(f"[BACKFILL] Sheet read skipped for {name}: {type(exc).__name__}: {exc}")
+        return pd.DataFrame()
     if len(rows) < 2:
         return pd.DataFrame()
     return pd.DataFrame(rows[1:], columns=rows[0])
 
 
 def _load_scored_sheet(name: str, market: str, limit: int = 0) -> pd.DataFrame:
-    df = _read_simple_sheet(name)
+    try:
+        df = _repository().read_dataframe(name, market=market)
+    except Exception as exc:
+        print(f"[BACKFILL] Storage read skipped for {name}: {type(exc).__name__}: {exc}")
+        df = pd.DataFrame()
     if df.empty:
-        try:
-            df = _repository().read_dataframe(name, market=market)
-        except Exception:
-            df = pd.DataFrame()
+        df = _read_simple_sheet(name)
     if df.empty or "Ticker" not in df.columns:
         return pd.DataFrame()
 
     df = df[df["Ticker"].astype(str).str.strip() != ""].copy()
     df["Market"] = market
-    for col in ["Name", "Sector", "Value_Score", "Quality_Score", "Momentum_Score", "Total_Score", "Final_Score"]:
+    for col in [
+        "Name", "Sector", "Value_Score", "Quality_Score", "Momentum_Score",
+        "Total_Score", "Final_Score", "Business_Quality_Score",
+        "Investability_Score", "Persistence_Quality",
+    ]:
         if col not in df.columns:
             df[col] = ""
     score_sort = "Final_Score" if "Final_Score" in df.columns else "Total_Score"
-    df = _to_num(df, ["Value_Score", "Quality_Score", "Momentum_Score", "Total_Score", "Final_Score"])
+    df = _to_num(df, FACTOR_COLS)
     if score_sort in df.columns:
         df = df.sort_values(score_sort, ascending=False, na_position="last")
     if limit and limit > 0:
@@ -119,19 +133,46 @@ def _load_scored_sheet(name: str, market: str, limit: int = 0) -> pd.DataFrame:
     return df.reset_index(drop=True)
 
 
-def _load_existing_snapshots() -> pd.DataFrame:
-    df = _read_simple_sheet(SNAPSHOT_SHEET)
+def _prepare_snapshot_frame(df: pd.DataFrame) -> pd.DataFrame:
     if df.empty:
-        try:
-            df = _repository().read_dataframe(SNAPSHOT_SHEET, market="GLOBAL")
-        except Exception:
-            df = pd.DataFrame()
+        return pd.DataFrame(columns=SNAPSHOT_COLS)
+
+    out = df.copy()
     for col in SNAPSHOT_COLS:
-        if col not in df.columns:
-            df[col] = ""
-    df = df[SNAPSHOT_COLS].copy()
-    df = _to_num(df, FACTOR_COLS)
-    return df
+        if col not in out.columns:
+            out[col] = ""
+
+    out = out[out["Ticker"].astype(str).str.strip() != ""].copy()
+    out["Market"] = out["Market"].fillna("").astype(str).str.upper()
+    out = out[out["Market"].isin(["US", "KR"])].copy()
+
+    logical_dates = pd.to_datetime(out["Snapshot_Date"], errors="coerce")
+    out = out[logical_dates.notna()].copy()
+    logical_dates = logical_dates[logical_dates.notna()]
+    out["Snapshot_Date"] = logical_dates.dt.strftime("%Y-%m-%d")
+
+    if "_storage_snapshot_date" in out.columns:
+        out["_storage_snapshot_order"] = pd.to_datetime(out["_storage_snapshot_date"], errors="coerce")
+    else:
+        out["_storage_snapshot_order"] = logical_dates
+
+    out = (
+        out.sort_values(["Snapshot_Date", "Market", "Ticker", "_storage_snapshot_order"], na_position="first")
+        .drop_duplicates(subset=["Snapshot_Date", "Market", "Ticker"], keep="last")
+    )
+    out = out[SNAPSHOT_COLS].copy()
+    return _to_num(out, FACTOR_COLS)
+
+
+def _load_existing_snapshots() -> pd.DataFrame:
+    try:
+        df = _repository().read_history(SNAPSHOT_SHEET, market=None)
+    except Exception as exc:
+        print(f"[BACKFILL] Storage read skipped for {SNAPSHOT_SHEET}: {type(exc).__name__}: {exc}")
+        df = pd.DataFrame()
+    if df.empty:
+        df = _read_simple_sheet(SNAPSHOT_SHEET)
+    return _prepare_snapshot_frame(df)
 
 
 def _snapshot_dates(months: int, min_age_days: int) -> list[pd.Timestamp]:
@@ -217,14 +258,14 @@ def _build_market_snapshots(scored: pd.DataFrame, prices: pd.DataFrame, dates: l
     if base.empty:
         return pd.DataFrame(columns=SNAPSHOT_COLS)
 
-    for col in ["Value_Score", "Quality_Score"]:
+    for col in STATIC_FACTOR_COLS:
         base[col] = pd.to_numeric(base[col], errors="coerce")
         fallback = base[col].median()
         base[col] = base[col].fillna(fallback if pd.notna(fallback) else 0.0)
 
     rows = []
     for snapshot_date in dates:
-        frame = base[["Ticker", "Name", "Sector", "Value_Score", "Quality_Score"]].copy()
+        frame = base[["Ticker", "Name", "Sector", *STATIC_FACTOR_COLS]].copy()
         momentum = _momentum_scores(prices, snapshot_date, market)
         frame["Momentum_Score"] = frame["Ticker"].map(momentum).fillna(BASE_WEIGHTS[market]["Momentum_Score"] * 0.5)
         frame["Total_Score"] = frame["Value_Score"] + frame["Quality_Score"] + frame["Momentum_Score"]
@@ -244,29 +285,30 @@ def _build_market_snapshots(scored: pd.DataFrame, prices: pd.DataFrame, dates: l
 
 def _write_snapshots(df: pd.DataFrame) -> None:
     out = df[SNAPSHOT_COLS].fillna("").astype(str)
-    ws = _get_or_create_sheet(SNAPSHOT_SHEET, rows=max(1000, len(out) + 50), cols=len(SNAPSHOT_COLS) + 2)
-    try:
-        ws.resize(rows=max(1000, len(out) + 50), cols=len(SNAPSHOT_COLS) + 2)
-    except Exception:
-        pass
-    ws.clear()
-    ws.update(range_name="A1", values=[SNAPSHOT_COLS] + out.values.tolist(), value_input_option="USER_ENTERED")
     dual_write_dataframe(SNAPSHOT_SHEET, out, market="GLOBAL")
+    try:
+        ws = _get_or_create_sheet(SNAPSHOT_SHEET, rows=max(1000, len(out) + 50), cols=len(SNAPSHOT_COLS) + 2)
+        ws.resize(rows=max(1000, len(out) + 50), cols=len(SNAPSHOT_COLS) + 2)
+        ws.clear()
+        ws.update(range_name="A1", values=[SNAPSHOT_COLS] + out.values.tolist(), value_input_option="USER_ENTERED")
+    except Exception:
+        print(f"[BACKFILL] Sheet write skipped for {SNAPSHOT_SHEET}.")
 
 
 def _write_log(row: dict) -> None:
-    ws = _get_or_create_sheet(BACKFILL_LOG_SHEET, rows=100, cols=len(LOG_COLS) + 2)
+    dual_write_dataframe(BACKFILL_LOG_SHEET, pd.DataFrame([row], columns=LOG_COLS), market="GLOBAL")
     try:
+        ws = _get_or_create_sheet(BACKFILL_LOG_SHEET, rows=100, cols=len(LOG_COLS) + 2)
         existing = ws.get_all_values()
     except Exception:
-        existing = []
+        print(f"[BACKFILL] Sheet write skipped for {BACKFILL_LOG_SHEET}.")
+        return
     rows = [LOG_COLS]
     if len(existing) >= 2 and existing[0] == LOG_COLS:
         rows += existing[1:]
     rows.append([str(row.get(col, "")) for col in LOG_COLS])
     ws.clear()
     ws.update(range_name="A1", values=rows, value_input_option="USER_ENTERED")
-    dual_write_dataframe(BACKFILL_LOG_SHEET, pd.DataFrame([row], columns=LOG_COLS), market="GLOBAL")
 
 
 def build_backfill(months: int, min_age_days: int, limit_per_market: int, force: bool) -> tuple[pd.DataFrame, dict]:

@@ -4,6 +4,7 @@ private enum InsightSection: String, CaseIterable, Identifiable, Hashable {
     case earnings = "실적"
     case news = "뉴스"
     case events = "이벤트"
+    case training = "훈련"
 
     var id: String { rawValue }
 
@@ -15,6 +16,8 @@ private enum InsightSection: String, CaseIterable, Identifiable, Hashable {
             return "뉴스"
         case .events:
             return "이벤트"
+        case .training:
+            return "훈련"
         }
     }
 
@@ -23,6 +26,7 @@ private enum InsightSection: String, CaseIterable, Identifiable, Hashable {
         case .earnings: return 0
         case .news: return 1
         case .events: return 2
+        case .training: return 3
         }
     }
 }
@@ -207,6 +211,8 @@ struct PulseTabView: View {
             )
         case .events:
             pulseContent(showCalendar: true, showMomentum: false)
+        case .training:
+            BlindFinancialQuizView()
         }
     }
 
@@ -377,6 +383,8 @@ struct PulseTabView: View {
         case .events:
             await vm.load()
             await vm.ensureCalendarLoaded()
+        case .training:
+            break
         }
     }
 

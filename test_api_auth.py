@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import tempfile
 import unittest
+import sqlite3
 from pathlib import Path
 
 from fastapi import FastAPI
@@ -23,6 +24,15 @@ def _client(db_path: Path) -> TestClient:
 
 
 class AuthRouteTests(unittest.TestCase):
+    def test_sqlite_store_context_closes_connection(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            store = SQLiteAuthStore(Path(tmp) / "auth.sqlite3")
+            with store.connect() as conn:
+                conn.execute("SELECT 1").fetchone()
+
+            with self.assertRaises(sqlite3.ProgrammingError):
+                conn.execute("SELECT 1").fetchone()
+
     def test_signup_login_me_and_watchlist_flow(self):
         with tempfile.TemporaryDirectory() as tmp:
             client = _client(Path(tmp) / "auth.sqlite3")

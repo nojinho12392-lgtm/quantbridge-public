@@ -9,7 +9,7 @@ sheets_client.py — 안정적인 Google Sheets 연결 헬퍼
 
 사용법 (모든 파이프라인 파일에서):
     from sheets_client import get_spreadsheet
-    ss = get_spreadsheet()                         # QuantBridge_Demo_Workbook
+    ss = get_spreadsheet()                         # Jino_Quant_Database
     ss = get_spreadsheet("다른_시트_이름")
 """
 
@@ -74,7 +74,7 @@ def get_client(key_path: str = _KEY_JSON) -> gspread.Client:
     return client
 
 
-def get_spreadsheet(name: str = "QuantBridge_Demo_Workbook",
+def get_spreadsheet(name: str = "Jino_Quant_Database",
                     key_path: str = _KEY_JSON) -> gspread.Spreadsheet:
     # open_by_key uses Sheets API directly (fast); open() uses Drive search (slow)
     settings = get_settings()

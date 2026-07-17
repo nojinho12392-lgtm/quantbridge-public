@@ -197,12 +197,12 @@ private struct QubitStartupSplash: View {
                 QubitStartupLogo()
                     .frame(width: 108, height: 108)
 
-                Text("made by QuantBridge")
+                Text("made by Jinho")
                     .font(.system(size: 13, weight: .medium))
                     .foregroundStyle(Color(red: 0.36, green: 0.43, blue: 0.48))
             }
             .accessibilityElement(children: .combine)
-            .accessibilityLabel("큐빗 made by QuantBridge")
+            .accessibilityLabel("큐빗 made by Jinho")
         }
     }
 }

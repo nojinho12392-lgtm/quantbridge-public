@@ -37,7 +37,15 @@ from datetime import datetime
 # ── Cache integration ─────────────────────────────────────────────────────────
 from cache_manager import CacheManager
 from kr_sector_map import UNCLASSIFIED_SECTOR, load_kr_sector_map, sector_for_ticker
+from pipeline.data.kr_dart_lake import read_latest_quality_history_features
 from pipeline.factor_policy_runtime import apply_factor_policy_weights
+from pipeline.scoring.company_quality import (
+    QUALITY_REVIEW_COLS,
+    QUALITY_SCORE_COLS,
+    add_company_quality_review_columns,
+    compute_company_quality_scores,
+    quality_adjusted_final_score,
+)
 from quantbridge.writers.dual_write import dual_write_dataframe
 
 # ── Google Sheets connection ──────────────────────────────────────────────────
@@ -106,6 +114,12 @@ SCORED_COLS = [
     'Rank', 'Ticker', 'Name', 'Market', 'Sector', 'MarketCap',
     'Value_Score', 'Quality_Score', 'Momentum_Score', 'Total_Score',
     'Final_Score', 'Score_Neutral',
+    'Profitability_Quality', 'Cash_Quality', 'Growth_Quality',
+    'BalanceSheet_Strength', 'Valuation_Discipline', 'Timing_Overlay',
+    'Persistence_Quality', 'Business_Quality_Score', 'Investability_Score', 'Quality_Data_Confidence',
+    'Quality_Red_Flags',
+    'Investability_Rank', 'Business_Quality_Rank', 'Quality_Rank_Delta',
+    'Quality_Category',
     'ROIC', 'RevGrowth', 'GrossMargin', 'FCF_Margin', 'Debt_EBITDA', 'PEG',
     'Last_Updated',
 ]
@@ -289,6 +303,41 @@ filtered['Sector'] = filtered.apply(
     lambda r: sector_for_ticker(r.get('Ticker'), kr_sector_map, r.get('Sector', '')),
     axis=1,
 )
+
+# ── OpenDART local history features (free data lake) ─────────────────────────
+try:
+    dart_history = read_latest_quality_history_features()
+except Exception as exc:
+    dart_history = pd.DataFrame()
+    print(f"\n[KR Scorer] OpenDART history features skipped: {type(exc).__name__}: {exc}")
+
+if not dart_history.empty and 'Ticker' in dart_history.columns:
+    history_cols = [
+        'Ticker',
+        'History_Years',
+        'ROIC_5Y_Median',
+        'ROIC_5Y_Stability',
+        'Revenue_CAGR_5Y',
+        'FCF_Positive_Years_5Y',
+        'Margin_Stability_5Y',
+        'Debt_Reduction_Trend_5Y',
+        'Quality_Persistence_Score',
+    ]
+    available_history_cols = [col for col in history_cols if col in dart_history.columns]
+    dart_history = dart_history[available_history_cols].drop_duplicates('Ticker', keep='last')
+    before_cols = set(filtered.columns)
+    filtered = filtered.merge(dart_history, on='Ticker', how='left')
+    added_cols = [col for col in available_history_cols if col != 'Ticker' and col not in before_cols]
+    matched = int(pd.to_numeric(
+        filtered.get('Quality_Persistence_Score', pd.Series(index=filtered.index)),
+        errors='coerce',
+    ).notna().sum())
+    print(
+        "\n[KR Scorer] OpenDART history features merged "
+        f"for {matched} tickers | added: {added_cols}"
+    )
+else:
+    print("\n[KR Scorer] OpenDART history features not found; run tools/kr_dart_lake.py")
 
 # ── Download momentum data for filtered KR tickers ───────────────────────────
 BATCH = 100
@@ -502,17 +551,26 @@ filtered['Total_Score'] = (
     other=np.nan
 ).round(4)
 
+filtered = compute_company_quality_scores(filtered)
+print("\n  Company Quality Core v2 적용")
+print(
+    "  Business quality range : "
+    f"{filtered['Business_Quality_Score'].min():.4f} → {filtered['Business_Quality_Score'].max():.4f}"
+)
+print(
+    "  Investability range    : "
+    f"{filtered['Investability_Score'].min():.4f} → {filtered['Investability_Score'].max():.4f}"
+)
+
 filtered = filtered.sort_values('Total_Score', ascending=False).reset_index(drop=True)
 scored    = filtered.dropna(subset=['Total_Score'])
 
 # ── Sector Neutralization ─────────────────────────────────────────────────────
 scored = sector_neutralize(scored, score_col='Total_Score')
-scored['Final_Score'] = (
-    0.6 * scored['Total_Score'].rank(pct=True) +
-    0.4 * scored['Score_Neutral'].rank(pct=True)
-).round(4)
+scored['Final_Score'] = quality_adjusted_final_score(scored)
 scored = scored.sort_values('Final_Score', ascending=False).reset_index(drop=True)
 scored['Rank'] = range(1, len(scored) + 1)
+scored = add_company_quality_review_columns(scored, rank_col='Rank')
 
 print(f"\n  점수 산출 완료 : {len(scored)} / 필터 통과 : {len(filtered)}")
 print("\n📊 Sector Neutralization applied (KR):")
@@ -545,6 +603,8 @@ scored_out['Name'] = scored_out['Name'].fillna(scored_out['Ticker'])
 # Round numeric columns to 4 decimal places
 num_cols = ['Value_Score', 'Quality_Score', 'Momentum_Score', 'Total_Score',
             'Final_Score', 'Score_Neutral',
+            *[c for c in QUALITY_SCORE_COLS if c != 'Quality_Red_Flags'],
+            *[c for c in QUALITY_REVIEW_COLS if c != 'Quality_Category'],
             'ROIC', 'RevGrowth', 'GrossMargin', 'FCF_Margin', 'Debt_EBITDA', 'PEG']
 for col in num_cols:
     if col in scored_out.columns:

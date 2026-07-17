@@ -15,13 +15,25 @@ def _num(df: pd.DataFrame, name: str) -> pd.Series:
     return pd.to_numeric(df[name], errors="coerce")
 
 
-def _rank(series: pd.Series, *, inverse: bool = False, fallback: float = 0.5) -> pd.Series:
-    s = pd.to_numeric(series, errors="coerce")
+def _rank(
+    series: pd.Series,
+    *,
+    inverse: bool = False,
+    fallback: float = 0.5,
+    positive_only: bool = False,
+) -> pd.Series:
+    raw = pd.to_numeric(series, errors="coerce")
+    observed = raw.notna()
+    s = raw.where(raw > 0) if positive_only else raw
     if inverse:
         s = (1.0 / s).where(s > 0)
     if s.notna().sum() == 0:
-        return pd.Series(fallback, index=series.index, dtype="float64")
-    return s.rank(pct=True, na_option="keep").fillna(fallback).clip(0.0, 1.0)
+        ranked = pd.Series(fallback, index=series.index, dtype="float64")
+    else:
+        ranked = s.rank(pct=True, na_option="keep").fillna(fallback).clip(0.0, 1.0)
+    if positive_only:
+        ranked = ranked.where(raw.gt(0) | ~observed, 0.0)
+    return ranked.clip(0.0, 1.0)
 
 
 def compute_kr_altman_z(df: pd.DataFrame) -> pd.Series:
@@ -55,8 +67,8 @@ def compute_kr_factor_scores(
     df = features.copy()
     w_v, w_q, w_m = weights
 
-    r_per = _rank(_num(df, "PER"), inverse=True)
-    r_pbr = _rank(_num(df, "PBR"), inverse=True)
+    r_per = _rank(_num(df, "PER"), inverse=True, positive_only=True)
+    r_pbr = _rank(_num(df, "PBR"), inverse=True, positive_only=True)
     r_revgrowth = _rank(_num(df, "RevGrowth"))
     r_divyield = _rank(_num(df, "DivYield").where(_num(df, "DivYield") > 0))
     value_raw = 0.40 * r_per + 0.25 * r_pbr + 0.25 * r_revgrowth + 0.10 * r_divyield

@@ -112,4 +112,3 @@ public struct QBResearchQualityResponse: Codable, JSONEncodable, Hashable {
         additionalProperties = try additionalPropertiesContainer.decodeMap(AnyCodable.self, excludedKeys: nonAdditionalPropertyKeys)
     }
 }
-

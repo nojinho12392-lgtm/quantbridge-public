@@ -33,8 +33,8 @@ def _android_dir() -> Path:
 
 ANDROID_DIR = _android_dir()
 APK_PATH = ANDROID_DIR / "app" / "build" / "outputs" / "apk" / "debug" / "app-debug.apk"
-PACKAGE_NAME = "com.example.myapplication"
-MAIN_ACTIVITY = "com.example.myapplication/.MainActivity"
+PACKAGE_NAME = "com.qubit.quantbridge"
+MAIN_ACTIVITY = "com.qubit.quantbridge/.MainActivity"
 
 
 def run(cmd: list[str], cwd: Path = ROOT, check: bool = True, capture: bool = False) -> subprocess.CompletedProcess:

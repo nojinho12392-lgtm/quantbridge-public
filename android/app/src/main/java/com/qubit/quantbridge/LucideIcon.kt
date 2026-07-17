@@ -1,0 +1,118 @@
+package com.qubit.quantbridge
+
+import androidx.annotation.DrawableRes
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+
+enum class LucideIcon(@param:DrawableRes val resId: Int) {
+    Activity(R.drawable.lucide_activity),
+    AirVent(R.drawable.lucide_air_vent),
+    Anchor(R.drawable.lucide_anchor),
+    Apple(R.drawable.lucide_apple),
+    ArrowUpDown(R.drawable.lucide_arrow_up_down),
+    AudioWaveform(R.drawable.lucide_audio_waveform),
+    BadgeDollarSign(R.drawable.lucide_badge_dollar_sign),
+    Banknote(R.drawable.lucide_banknote),
+    BarChart3(R.drawable.lucide_bar_chart_3),
+    Battery(R.drawable.lucide_battery),
+    Bell(R.drawable.lucide_bell),
+    Beaker(R.drawable.lucide_beaker),
+    Bot(R.drawable.lucide_bot),
+    BriefcaseBusiness(R.drawable.lucide_briefcase_business),
+    Building(R.drawable.lucide_building),
+    Building2(R.drawable.lucide_building_2),
+    Cable(R.drawable.lucide_cable),
+    CalendarCheck(R.drawable.lucide_calendar_check),
+    CalendarClock(R.drawable.lucide_calendar_clock),
+    Car(R.drawable.lucide_car),
+    ChartCandlestick(R.drawable.lucide_chart_candlestick),
+    Check(R.drawable.lucide_check),
+    ChevronRight(R.drawable.lucide_chevron_right),
+    CircleArrowDown(R.drawable.lucide_circle_arrow_down),
+    CircleArrowUp(R.drawable.lucide_circle_arrow_up),
+    CircuitBoard(R.drawable.lucide_circuit_board),
+    Clapperboard(R.drawable.lucide_clapperboard),
+    Cloud(R.drawable.lucide_cloud),
+    Cpu(R.drawable.lucide_cpu),
+    CreditCard(R.drawable.lucide_credit_card),
+    Database(R.drawable.lucide_database),
+    Dna(R.drawable.lucide_dna),
+    Edit(R.drawable.lucide_edit),
+    Eye(R.drawable.lucide_eye),
+    Factory(R.drawable.lucide_factory),
+    FlaskConical(R.drawable.lucide_flask_conical),
+    Fuel(R.drawable.lucide_fuel),
+    Gamepad2(R.drawable.lucide_gamepad_2),
+    Gem(R.drawable.lucide_gem),
+    GitCompare(R.drawable.lucide_git_compare),
+    Globe2(R.drawable.lucide_globe_2),
+    Hammer(R.drawable.lucide_hammer),
+    HardDrive(R.drawable.lucide_hard_drive),
+    Heart(R.drawable.lucide_heart),
+    HeartPulse(R.drawable.lucide_heart_pulse),
+    Hospital(R.drawable.lucide_hospital),
+    Hotel(R.drawable.lucide_hotel),
+    Landmark(R.drawable.lucide_landmark),
+    LayoutDashboard(R.drawable.lucide_layout_dashboard),
+    Leaf(R.drawable.lucide_leaf),
+    Lightbulb(R.drawable.lucide_lightbulb),
+    LineChart(R.drawable.lucide_line_chart),
+    ListOrdered(R.drawable.lucide_list_ordered),
+    Microchip(R.drawable.lucide_microchip),
+    MonitorCog(R.drawable.lucide_monitor_cog),
+    Network(R.drawable.lucide_network),
+    Newspaper(R.drawable.lucide_newspaper),
+    Palette(R.drawable.lucide_palette),
+    Pickaxe(R.drawable.lucide_pickaxe),
+    PieChart(R.drawable.lucide_pie_chart),
+    Pill(R.drawable.lucide_pill),
+    Plane(R.drawable.lucide_plane),
+    Plus(R.drawable.lucide_plus),
+    Radio(R.drawable.lucide_radio),
+    RadioTower(R.drawable.lucide_radio_tower),
+    RefreshCw(R.drawable.lucide_refresh_cw),
+    Rocket(R.drawable.lucide_rocket),
+    Search(R.drawable.lucide_search),
+    Server(R.drawable.lucide_server),
+    Ship(R.drawable.lucide_ship),
+    ShieldCheck(R.drawable.lucide_shield_check),
+    ShoppingBag(R.drawable.lucide_shopping_bag),
+    ShoppingCart(R.drawable.lucide_shopping_cart),
+    SlidersHorizontal(R.drawable.lucide_sliders_horizontal),
+    Sparkles(R.drawable.lucide_sparkles),
+    Square(R.drawable.lucide_square),
+    Star(R.drawable.lucide_star),
+    Stethoscope(R.drawable.lucide_stethoscope),
+    Store(R.drawable.lucide_store),
+    Syringe(R.drawable.lucide_syringe),
+    Target(R.drawable.lucide_target),
+    TrendingDown(R.drawable.lucide_trending_down),
+    TrendingUp(R.drawable.lucide_trending_up),
+    TriangleAlert(R.drawable.lucide_triangle_alert),
+    Truck(R.drawable.lucide_truck),
+    Utensils(R.drawable.lucide_utensils),
+    UserRound(R.drawable.lucide_user_round),
+    Warehouse(R.drawable.lucide_warehouse),
+    Workflow(R.drawable.lucide_workflow),
+    X(R.drawable.lucide_x),
+    Zap(R.drawable.lucide_zap)
+}
+
+@Composable
+fun LucideIconView(
+    icon: LucideIcon,
+    contentDescription: String?,
+    modifier: Modifier = Modifier,
+    tint: Color = LocalContentColor.current
+) {
+    Icon(
+        painter = painterResource(icon.resId),
+        contentDescription = contentDescription,
+        modifier = modifier,
+        tint = tint
+    )
+}

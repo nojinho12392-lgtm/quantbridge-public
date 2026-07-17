@@ -411,10 +411,10 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.quantbridge.stockanalysis";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.Jinho.Stock-Analysis";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				QUANT_API_BASE_URL = "";
-				QUANT_API_FALLBACK_BASE_URL = "http://localhost:8000";
+				QUANT_API_FALLBACK_BASE_URL = "https://qbjinho05082315-api.bravepond-eb5e2096.koreacentral.azurecontainerapps.io";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -441,10 +441,10 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.quantbridge.stockanalysis";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.Jinho.Stock-Analysis";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				QUANT_API_BASE_URL = "http://localhost:8000";
-				QUANT_API_FALLBACK_BASE_URL = "http://localhost:8000";
+				QUANT_API_BASE_URL = "https://qbjinho05082315-api.bravepond-eb5e2096.koreacentral.azurecontainerapps.io";
+				QUANT_API_FALLBACK_BASE_URL = "https://qbjinho05082315-api.bravepond-eb5e2096.koreacentral.azurecontainerapps.io";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -467,7 +467,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.quantbridge.stockanalysis.tests";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jinho.stock-analysis.tests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -489,7 +489,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.quantbridge.stockanalysis.tests";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jinho.stock-analysis.tests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

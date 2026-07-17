@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>APIBaseURL</key>
-	<string>http://localhost:8000</string>
+	<string>https://qbjinho05082315-api.bravepond-eb5e2096.koreacentral.azurecontainerapps.io</string>
 	<key>APIFallbackBaseURL</key>
 	<string>$(QUANT_API_FALLBACK_BASE_URL)</string>
 	<key>NSAppTransportSecurity</key>
@@ -12,7 +12,7 @@
 		<true/>
 		<key>NSExceptionDomains</key>
 		<dict>
-				<key>localhost</key>
+			<key>100.67.231.97</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>

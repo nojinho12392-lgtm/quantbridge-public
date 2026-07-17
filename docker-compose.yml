@@ -29,18 +29,19 @@ services:
       QUANT_DATABASE_URL: postgresql://quantbridge:quantbridge@postgres:5432/quantbridge
       QUANT_ENABLE_PARQUET: "false"
       QUANT_GOOGLE_KEY_PATH: /app/key.json
-      QUANT_SPREADSHEET_ID: YOUR_GOOGLE_SHEET_ID
-      QUANT_SPREADSHEET_NAME: QuantBridge_Demo_Workbook
+      QUANT_SPREADSHEET_ID: 1kn0Kp1QESSdwvmphCmaUFHNRh9qVUoN-2m_vMVDYHes
+      QUANT_SPREADSHEET_NAME: Jino_Quant_Database
       QUANT_API_SQLITE_PATH: /var/lib/quantbridge/quantbridge.sqlite3
       QUANT_API_CACHE_DIR: /var/lib/quantbridge/api_runtime_cache
-      QUANT_API_AUTO_WARM: "0"
-      QUANT_API_ALLOW_EXTERNAL_FETCH: "false"
+      QUANT_API_AUTO_WARM: ${QUANT_API_AUTO_WARM:-1}
+      QUANT_API_ALLOW_EXTERNAL_FETCH: ${QUANT_API_ALLOW_EXTERNAL_FETCH:-true}
       QUANT_API_ENV: local
       QUANT_CORS_ORIGINS: "*"
       QUANT_AUTH_RATE_LIMIT_PER_MINUTE: "20"
     ports:
       - "8000:8000"
     volumes:
+      - ./key.json:/app/key.json:ro
       - quantbridge_api:/var/lib/quantbridge
     healthcheck:
       test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/ready', timeout=5).read()\""]
@@ -48,8 +49,32 @@ services:
       timeout: 8s
       retries: 5
       start_period: 20s
+
+  research-quality:
+    profiles: ["jobs"]
+    build:
+      context: .
+      dockerfile: tools/Dockerfile.research
+    container_name: quantbridge-research-quality
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      QUANT_ENABLE_POSTGRES: "true"
+      QUANT_DATABASE_URL: postgresql://quantbridge:quantbridge@postgres:5432/quantbridge
+      QUANT_ENABLE_PARQUET: "true"
+      QUANT_DATA_LAKE_DIR: /app/data_lake
+      QUANT_GOOGLE_KEY_PATH: /app/key.json
+      QUANT_SPREADSHEET_ID: 1kn0Kp1QESSdwvmphCmaUFHNRh9qVUoN-2m_vMVDYHes
+      QUANT_SPREADSHEET_NAME: Jino_Quant_Database
+    volumes:
+      - ./key.json:/app/key.json:ro
+      - ./data_lake:/app/data_lake
+    command: ["python", "tools/run_research_quality.py"]
+
 volumes:
   quantbridge_pg:
-    name: quantbridge_public_pg
+    external: true
+    name: quantproject_quantbridge_pg
   quantbridge_api:
-    name: quantbridge_public_api
+    name: quantbridge-fullstack_quantbridge_api

@@ -15,6 +15,7 @@ import time
 import warnings
 warnings.filterwarnings('ignore')
 from quantbridge.config import get_settings
+from pipeline.scoring.company_quality import add_company_quality_review_columns
 from quantbridge.ticker_policy import banned_tickers_label, drop_banned_ticker_rows
 from quantbridge.writers.dual_write import dual_write_dataframe
 
@@ -617,6 +618,12 @@ SCORED_COLS_ML = [
     'Value_Score', 'Quality_Score', 'Momentum_Score', 'Total_Score',
     'Final_Score', 'Score_Neutral',
     'ML_Score', 'Combined_Score',
+    'Profitability_Quality', 'Cash_Quality', 'Growth_Quality',
+    'BalanceSheet_Strength', 'Valuation_Discipline', 'Timing_Overlay',
+    'Persistence_Quality', 'Business_Quality_Score', 'Investability_Score',
+    'Quality_Data_Confidence', 'Quality_Red_Flags',
+    'Investability_Rank', 'Business_Quality_Rank', 'Quality_Rank_Delta',
+    'Quality_Category',
     'ROIC', 'RevGrowth', 'GrossMargin', 'FCF_Margin', 'Debt_EBITDA', 'PEG',
     'Last_Updated',
 ]
@@ -641,6 +648,7 @@ scored_df["Combined_Score"] = pd.to_numeric(scored_df["Combined_Score"], errors=
 scored_df = scored_df.sort_values("Combined_Score", ascending=False, na_position="last")
 scored_df = scored_df.reset_index(drop=True)
 scored_df["Rank"] = scored_df.index + 1
+scored_df = add_company_quality_review_columns(scored_df, rank_col="Rank")
 
 for col in SCORED_COLS_ML:
     if col not in scored_df.columns:

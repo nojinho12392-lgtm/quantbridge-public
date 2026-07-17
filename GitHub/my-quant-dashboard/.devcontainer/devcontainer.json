@@ -1,0 +1,36 @@
+{
+  "name": "QuantBridge Dashboard",
+  "image": "mcr.microsoft.com/devcontainers/python:1-3.11-bookworm",
+  "postCreateCommand": "python -m pip install --upgrade pip && pip install -r requirements.txt && python -m py_compile app.py data_loader.py ui_components.py ui_dialogs.py ui_charts.py",
+  "postAttachCommand": {
+    "dashboard": "streamlit run app.py --server.address 0.0.0.0 --server.port 8501 --server.enableCORS false --server.enableXsrfProtection false"
+  },
+  "forwardPorts": [8501],
+  "portsAttributes": {
+    "8501": {
+      "label": "Streamlit Dashboard",
+      "onAutoForward": "openPreview"
+    }
+  },
+  "customizations": {
+    "codespaces": {
+      "openFiles": [
+        "app.py",
+        "data_loader.py",
+        ".github/workflows/dashboard-ci.yml"
+      ]
+    },
+    "vscode": {
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "python.analysis.typeCheckingMode": "basic"
+      },
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "github.vscode-github-actions",
+        "redhat.vscode-yaml"
+      ]
+    }
+  }
+}

@@ -5,7 +5,9 @@ This job is intentionally much smaller than the full QuantBridge pipeline. It
 only updates factor score snapshots, evaluates aged IC diagnostics when
 available, refreshes the PASS/WATCH/FAIL gate table, updates policy
 recommendations, simulates policy-adjusted factor weights when aged snapshots
-exist, and writes an operator remediation plan for weak factors.
+exist, repairs scored-stock quality columns when older snapshots are missing
+them, builds policy-adjusted shadow rankings for the app, and writes an operator
+remediation plan for weak factors.
 
 Run:
     python tools/run_research_quality.py
@@ -46,6 +48,16 @@ RESEARCH_QUALITY_STEPS = [
         "POLICY-BT",
     ),
     PipelineStep(
+        "tools/repair_scored_quality_schema.py",
+        "Backfill scored-stock quality columns",
+        "SCORE-QUALITY",
+    ),
+    PipelineStep(
+        "tools/build_policy_adjusted_rankings.py",
+        "Build policy-adjusted shadow rankings",
+        "POLICY-RANK",
+    ),
+    PipelineStep(
         "pipeline/18_factor_remediation_plan.py",
         "Write factor remediation work queue",
         "REMEDIATE",
@@ -59,6 +71,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--skip-gates", action="store_true", help="Skip Signal_Quality_Gates update")
     parser.add_argument("--skip-policy", action="store_true", help="Skip Factor_Weight_Policy update")
     parser.add_argument("--skip-policy-backtest", action="store_true", help="Skip Factor_Policy_Backtest update")
+    parser.add_argument("--skip-scored-quality-repair", action="store_true", help="Skip scored quality schema repair")
+    parser.add_argument("--skip-policy-rankings", action="store_true", help="Skip policy-adjusted shadow rankings")
     parser.add_argument("--skip-remediation", action="store_true", help="Skip Factor_Remediation_Plan update")
     parser.add_argument("--prefect", action="store_true", help="Use Prefect runner instead of local sequential runner")
     parser.add_argument("--test", action="store_true", help="Pass QUANT_TEST_MODE=true to child scripts")
@@ -76,6 +90,10 @@ def main() -> None:
         if args.skip_policy and step.script.endswith("16_factor_weight_policy.py"):
             continue
         if args.skip_policy_backtest and step.script.endswith("17_factor_policy_backtest.py"):
+            continue
+        if args.skip_scored_quality_repair and step.script.endswith("repair_scored_quality_schema.py"):
+            continue
+        if args.skip_policy_rankings and step.script.endswith("build_policy_adjusted_rankings.py"):
             continue
         if args.skip_remediation and step.script.endswith("18_factor_remediation_plan.py"):
             continue

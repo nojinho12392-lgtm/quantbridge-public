@@ -8,7 +8,7 @@ _KEY_JSON = os.path.join(_ROOT, 'key.json')
 """
 00_schema_writer.py  ─  Database Schema Documentation
 ======================================================
-Creates / updates a 'Schema' sheet in QuantBridge_Demo_Workbook.
+Creates / updates a 'Schema' sheet in Jino_Quant_Database.
 Documents every sheet's column names, data types, and update frequency.
 Run this once after any structural change to the pipeline.
 """
@@ -27,7 +27,7 @@ spreadsheet = get_spreadsheet()
 
 SCHEMA = [
     # ── Header ──────────────────────────────────────────────────────────────
-    ["QuantBridge_Demo_Workbook  —  Schema Reference", "", "", "", ""],
+    ["Jino_Quant_Database  —  Schema Reference", "", "", "", ""],
     [f"Last Updated: {datetime.now().strftime('%Y-%m-%d %H:%M')}", "", "", "", ""],
     ["", "", "", "", ""],
     ["Sheet", "Column", "Type", "Format / Unit", "Description"],
@@ -81,6 +81,21 @@ SCHEMA = [
     ["US_Scored_Stocks",   "Quality_Score",  "float", "0.0000 ~ 0.3000",        "Quality factor score (30% weight)"],
     ["US_Scored_Stocks",   "Momentum_Score", "float", "0.0000 ~ 0.3000",        "Momentum factor score (30% weight)"],
     ["US_Scored_Stocks",   "Total_Score",    "float", "0.0000 ~ 1.0000",        "Sum of V+Q+M scores"],
+    ["US_Scored_Stocks",   "Profitability_Quality", "float", "0.0000 ~ 1.0000", "Profitability subscore"],
+    ["US_Scored_Stocks",   "Cash_Quality",   "float", "0.0000 ~ 1.0000",        "Cash conversion and FCF quality subscore"],
+    ["US_Scored_Stocks",   "Growth_Quality", "float", "0.0000 ~ 1.0000",        "Growth quality subscore"],
+    ["US_Scored_Stocks",   "BalanceSheet_Strength", "float", "0.0000 ~ 1.0000", "Leverage and solvency subscore"],
+    ["US_Scored_Stocks",   "Valuation_Discipline", "float", "0.0000 ~ 1.0000",  "Valuation discipline subscore"],
+    ["US_Scored_Stocks",   "Timing_Overlay", "float", "0.0000 ~ 1.0000",        "Momentum and analyst timing subscore"],
+    ["US_Scored_Stocks",   "Persistence_Quality", "float", "0.0000 ~ 1.0000",   "Multi-year quality persistence subscore"],
+    ["US_Scored_Stocks",   "Business_Quality_Score", "float", "0.0000 ~ 1.0000","Pure business quality score"],
+    ["US_Scored_Stocks",   "Investability_Score", "float", "0.0000 ~ 1.0000",   "Business quality plus valuation and timing"],
+    ["US_Scored_Stocks",   "Quality_Data_Confidence", "float", "0.0000 ~ 1.0000","Observed metric coverage"],
+    ["US_Scored_Stocks",   "Quality_Red_Flags", "str", "pipe-delimited",        "Quality and balance-sheet warning flags"],
+    ["US_Scored_Stocks",   "Investability_Rank", "int", "1, 2, 3...",           "Rank by Investability_Score"],
+    ["US_Scored_Stocks",   "Business_Quality_Rank", "int", "1, 2, 3...",        "Rank by Business_Quality_Score"],
+    ["US_Scored_Stocks",   "Quality_Rank_Delta", "float", "positive/negative", "Original rank minus investability rank"],
+    ["US_Scored_Stocks",   "Quality_Category", "str", "Core Compounder",       "Review category from quality scores"],
     ["US_Scored_Stocks",   "ROIC",           "float", "decimal (0.1234)",       "Return on invested capital"],
     ["US_Scored_Stocks",   "RevGrowth",      "float", "decimal (0.15 = 15%)",   "Revenue growth"],
     ["US_Scored_Stocks",   "GrossMargin",    "float", "decimal (0.1234)",       "Gross margin"],
@@ -130,6 +145,21 @@ SCHEMA = [
     ["KR_Scored_Stocks",   "Quality_Score",  "float","0.0000 ~ 0.3500",       "Quality factor score (35% weight)"],
     ["KR_Scored_Stocks",   "Momentum_Score", "float","0.0000 ~ 0.2500",       "Momentum factor score (25% weight)"],
     ["KR_Scored_Stocks",   "Total_Score",    "float","0.0000 ~ 1.0000",       "Sum of V+Q+M scores"],
+    ["KR_Scored_Stocks",   "Profitability_Quality", "float", "0.0000 ~ 1.0000", "Profitability subscore"],
+    ["KR_Scored_Stocks",   "Cash_Quality",   "float", "0.0000 ~ 1.0000",      "Cash conversion and FCF quality subscore"],
+    ["KR_Scored_Stocks",   "Growth_Quality", "float", "0.0000 ~ 1.0000",      "Growth quality subscore"],
+    ["KR_Scored_Stocks",   "BalanceSheet_Strength", "float", "0.0000 ~ 1.0000", "Leverage and solvency subscore"],
+    ["KR_Scored_Stocks",   "Valuation_Discipline", "float", "0.0000 ~ 1.0000","Valuation discipline subscore"],
+    ["KR_Scored_Stocks",   "Timing_Overlay", "float", "0.0000 ~ 1.0000",      "Momentum and analyst timing subscore"],
+    ["KR_Scored_Stocks",   "Persistence_Quality", "float", "0.0000 ~ 1.0000", "Multi-year quality persistence subscore"],
+    ["KR_Scored_Stocks",   "Business_Quality_Score", "float", "0.0000 ~ 1.0000","Pure business quality score"],
+    ["KR_Scored_Stocks",   "Investability_Score", "float", "0.0000 ~ 1.0000", "Business quality plus valuation and timing"],
+    ["KR_Scored_Stocks",   "Quality_Data_Confidence", "float", "0.0000 ~ 1.0000","Observed metric coverage"],
+    ["KR_Scored_Stocks",   "Quality_Red_Flags", "str", "pipe-delimited",      "Quality and balance-sheet warning flags"],
+    ["KR_Scored_Stocks",   "Investability_Rank", "int", "1, 2, 3...",         "Rank by Investability_Score"],
+    ["KR_Scored_Stocks",   "Business_Quality_Rank", "int", "1, 2, 3...",      "Rank by Business_Quality_Score"],
+    ["KR_Scored_Stocks",   "Quality_Rank_Delta", "float", "positive/negative","Original rank minus investability rank"],
+    ["KR_Scored_Stocks",   "Quality_Category", "str", "Core Compounder",     "Review category from quality scores"],
     ["KR_Scored_Stocks",   "ROIC",           "float","decimal (0.1234)",      "Return on invested capital"],
     ["KR_Scored_Stocks",   "RevGrowth",      "float","decimal (0.15 = 15%)", "Revenue growth"],
     ["KR_Scored_Stocks",   "GrossMargin",    "float","decimal (0.1234)",      "Gross margin"],
@@ -205,7 +235,7 @@ SCHEMA = [
 # Write to Google Sheets
 # ══════════════════════════════════════════════════════════════════════════════
 print("\n" + "=" * 65)
-print("  SCHEMA WRITER  —  QuantBridge_Demo_Workbook")
+print("  SCHEMA WRITER  —  Jino_Quant_Database")
 print("=" * 65)
 
 try:
@@ -223,4 +253,4 @@ print(f"\n✅ Schema written: {len(SCHEMA)} rows")
 print(f"   Sheets documented: US_Universe, KR_Universe, US_Scored_Stocks,")
 print(f"   KR_Scored_Stocks, US_Final_Portfolio, KR_Final_Portfolio,")
 print(f"   US_SmallCap_Gems, KR_SmallCap_Gems, Company_Master, Earnings_Calendar")
-print(f"   → Open 'Schema' tab in QuantBridge_Demo_Workbook to view")
+print(f"   → Open 'Schema' tab in Jino_Quant_Database to view")

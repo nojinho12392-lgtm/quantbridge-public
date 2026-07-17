@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import json
 from datetime import datetime
+from pathlib import Path
 from typing import Iterable
 
 import pandas as pd
@@ -41,15 +43,129 @@ class QuantRepository:
     def record_run(self, run_id: str, runner: str, status: str, payload: dict | None = None) -> None:
         if self.settings.enable_postgres:
             self.postgres.record_run(run_id, runner, status, payload)
+        if self.settings.enable_parquet:
+            self._record_local_run(run_id, runner, status, payload)
 
     def read_pipeline_runs(self, limit: int = 50) -> pd.DataFrame:
-        if not self.settings.enable_postgres:
-            return pd.DataFrame()
+        if self.settings.enable_postgres:
+            try:
+                df = self.postgres.read_runs(limit=limit)
+                if not df.empty:
+                    return df
+            except Exception as exc:
+                print(f"  ⚠️  postgres run read skipped: {type(exc).__name__}: {exc}")
+
+        if self.settings.enable_parquet:
+            return self._read_local_runs(limit=limit)
+
+        return pd.DataFrame()
+
+    def _local_pipeline_runs_path(self) -> Path:
+        return Path(self.settings.data_lake_dir) / "pipeline_runs" / "runs.parquet"
+
+    def _read_local_run_records(self) -> list[dict]:
+        path = self._local_pipeline_runs_path()
+        if not path.exists():
+            return []
         try:
-            return self.postgres.read_runs(limit=limit)
+            df = pd.read_parquet(path)
         except Exception as exc:
-            print(f"  ⚠️  postgres run read skipped: {type(exc).__name__}: {exc}")
+            print(f"  ⚠️  local run read skipped: {type(exc).__name__}: {exc}")
+            return []
+
+        records: list[dict] = []
+        for row in df.to_dict("records"):
+            payload = self._decode_payload(row.get("payload_json", row.get("payload")))
+            records.append({
+                "run_id": self._clean_text(row.get("run_id")),
+                "runner": self._clean_text(row.get("runner")),
+                "status": self._clean_text(row.get("status")),
+                "started_at": self._clean_text(row.get("started_at")),
+                "finished_at": self._clean_text(row.get("finished_at")),
+                "payload": payload,
+            })
+        return [row for row in records if row.get("run_id")]
+
+    def _write_local_run_records(self, records: list[dict]) -> None:
+        path = self._local_pipeline_runs_path()
+        path.parent.mkdir(parents=True, exist_ok=True)
+        rows = []
+        for row in records:
+            rows.append({
+                "run_id": row.get("run_id"),
+                "runner": row.get("runner"),
+                "status": row.get("status"),
+                "started_at": row.get("started_at"),
+                "finished_at": row.get("finished_at"),
+                "payload_json": json.dumps(row.get("payload") or {}, ensure_ascii=False, sort_keys=True),
+            })
+        tmp_path = path.with_suffix(".tmp.parquet")
+        pd.DataFrame(rows).to_parquet(tmp_path, index=False)
+        tmp_path.replace(path)
+
+    def _record_local_run(self, run_id: str, runner: str, status: str, payload: dict | None = None) -> None:
+        now = datetime.utcnow().replace(microsecond=0).isoformat()
+        records = self._read_local_run_records()
+        by_id = {str(row.get("run_id")): row for row in records if row.get("run_id")}
+        current = by_id.get(run_id, {})
+        previous_payload = current.get("payload") if isinstance(current.get("payload"), dict) else {}
+        next_payload = payload if isinstance(payload, dict) else {}
+        merged_payload = {**previous_payload, **next_payload}
+
+        current.update({
+            "run_id": run_id,
+            "runner": runner or current.get("runner"),
+            "status": status,
+            "started_at": current.get("started_at") or now,
+            "finished_at": now if status in {"success", "failed"} else None,
+            "payload": merged_payload,
+        })
+        by_id[run_id] = current
+        self._write_local_run_records(list(by_id.values()))
+
+    def _read_local_runs(self, limit: int = 50) -> pd.DataFrame:
+        records = self._read_local_run_records()
+        if not records:
             return pd.DataFrame()
+        safe_limit = max(1, min(int(limit or 50), 200))
+        df = pd.DataFrame(records)
+        if "started_at" in df.columns:
+            order = pd.to_datetime(df["started_at"], errors="coerce", utc=True)
+            df = (
+                df.assign(_started_order=order)
+                .sort_values("_started_order", ascending=False, na_position="last")
+                .drop(columns=["_started_order"])
+            )
+        return df.head(safe_limit).reset_index(drop=True)
+
+    @staticmethod
+    def _decode_payload(value: object) -> dict:
+        if isinstance(value, dict):
+            return value
+        if value is None:
+            return {}
+        try:
+            if pd.isna(value):
+                return {}
+        except Exception:
+            pass
+        try:
+            decoded = json.loads(str(value))
+        except Exception:
+            return {}
+        return decoded if isinstance(decoded, dict) else {}
+
+    @staticmethod
+    def _clean_text(value: object) -> str | None:
+        if value is None:
+            return None
+        try:
+            if pd.isna(value):
+                return None
+        except Exception:
+            pass
+        text = str(value)
+        return text if text else None
 
     def upsert_app_api_snapshot(
         self,
@@ -82,6 +198,22 @@ class QuantRepository:
 
         if self.settings.enable_parquet:
             return self._order_frame(self.parquet.read_latest(dataset, market=market))
+
+        return pd.DataFrame()
+
+    def read_history(self, dataset: str, market: str | None = None) -> pd.DataFrame:
+        """Read all stored snapshots, preferring PostgreSQL and falling back to Parquet."""
+
+        if self.settings.enable_postgres:
+            try:
+                df = self.postgres.read_history(dataset, market=market)
+                if not df.empty:
+                    return self._order_frame(df)
+            except Exception as exc:
+                print(f"  ⚠️  postgres history read skipped for {dataset}: {type(exc).__name__}: {exc}")
+
+        if self.settings.enable_parquet:
+            return self._order_frame(self.parquet.read_history(dataset, market=market))
 
         return pd.DataFrame()
 

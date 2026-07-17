@@ -1,147 +1,97 @@
 # QuantBridge
 
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+QuantBridge is a full-stack quantitative investing workspace:
 
-QuantBridge is an open-source investment research and decision-support workspace
-for individual investors who want to slow down before acting. It combines a
-Python scoring pipeline, a FastAPI backend, Android/iOS clients, and
-decision-journal UX patterns that help users record why they watch, wait, or
-walk away.
+- Python factor/scoring/research pipeline
+- FastAPI service backed by PostgreSQL and optional Parquet
+- Streamlit dashboard
+- Android app and iOS app clients
+- Azure staging deployment scripts
+- CI, research-quality, and operations health automation
 
-This repository is designed for education, research, and personal experimentation.
-It does not include market-data credentials, cached market data, brokerage
-credentials, production deployment secrets, or any paid/licensed data.
-
-![QuantBridge social preview](docs/assets/social-preview.png)
-
-> Demo screenshots use synthetic sample data only. They do not show real market
-> data, company logos, brokerage data, or investment advice.
-
-## Demo Screens
-
-<p align="center">
-  <img src="docs/assets/screenshots/home-demo.png" width="180" alt="QuantBridge home demo screen with today's decision cards" />
-  <img src="docs/assets/screenshots/ranking-demo.png" width="180" alt="QuantBridge ranking demo screen with profile-based interpretation" />
-  <img src="docs/assets/screenshots/decision-journal-demo.png" width="180" alt="QuantBridge decision journal demo screen" />
-  <img src="docs/assets/screenshots/judgement-alerts-demo.png" width="180" alt="QuantBridge judgement alert timeline demo screen" />
-</p>
-
-## Product Highlights
-
-- Decision journal first: users write the reason, risk, counter-argument, and
-  personal fit before treating a company as actionable.
-- Profile-based interpretation: the same company can be framed differently for
-  growth, stability, beginner, or short-term impulse profiles.
-- Judgement alerts: watchlist updates are saved as decision changes, not just
-  price movement notifications.
-- Curated coverage posture: the app is designed around analyzable companies and
-  bring-your-own-data workflows instead of redistributing licensed market data.
-
-## What This Project Is
-
-- A structured way to compare companies using factor-style signals.
-- A mobile app concept centered on investment decision notes, risk checks, and
-  watchlist updates.
-- A backend/API reference for serving scored company, portfolio, watchlist, and
-  insight payloads.
-- A research codebase that users can run with their own data sources.
-
-## What This Project Is Not
-
-- It is not investment advice.
-- It is not a buy/sell signal service.
-- It is not a portfolio allocation recommendation service.
-- It does not redistribute KRX, Koscom, Yahoo Finance, Naver Finance, or other
-  third-party market data.
-- It does not provide production-ready financial data licensing.
-
-## Repository Layout
-
-```text
-api/                 FastAPI backend
-android/             Android client
-Stock Analysis/      iOS SwiftUI client
-pipeline/            Research and scoring pipeline
-quantbridge/         Shared Python configuration, schemas, storage helpers
-tools/               Local QA and development utilities
-scripts/             Supporting scripts
-examples/            Synthetic sample data for demos
-docs/                Public release notes and legal/data guidance
-```
-
-## Quick Start
-
-Create a local environment file:
+## Common Commands
 
 ```bash
-cp .env.example .env
+make ci-local
+make test
+python main_engine.py --test
+make research-quality
+make kr-rank-local
+make kr-rank-health
+make us-rank-local
+make staging-ops-health
+make android-device-qa
+make cleanup-duplicates
+make export-public-dry
 ```
 
-Install Python dependencies:
+## Product Identity
+
+- Android `applicationId` / `namespace`: `com.qubit.quantbridge`
+- App display name: 큐빗
+- Public export helper: `make export-public` writes a secret-free tree to
+  `../quantbridge-public-clean`
+
+## Quality Research Data Lakes
+
+Build a free local SEC CompanyFacts lake for multi-year US quality features:
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-pip install -r api/requirements_api.txt
+python tools/sec_companyfacts_lake.py --tickers AAPL,MSFT,NVDA --max-requests 20
 ```
 
-Run offline checks:
+Build a free local OpenDART lake for Korean quality features:
 
 ```bash
-python -m unittest test_smallcap_scoring.py test_data_quality.py test_config.py
+python tools/kr_dart_lake.py --tickers 005930.KS,000660.KS --start-year 2015 --end-year 2024 --max-api-calls 200
 ```
 
-Run the API locally:
+Refresh the local Korean ranking snapshots used by `/scored/KR`:
 
 ```bash
-uvicorn api.server:app --reload --host 127.0.0.1 --port 8000
+make kr-rank-local
+make kr-rank-local KR_LOCAL_LIMIT=100 KR_LOCAL_KOSDAQ_LIMIT=50
 ```
 
-Android can point to `http://10.0.2.2:8000` from the emulator. The iOS simulator
-can point to `http://localhost:8000`.
+The same command also publishes the top local KR scores as `KR_Final_Portfolio`
+equal-weight candidates and eligible 100B-10T KRW names as `KR_SmallCap_Gems`.
+It intentionally leaves price-derived fields blank when the local run cannot
+verify them.
 
-## Data Sources
+Install a local macOS schedule for the same refresh. By default it runs Monday
+through Friday at 18:30 local time:
 
-Bring your own data. Do not commit downloaded/cached market data into this
-repository.
+```bash
+make install-kr-rank-schedule
+make kr-rank-schedule-status
+make kr-rank-health
+make uninstall-kr-rank-schedule
+```
 
-Recommended low-risk starting points:
+`/ops/health` also includes this KR ranking refresh check, so the existing
+ops-health schedule/webhook path will surface stale snapshots or failed runs.
 
-- Public company filings such as OpenDART or SEC EDGAR.
-- User-provided CSV files for personal analysis.
-- Synthetic sample data under `examples/sample_data/`.
+Refresh local US ranking snapshots from free SEC CompanyFacts and Yahoo Finance
+inputs:
 
-Use of Yahoo Finance, Naver Finance, KRX/Koscom, brokerage APIs, or paid market
-data must follow each provider's terms and licensing requirements.
+```bash
+make us-rank-local US_LOCAL_EXTRA=--refresh-sec-lake
+```
 
-## Public Release Posture
+This publishes `US_Universe`, `US_Scored_Stocks`, `US_Final_Portfolio`, and
+eligible 100M-10B USD names as `US_SmallCap_Gems` to the local repository.
 
-The public version intentionally excludes:
+Validate quality signals offline from local snapshots and close prices:
 
-- `.env`
-- `key.json`
-- `kiwoom_credentials.json`
-- SQLite databases
-- Parquet/data lake files
-- cached API responses
-- APK/AAB/IPA build outputs
-- production deployment workflows
-- self-hosted runner setup
-- Azure/staging secrets and scripts
+```bash
+python tools/validate_quality_signals.py --snapshots-csv quality_snapshots.csv --prices-csv closes.csv --signals Persistence_Quality,Investability_Score
+```
 
-See `docs/PUBLIC_RELEASE_CHECKLIST.md` before publishing.
+## Secrets
 
-## License
+Never commit local secrets or generated data. The repository ignores files such
+as `key.json`, `.env`, `deploy/azure/staging.env`, Android `local.properties`,
+SQLite databases, Parquet data, and build outputs.
 
-The source code in this repository is licensed under the Apache License 2.0.
-Third-party market data, company logos, trademarks, API credentials, and
-provider-specific datasets are not included in that license. Users must follow
-the terms and licensing requirements of any data source or API they connect.
-
-## Disclaimer
-
-This project is for educational and research purposes only. It is not financial,
-investment, tax, or legal advice. Users are responsible for verifying data
-licenses, API terms, local regulations, and the suitability of any analysis
-before making investment decisions.
+For cloud/runtime secrets, use GitHub Actions secrets or Azure Key Vault as
+documented in `docs/STAGING_DEPLOY.md`.

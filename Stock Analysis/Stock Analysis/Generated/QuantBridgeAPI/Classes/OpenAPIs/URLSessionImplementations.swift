@@ -591,7 +591,7 @@ private class FormDataEncoding: ParameterEncoding {
                 return utType.preferredMIMEType ?? "application/octet-stream"
             }
             #else
-            return "application/octet-stream" 
+            return "application/octet-stream"
             #endif
         } else {
             if let uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, pathExtension as NSString, nil)?.takeRetainedValue(),
@@ -612,7 +612,7 @@ private class FormURLEncoding: ParameterEncoding {
 
         var requestBodyComponents = URLComponents()
         let queryItems = APIHelper.mapValuesToQueryItems(parameters ?? [:])
-        
+
         /// `httpBody` needs to be percent encoded
         /// -> https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST
         /// "application/x-www-form-urlencoded: [...] Non-alphanumeric characters in both keys and values are percent-encoded"

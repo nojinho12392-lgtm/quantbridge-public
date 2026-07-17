@@ -287,14 +287,19 @@ def macro_rows(result: dict) -> list[list[str]]:
 
 def write_macro_regime(result: dict, spreadsheet=None) -> None:
     rows = macro_rows(result)
-    spreadsheet = spreadsheet or get_spreadsheet()
     print("\n[REGIME] Writing to Macro_Regime sheet...")
     try:
+        spreadsheet = spreadsheet or get_spreadsheet()
         ws = spreadsheet.worksheet("Macro_Regime")
     except gspread.exceptions.WorksheetNotFound:
         ws = spreadsheet.add_worksheet(title="Macro_Regime", rows=50, cols=4)
-    ws.clear()
-    ws.update(range_name="A1", values=rows, value_input_option="USER_ENTERED")
+        ws.clear()
+        ws.update(range_name="A1", values=rows, value_input_option="USER_ENTERED")
+    except Exception as exc:
+        print(f"[REGIME] Sheet write skipped: {type(exc).__name__}: {exc}")
+    else:
+        ws.clear()
+        ws.update(range_name="A1", values=rows, value_input_option="USER_ENTERED")
     dual_write_key_values("Macro_Regime", rows, market="GLOBAL")
     print(
         f"✅ [REGIME] Macro_Regime updated — {result['Regime']}  "

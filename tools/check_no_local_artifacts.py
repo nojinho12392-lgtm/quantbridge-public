@@ -39,7 +39,17 @@ BLOCKED_SUFFIXES = {
     ".parquet",
     ".pt",
     ".log",
+    ".apk",
+    ".aab",
+    ".ipa",
 }
+
+# Placeholder Android application IDs that must not ship in source.
+BLOCKED_PACKAGE_MARKERS = (
+    'applicationId = "com.example.myapplication"',
+    'namespace = "com.example.myapplication"',
+    "package com.example.myapplication",
+)
 
 SECRET_MARKERS = (
     "-----BEGIN " + "PRIVATE KEY-----",
@@ -97,12 +107,37 @@ def content_violations(paths: list[str]) -> list[str]:
             if marker in text:
                 violations.append(f"{rel} contains secret marker {marker!r}")
                 break
+        # Only enforce package identity on Android app source / Gradle config.
+        if rel.startswith("android/app/") and not "/build/" in rel:
+            for marker in BLOCKED_PACKAGE_MARKERS:
+                if marker in text:
+                    violations.append(
+                        f"{rel} still uses placeholder Android package marker {marker!r}"
+                    )
+                    break
+    return violations
+
+
+def package_identity_violations() -> list[str]:
+    """Fail if the canonical Android app identity is not branded."""
+    gradle = ROOT / "android/app/build.gradle.kts"
+    main_activity = ROOT / "android/app/src/main/java/com/qubit/quantbridge/MainActivity.kt"
+    violations: list[str] = []
+    if not gradle.exists():
+        return ["android/app/build.gradle.kts is missing"]
+    text = gradle.read_text(encoding="utf-8")
+    if 'applicationId = "com.qubit.quantbridge"' not in text:
+        violations.append('android/app/build.gradle.kts must set applicationId = "com.qubit.quantbridge"')
+    if 'namespace = "com.qubit.quantbridge"' not in text:
+        violations.append('android/app/build.gradle.kts must set namespace = "com.qubit.quantbridge"')
+    if not main_activity.exists():
+        violations.append("android package path missing MainActivity under com/qubit/quantbridge")
     return violations
 
 
 def main() -> int:
     paths = tracked_files()
-    violations = path_violations(paths) + content_violations(paths)
+    violations = path_violations(paths) + content_violations(paths) + package_identity_violations()
     if violations:
         print("Tracked local secret/generated artifact check FAILED:")
         for item in violations:

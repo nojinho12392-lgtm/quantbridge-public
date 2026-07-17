@@ -76,4 +76,3 @@ public struct QBComparisonRecommendationsResponse: Codable, JSONEncodable, Hasha
         additionalProperties = try additionalPropertiesContainer.decodeMap(AnyCodable.self, excludedKeys: nonAdditionalPropertyKeys)
     }
 }
-

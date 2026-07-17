@@ -20,6 +20,13 @@ SCORED_COLS = [
     "Rank", "Ticker", "Name", "Market", "Sector", "MarketCap",
     "Value_Score", "Quality_Score", "Momentum_Score", "Total_Score",
     "Final_Score", "Score_Neutral",
+    "Profitability_Quality", "Cash_Quality", "Growth_Quality",
+    "BalanceSheet_Strength", "Valuation_Discipline", "Timing_Overlay",
+    "Persistence_Quality",
+    "Business_Quality_Score", "Investability_Score", "Quality_Data_Confidence",
+    "Quality_Red_Flags",
+    "Investability_Rank", "Business_Quality_Rank", "Quality_Rank_Delta",
+    "Quality_Category",
     "ROIC", "RevGrowth", "GrossMargin", "FCF_Margin", "Debt_EBITDA", "PEG",
     "Last_Updated",
 ]
@@ -29,6 +36,13 @@ SCORED_COLS_ML = [
     "Value_Score", "Quality_Score", "Momentum_Score", "Total_Score",
     "Final_Score", "Score_Neutral",
     "ML_Score", "Combined_Score",
+    "Profitability_Quality", "Cash_Quality", "Growth_Quality",
+    "BalanceSheet_Strength", "Valuation_Discipline", "Timing_Overlay",
+    "Persistence_Quality",
+    "Business_Quality_Score", "Investability_Score", "Quality_Data_Confidence",
+    "Quality_Red_Flags",
+    "Investability_Rank", "Business_Quality_Rank", "Quality_Rank_Delta",
+    "Quality_Category",
     "ROIC", "RevGrowth", "GrossMargin", "FCF_Margin", "Debt_EBITDA", "PEG",
     "Last_Updated",
 ]
@@ -85,6 +99,9 @@ STORAGE_SHEETS = [
     "Factor_Weight_Policy",
     "Factor_Policy_Backtest",
     "Factor_Remediation_Plan",
+    "US_Policy_Adjusted_Ranking",
+    "KR_Policy_Adjusted_Ranking",
+    "Policy_Adjusted_Ranking_Summary",
     "Macro_Regime",
 ]
 

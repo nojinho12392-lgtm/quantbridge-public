@@ -8,6 +8,7 @@ import unittest
 import pandas as pd
 
 from quantbridge.quality import DatasetSpec, build_data_quality_report, evaluate_dataset
+from tools.repair_scored_quality_schema import repair_scored_frame
 
 
 def _fresh_date(days_ago: int = 0) -> str:
@@ -142,6 +143,21 @@ class DataQualityTests(unittest.TestCase):
                 "Score_Neutral": -1.25,
                 "ML_Score": 0.4,
                 "Combined_Score": 0.7,
+                "Profitability_Quality": 0.8,
+                "Cash_Quality": 0.7,
+                "Growth_Quality": 0.6,
+                "BalanceSheet_Strength": 0.9,
+                "Valuation_Discipline": 0.5,
+                "Timing_Overlay": 0.6,
+                "Persistence_Quality": 0.7,
+                "Business_Quality_Score": 0.75,
+                "Investability_Score": 0.68,
+                "Quality_Data_Confidence": 0.9,
+                "Quality_Red_Flags": "",
+                "Investability_Rank": 1,
+                "Business_Quality_Rank": 1,
+                "Quality_Rank_Delta": 0,
+                "Quality_Category": "Core Compounder",
                 "ROIC": 0.1,
                 "RevGrowth": 0.1,
                 "GrossMargin": 0.1,
@@ -202,6 +218,41 @@ class DataQualityTests(unittest.TestCase):
             optional_columns=("Data_Confidence",),
         )
         self.assertEqual(evaluate_dataset(spec, smallcap)["status"], "WARN")
+
+    def test_repair_scored_quality_schema_fills_legacy_scored_rows(self):
+        legacy = pd.DataFrame([
+            {
+                "Rank": 1,
+                "Ticker": "AAPL",
+                "Name": "Apple",
+                "Market": "US",
+                "Sector": "Tech",
+                "MarketCap": 3_000_000_000_000,
+                "Value_Score": 0.2,
+                "Quality_Score": 0.2,
+                "Momentum_Score": 0.2,
+                "Total_Score": 0.6,
+                "Final_Score": 0.8,
+                "Score_Neutral": 0.5,
+                "ML_Score": "",
+                "Combined_Score": 0.8,
+                "ROIC": 0.25,
+                "RevGrowth": 0.12,
+                "GrossMargin": 0.45,
+                "FCF_Margin": 0.18,
+                "Debt_EBITDA": 1.2,
+                "PEG": 1.4,
+                "Last_Updated": _fresh_date(),
+            },
+        ])
+
+        repaired = repair_scored_frame(legacy, "US")
+        report = evaluate_dataset(DatasetSpec("US_Scored_Stocks", market="US"), repaired)
+
+        self.assertEqual(report["status"], "OK")
+        self.assertIn("Business_Quality_Score", repaired.columns)
+        self.assertIn("Investability_Score", repaired.columns)
+        self.assertIn("Quality_Category", repaired.columns)
 
 
 if __name__ == "__main__":

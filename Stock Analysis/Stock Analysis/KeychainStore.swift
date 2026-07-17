@@ -2,7 +2,7 @@ import Foundation
 import Security
 
 enum KeychainStore {
-    private static let service = "com.quantbridge.stock-analysis.auth"
+    private static let service = "com.jinho.stock-analysis.auth"
     private static let tokenAccount = "quantbridge_access_token"
     private static let cachedUserAccount = "quantbridge_cached_user"
     private static let accessibility = kSecAttrAccessibleWhenUnlockedThisDeviceOnly

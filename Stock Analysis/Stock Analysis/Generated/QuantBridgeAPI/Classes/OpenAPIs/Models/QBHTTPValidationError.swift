@@ -29,4 +29,3 @@ public struct QBHTTPValidationError: Codable, JSONEncodable, Hashable {
         try container.encodeIfPresent(detail, forKey: .detail)
     }
 }
-

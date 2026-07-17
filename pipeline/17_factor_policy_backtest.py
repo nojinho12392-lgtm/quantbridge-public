@@ -118,14 +118,47 @@ def _read_sheet(name: str, cols: list[str]) -> pd.DataFrame:
     return df[cols].copy()
 
 
-def _load_storage_or_sheet(name: str, cols: list[str]) -> pd.DataFrame:
+def _prepare_snapshot_frame(df: pd.DataFrame) -> pd.DataFrame:
+    if df.empty:
+        return pd.DataFrame(columns=SNAPSHOT_COLS)
+
+    out = df.copy()
+    for col in SNAPSHOT_COLS:
+        if col not in out.columns:
+            out[col] = ""
+
+    out = out[out["Ticker"].astype(str).str.strip() != ""].copy()
+    out["Market"] = out["Market"].fillna("").astype(str).str.upper()
+    out = out[out["Market"].isin(["US", "KR"])].copy()
+
+    logical_dates = pd.to_datetime(out["Snapshot_Date"], errors="coerce")
+    out = out[logical_dates.notna()].copy()
+    logical_dates = logical_dates[logical_dates.notna()]
+    out["Snapshot_Date"] = logical_dates.dt.strftime("%Y-%m-%d")
+
+    if "_storage_snapshot_date" in out.columns:
+        out["_storage_snapshot_order"] = pd.to_datetime(out["_storage_snapshot_date"], errors="coerce")
+    else:
+        out["_storage_snapshot_order"] = logical_dates
+
+    out = (
+        out.sort_values(["Snapshot_Date", "Market", "Ticker", "_storage_snapshot_order"], na_position="first")
+        .drop_duplicates(subset=["Snapshot_Date", "Market", "Ticker"], keep="last")
+    )
+    return out[SNAPSHOT_COLS].copy()
+
+
+def _load_storage_or_sheet(name: str, cols: list[str], *, history: bool = False) -> pd.DataFrame:
     try:
-        df = _repository().read_dataframe(name, market="GLOBAL")
+        repo = _repository()
+        df = repo.read_history(name, market=None) if history else repo.read_dataframe(name, market=None)
     except Exception as exc:
         print(f"[POLICY-BT] Storage read skipped for {name}: {type(exc).__name__}: {exc}")
         df = pd.DataFrame()
     if df.empty:
         df = _read_sheet(name, cols)
+    if history:
+        return _prepare_snapshot_frame(df)
     for col in cols:
         if col not in df.columns:
             df[col] = ""
@@ -133,7 +166,7 @@ def _load_storage_or_sheet(name: str, cols: list[str]) -> pd.DataFrame:
 
 
 def load_snapshots() -> pd.DataFrame:
-    df = _load_storage_or_sheet(SNAPSHOT_SHEET, SNAPSHOT_COLS)
+    df = _load_storage_or_sheet(SNAPSHOT_SHEET, SNAPSHOT_COLS, history=True)
     df = _to_num(df, FACTOR_COLS)
     df["Market"] = df["Market"].fillna("").astype(str).str.upper()
     df["Ticker"] = df["Ticker"].fillna("").astype(str).str.strip()
@@ -503,14 +536,22 @@ def _fmt_df(df: pd.DataFrame) -> pd.DataFrame:
 
 def write_policy_backtest(df: pd.DataFrame) -> None:
     out = _fmt_df(df)
+    dual_write_dataframe(OUTPUT_SHEET, out, market="GLOBAL")
     try:
         ws = _spreadsheet().worksheet(OUTPUT_SHEET)
     except gspread.exceptions.WorksheetNotFound:
         ws = _spreadsheet().add_worksheet(title=OUTPUT_SHEET, rows=max(100, len(out) + 10), cols=len(OUTPUT_COLS) + 2)
-    ws.clear()
-    ws.update(range_name="A1", values=[OUTPUT_COLS] + out.values.tolist(), value_input_option="USER_ENTERED")
-    dual_write_dataframe(OUTPUT_SHEET, out, market="GLOBAL")
-    print(f"[POLICY-BT] Wrote {len(out)} rows to {OUTPUT_SHEET}")
+    except Exception as exc:
+        print(f"[POLICY-BT] Sheet write skipped: {type(exc).__name__}: {exc}")
+        print(f"[POLICY-BT] Wrote {len(out)} rows to local storage {OUTPUT_SHEET}")
+        return
+    try:
+        ws.clear()
+        ws.update(range_name="A1", values=[OUTPUT_COLS] + out.values.tolist(), value_input_option="USER_ENTERED")
+        print(f"[POLICY-BT] Wrote {len(out)} rows to {OUTPUT_SHEET}")
+    except Exception as exc:
+        print(f"[POLICY-BT] Sheet write skipped: {type(exc).__name__}: {exc}")
+        print(f"[POLICY-BT] Wrote {len(out)} rows to local storage {OUTPUT_SHEET}")
 
 
 def main() -> None:

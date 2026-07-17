@@ -44,6 +44,31 @@ class SettingsTests(unittest.TestCase):
         self.assertEqual(settings.api_sqlite_path, ROOT / Path("tmp/auth.sqlite3"))
         self.assertEqual(settings.pipeline_runner, "legacy")
 
+    def test_blank_path_env_values_fall_back_to_defaults(self):
+        with patch.dict(
+            os.environ,
+            {
+                "QUANT_GOOGLE_KEY_PATH": "",
+                "QUANT_DATA_LAKE_DIR": "",
+                "QUANT_API_SQLITE_PATH": "",
+                "QUANT_KIWOOM_CREDENTIALS_PATH": "",
+            },
+            clear=True,
+        ):
+            settings = Settings(_env_file=None)
+
+        self.assertEqual(settings.google_key_path, ROOT / "key.json")
+        self.assertEqual(settings.data_lake_dir, ROOT / "data_lake")
+        self.assertEqual(settings.api_sqlite_path, ROOT / "api" / "quantbridge.sqlite3")
+        self.assertEqual(settings.kiwoom_credentials_path, ROOT / "kiwoom_credentials.json")
+
+    def test_google_credentials_require_file_or_json_secret(self):
+        with patch.dict(os.environ, {"QUANT_GOOGLE_KEY_PATH": "."}, clear=True):
+            settings = Settings(_env_file=None)
+
+        self.assertFalse(settings.google_key_path.is_file())
+        self.assertFalse(settings.has_google_credentials)
+
     def test_production_rejects_wildcard_cors(self):
         with patch.dict(os.environ, {"QUANT_API_ENV": "production", "QUANT_CORS_ORIGINS": "*"}, clear=True):
             with self.assertRaises(ValidationError):

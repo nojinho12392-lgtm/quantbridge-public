@@ -16,7 +16,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 PROJECT = ROOT / "Stock Analysis" / "Stock Analysis.xcodeproj"
 SCHEME = "Stock Analysis"
-BUNDLE_ID = "com.quantbridge.stockanalysis"
+BUNDLE_ID = "com.Jinho.Stock-Analysis"
 MIN_SCREENSHOT_BYTES = 20_000
 MIN_PIXEL_RANGE = 8
 PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"

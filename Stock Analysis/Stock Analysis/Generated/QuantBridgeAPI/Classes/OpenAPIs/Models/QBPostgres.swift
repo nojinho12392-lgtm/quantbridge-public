@@ -22,4 +22,3 @@ public struct QBPostgres: Codable, JSONEncodable, Hashable {
         var container = encoder.container(keyedBy: CodingKeys.self)
     }
 }
-

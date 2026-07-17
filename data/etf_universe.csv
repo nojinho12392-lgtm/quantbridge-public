@@ -1,0 +1,112 @@
+rank,ticker,name,region,issuer,category,theme,expenseRatio,aum,distribution,profile,asOf,dataSource
+1,QQQ,Invesco QQQ,US,Invesco,성장,나스닥100 빅테크,0.20%,$280B+,분기,nasdaq100,2026-05-15 curated,curated_universe
+2,QQQM,Invesco NASDAQ 100 ETF,US,Invesco,성장,나스닥100 저비용,0.15%,$30B+,분기,nasdaq100,2026-05-15 curated,curated_universe
+3,SPY,SPDR S&P 500 ETF Trust,US,State Street,대표지수,미국 대형주,0.09%,$500B+,분기,sp500,2026-05-15 curated,curated_universe
+4,VOO,Vanguard S&P 500,US,Vanguard,대표지수,미국 대형주,0.03%,$1T+,분기,sp500,2026-05-15 curated,curated_universe
+5,IVV,iShares Core S&P 500,US,iShares,대표지수,미국 대형주,0.03%,$500B+,분기,sp500,2026-05-15 curated,curated_universe
+6,VTI,Vanguard Total Stock Market,US,Vanguard,대표지수,미국 전체시장,0.03%,$400B+,분기,us_total,2026-05-15 curated,curated_universe
+7,SCHB,Schwab US Broad Market,US,Schwab,대표지수,미국 전체시장,0.03%,$30B+,분기,us_total,2026-05-15 curated,curated_universe
+8,DIA,SPDR Dow Jones Industrial Average,US,State Street,대표지수,다우존스 30,0.16%,$35B+,월,dow30,2026-05-15 curated,curated_universe
+9,IWM,iShares Russell 2000,US,iShares,소형주,미국 소형주,0.19%,$60B+,분기,russell2000,2026-05-15 curated,curated_universe
+10,IJH,iShares Core S&P Mid-Cap,US,iShares,대표지수,미국 중형주,0.05%,$80B+,분기,midcap_us,2026-05-15 curated,curated_universe
+11,IJR,iShares Core S&P Small-Cap,US,iShares,소형주,미국 소형주,0.06%,$80B+,분기,smallcap_us,2026-05-15 curated,curated_universe
+12,VT,Vanguard Total World Stock,US,Vanguard,대표지수,전세계 주식,0.07%,$40B+,분기,global_equity,2026-05-15 curated,curated_universe
+13,VXUS,Vanguard Total International Stock,US,Vanguard,해외지수,미국 제외 글로벌,0.07%,$70B+,분기,developed_ex_us,2026-05-15 curated,curated_universe
+14,EFA,iShares MSCI EAFE,US,iShares,해외지수,선진국 미국제외,0.32%,$50B+,반기,developed_ex_us,2026-05-15 curated,curated_universe
+15,EEM,iShares MSCI Emerging Markets,US,iShares,해외지수,신흥국 주식,0.70%,$15B+,반기,emerging,2026-05-15 curated,curated_universe
+16,VEA,Vanguard FTSE Developed Markets,US,Vanguard,해외지수,선진국 주식,0.05%,$100B+,분기,developed_ex_us,2026-05-15 curated,curated_universe
+17,VWO,Vanguard FTSE Emerging Markets,US,Vanguard,해외지수,신흥국 주식,0.08%,$80B+,분기,emerging,2026-05-15 curated,curated_universe
+18,SCHD,Schwab US Dividend Equity,US,Schwab,배당,미국 배당성장,0.06%,$60B+,분기,dividend,2026-05-15 curated,curated_universe
+19,VIG,Vanguard Dividend Appreciation,US,Vanguard,배당,미국 배당성장,0.05%,$90B+,분기,dividend,2026-05-15 curated,curated_universe
+20,VYM,Vanguard High Dividend Yield,US,Vanguard,배당,미국 고배당,0.06%,$60B+,분기,dividend,2026-05-15 curated,curated_universe
+21,DGRO,iShares Core Dividend Growth,US,iShares,배당,미국 배당성장,0.08%,$30B+,분기,dividend,2026-05-15 curated,curated_universe
+22,NOBL,ProShares S&P 500 Dividend Aristocrats,US,ProShares,배당,배당귀족주,0.35%,$10B+,분기,dividend,2026-05-15 curated,curated_universe
+23,SDY,SPDR S&P Dividend,US,State Street,배당,미국 배당주,0.35%,$20B+,분기,dividend,2026-05-15 curated,curated_universe
+24,JEPI,JPMorgan Equity Premium Income,US,JPMorgan,배당,월배당 커버드콜,0.35%,$30B+,월,covered_call,2026-05-15 curated,curated_universe
+25,JEPQ,JPMorgan Nasdaq Equity Premium Income,US,JPMorgan,배당,나스닥 커버드콜,0.35%,$15B+,월,covered_call,2026-05-15 curated,curated_universe
+26,QYLD,Global X Nasdaq 100 Covered Call,US,Global X,배당,나스닥 커버드콜,0.60%,$7B+,월,covered_call,2026-05-15 curated,curated_universe
+27,VUG,Vanguard Growth,US,Vanguard,성장,미국 성장주,0.04%,$100B+,분기,growth,2026-05-15 curated,curated_universe
+28,IWF,iShares Russell 1000 Growth,US,iShares,성장,미국 대형 성장주,0.19%,$90B+,분기,growth,2026-05-15 curated,curated_universe
+29,SCHG,Schwab US Large-Cap Growth,US,Schwab,성장,미국 대형 성장주,0.04%,$30B+,분기,growth,2026-05-15 curated,curated_universe
+30,VOOG,Vanguard S&P 500 Growth,US,Vanguard,성장,S&P500 성장주,0.10%,$10B+,분기,growth,2026-05-15 curated,curated_universe
+31,VTV,Vanguard Value,US,Vanguard,가치,미국 가치주,0.04%,$120B+,분기,value,2026-05-15 curated,curated_universe
+32,IWD,iShares Russell 1000 Value,US,iShares,가치,미국 대형 가치주,0.19%,$60B+,분기,value,2026-05-15 curated,curated_universe
+33,SCHV,Schwab US Large-Cap Value,US,Schwab,가치,미국 대형 가치주,0.04%,$15B+,분기,value,2026-05-15 curated,curated_universe
+34,MTUM,iShares MSCI USA Momentum Factor,US,iShares,전략,모멘텀 팩터,0.15%,$10B+,반기,momentum,2026-05-15 curated,curated_universe
+35,QUAL,iShares MSCI USA Quality Factor,US,iShares,전략,퀄리티 팩터,0.15%,$40B+,반기,quality,2026-05-15 curated,curated_universe
+36,USMV,iShares MSCI USA Min Vol Factor,US,iShares,전략,저변동 팩터,0.15%,$20B+,반기,lowvol,2026-05-15 curated,curated_universe
+37,XLK,Technology Select Sector SPDR,US,State Street,섹터,미국 기술주,0.09%,$60B+,분기,technology,2026-05-15 curated,curated_universe
+38,XLF,Financial Select Sector SPDR,US,State Street,섹터,미국 금융,0.09%,$40B+,분기,financial,2026-05-15 curated,curated_universe
+39,XLV,Health Care Select Sector SPDR,US,State Street,섹터,미국 헬스케어,0.09%,$35B+,분기,healthcare,2026-05-15 curated,curated_universe
+40,XLE,Energy Select Sector SPDR,US,State Street,섹터,미국 에너지,0.09%,$35B+,분기,energy,2026-05-15 curated,curated_universe
+41,XLY,Consumer Discretionary Select Sector SPDR,US,State Street,섹터,미국 경기소비재,0.09%,$20B+,분기,consumer_discretionary,2026-05-15 curated,curated_universe
+42,XLP,Consumer Staples Select Sector SPDR,US,State Street,섹터,미국 필수소비재,0.09%,$15B+,분기,consumer_staples,2026-05-15 curated,curated_universe
+43,XLI,Industrial Select Sector SPDR,US,State Street,섹터,미국 산업재,0.09%,$20B+,분기,industrial,2026-05-15 curated,curated_universe
+44,XLU,Utilities Select Sector SPDR,US,State Street,섹터,미국 유틸리티,0.09%,$15B+,분기,utility,2026-05-15 curated,curated_universe
+45,XLB,Materials Select Sector SPDR,US,State Street,섹터,미국 소재,0.09%,$8B+,분기,materials,2026-05-15 curated,curated_universe
+46,XLRE,Real Estate Select Sector SPDR,US,State Street,리츠,미국 부동산,0.09%,$7B+,분기,realestate,2026-05-15 curated,curated_universe
+47,XLC,Communication Services Select Sector SPDR,US,State Street,섹터,미국 커뮤니케이션,0.09%,$15B+,분기,communication,2026-05-15 curated,curated_universe
+48,SMH,VanEck Semiconductor,US,VanEck,섹터,미국 반도체,0.35%,$20B+,연,semiconductor_us,2026-05-15 curated,curated_universe
+49,SOXX,iShares Semiconductor,US,iShares,섹터,미국 반도체,0.35%,$10B+,분기,semiconductor_us,2026-05-15 curated,curated_universe
+50,IBB,iShares Biotechnology,US,iShares,섹터,미국 바이오,0.45%,$7B+,분기,biotech,2026-05-15 curated,curated_universe
+51,XBI,SPDR S&P Biotech,US,State Street,섹터,미국 바이오 동일가중,0.35%,$6B+,분기,biotech,2026-05-15 curated,curated_universe
+52,ARKK,ARK Innovation ETF,US,ARK,테마,혁신성장,0.75%,$5B+,연,innovation,2026-05-15 curated,curated_universe
+53,BOTZ,Global X Robotics and AI,US,Global X,테마,로보틱스 AI,0.68%,$2B+,반기,robotics,2026-05-15 curated,curated_universe
+54,ROBO,ROBO Global Robotics and Automation,US,ROBO Global,테마,로보틱스 자동화,0.95%,$1B+,반기,robotics,2026-05-15 curated,curated_universe
+55,CIBR,First Trust Nasdaq Cybersecurity,US,First Trust,테마,사이버보안,0.59%,$6B+,분기,cyber,2026-05-15 curated,curated_universe
+56,SKYY,First Trust Cloud Computing,US,First Trust,테마,클라우드,0.60%,$3B+,분기,cloud,2026-05-15 curated,curated_universe
+57,CLOU,Global X Cloud Computing,US,Global X,테마,클라우드 소프트웨어,0.68%,$1B+,반기,cloud,2026-05-15 curated,curated_universe
+58,TAN,Invesco Solar ETF,US,Invesco,테마,태양광,0.67%,$1B+,분기,clean_energy,2026-05-15 curated,curated_universe
+59,ICLN,iShares Global Clean Energy,US,iShares,테마,클린에너지,0.40%,$2B+,반기,clean_energy,2026-05-15 curated,curated_universe
+60,VNQ,Vanguard Real Estate,US,Vanguard,리츠,미국 리츠,0.13%,$30B+,분기,reit_us,2026-05-15 curated,curated_universe
+61,VNQI,Vanguard Global ex-US Real Estate,US,Vanguard,리츠,글로벌 리츠,0.12%,$4B+,분기,reit_us,2026-05-15 curated,curated_universe
+62,TLT,iShares 20+ Year Treasury Bond,US,iShares,채권,미국 장기국채,0.15%,$50B+,월,bond_long,2026-05-15 curated,curated_universe
+63,IEF,iShares 7-10 Year Treasury Bond,US,iShares,채권,미국 중기국채,0.15%,$30B+,월,bond_intermediate,2026-05-15 curated,curated_universe
+64,SHY,iShares 1-3 Year Treasury Bond,US,iShares,채권,미국 단기국채,0.15%,$25B+,월,bond_short,2026-05-15 curated,curated_universe
+65,BND,Vanguard Total Bond Market,US,Vanguard,채권,미국 종합채권,0.03%,$110B+,월,bond_core,2026-05-15 curated,curated_universe
+66,AGG,iShares Core US Aggregate Bond,US,iShares,채권,미국 종합채권,0.03%,$100B+,월,bond_core,2026-05-15 curated,curated_universe
+67,LQD,iShares iBoxx Investment Grade Corporate Bond,US,iShares,채권,미국 투자등급 회사채,0.14%,$30B+,월,credit_ig,2026-05-15 curated,curated_universe
+68,HYG,iShares iBoxx High Yield Corporate Bond,US,iShares,채권,미국 하이일드,0.49%,$15B+,월,credit_hy,2026-05-15 curated,curated_universe
+69,JNK,SPDR Bloomberg High Yield Bond,US,State Street,채권,미국 하이일드,0.40%,$8B+,월,credit_hy,2026-05-15 curated,curated_universe
+70,TIP,iShares TIPS Bond,US,iShares,채권,미국 물가연동국채,0.19%,$20B+,월,tips,2026-05-15 curated,curated_universe
+71,SGOV,iShares 0-3 Month Treasury Bond,US,iShares,채권,미국 초단기국채,0.09%,$20B+,월,cash,2026-05-15 curated,curated_universe
+72,GLD,SPDR Gold Shares,US,State Street,원자재,금,0.40%,$60B+,없음,gold,2026-05-15 curated,curated_universe
+73,IAU,iShares Gold Trust,US,iShares,원자재,금 저비용,0.25%,$30B+,없음,gold,2026-05-15 curated,curated_universe
+74,SLV,iShares Silver Trust,US,iShares,원자재,은,0.50%,$10B+,없음,silver,2026-05-15 curated,curated_universe
+75,USO,United States Oil Fund,US,USCF,원자재,WTI 원유,0.60%,$1B+,없음,oil,2026-05-15 curated,curated_universe
+76,DBC,Invesco DB Commodity Index Tracking,US,Invesco,원자재,종합 원자재,0.85%,$2B+,연,commodity,2026-05-15 curated,curated_universe
+77,069500,KODEX 200,KR,KODEX,대표지수,코스피200,0.15%대,국내 대형,분배,kospi200,2026-05-15 curated,curated_universe
+78,102110,TIGER 200,KR,TIGER,대표지수,코스피200,0.05%대,국내 대형,분배,kospi200,2026-05-15 curated,curated_universe
+79,148020,RISE 200,KR,RISE,대표지수,코스피200,0.05%대,국내 대형,분배,kospi200,2026-05-15 curated,curated_universe
+80,278530,KODEX 200TR,KR,KODEX,대표지수,코스피200 TR,0.05%대,국내 대형,재투자,kospi200,2026-05-15 curated,curated_universe
+81,226490,KODEX 코스피,KR,KODEX,대표지수,코스피,0.15%대,국내 중대형,분배,kospi200,2026-05-15 curated,curated_universe
+82,229200,KODEX 코스닥150,KR,KODEX,대표지수,코스닥150,0.25%대,국내 중대형,분배,kosdaq150,2026-05-15 curated,curated_universe
+83,233740,KODEX 코스닥150레버리지,KR,KODEX,전략,코스닥150 레버리지,0.64%대,국내 중대형,분배,leverage,2026-05-15 curated,curated_universe
+84,252670,KODEX 200선물인버스2X,KR,KODEX,전략,코스피200 인버스,0.64%대,국내 대형,분배,inverse,2026-05-15 curated,curated_universe
+85,133690,TIGER 미국나스닥100,KR,TIGER,해외지수,나스닥100,0.07%대,국내 대형,상품별 상이,nasdaq100_kr,2026-05-15 curated,curated_universe
+86,379800,KODEX 미국S&P500TR,KR,KODEX,해외지수,S&P500 TR,0.05%대,국내 대형,재투자,sp500_kr,2026-05-15 curated,curated_universe
+87,360750,TIGER 미국S&P500,KR,TIGER,해외지수,S&P500,0.07%대,국내 대형,분배,sp500_kr,2026-05-15 curated,curated_universe
+88,379810,KODEX 미국나스닥100TR,KR,KODEX,해외지수,나스닥100 TR,0.05%대,국내 대형,재투자,nasdaq100_kr,2026-05-15 curated,curated_universe
+89,314250,KODEX 미국FANG플러스(H),KR,KODEX,테마,미국 빅테크 집중,0.45%대,국내 중대형,분배,fang_kr,2026-05-15 curated,curated_universe
+90,381180,TIGER 미국필라델피아반도체나스닥,KR,TIGER,섹터,미국 반도체,0.49%대,국내 대형,분배,semiconductor_us_kr,2026-05-15 curated,curated_universe
+91,381170,TIGER 미국테크TOP10 INDXX,KR,TIGER,테마,미국 테크 TOP10,0.49%대,국내 중대형,분배,nasdaq100_kr,2026-05-15 curated,curated_universe
+92,195930,TIGER 유로스탁스50(합성 H),KR,TIGER,해외지수,유럽 대형주,0.35%대,국내 중형,분배,europe,2026-05-15 curated,curated_universe
+93,245340,TIGER 미국다우존스30,KR,TIGER,해외지수,다우존스30,0.35%대,국내 중형,분배,dow30,2026-05-15 curated,curated_universe
+94,261240,KODEX 미국달러선물,KR,KODEX,전략,미국달러,0.25%대,국내 중형,분배,currency_usd,2026-05-15 curated,curated_universe
+95,261250,KODEX 미국달러선물레버리지,KR,KODEX,전략,미국달러 레버리지,0.45%대,국내 중형,분배,currency_usd,2026-05-15 curated,curated_universe
+96,132030,KODEX 골드선물(H),KR,KODEX,원자재,금 선물,0.68%대,국내 중형,분배,gold,2026-05-15 curated,curated_universe
+97,261220,KODEX WTI원유선물(H),KR,KODEX,원자재,WTI 원유,0.35%대,국내 중형,분배,oil,2026-05-15 curated,curated_universe
+98,114260,KODEX 국고채3년,KR,KODEX,채권,국고채 3년,0.15%대,국내 중형,분배,bond_kr,2026-05-15 curated,curated_universe
+99,153130,KODEX 단기채권,KR,KODEX,채권,국내 단기채권,0.15%대,국내 중대형,분배,bond_kr,2026-05-15 curated,curated_universe
+100,273130,KODEX 종합채권(AA-이상)액티브,KR,KODEX,채권,국내 종합채권,0.05%대,국내 중대형,분배,bond_kr,2026-05-15 curated,curated_universe
+101,305720,KODEX 2차전지산업,KR,KODEX,테마,국내 2차전지,0.45%대,국내 중대형,분배,battery_kr,2026-05-15 curated,curated_universe
+102,305540,TIGER 2차전지테마,KR,TIGER,테마,국내 2차전지,0.50%대,국내 중대형,분배,battery_kr,2026-05-15 curated,curated_universe
+103,091160,KODEX 반도체,KR,KODEX,섹터,국내 반도체,0.45%대,국내 중대형,분배,semiconductor_kr,2026-05-15 curated,curated_universe
+104,091170,KODEX 은행,KR,KODEX,섹터,국내 은행,0.45%대,국내 중형,분배,bank_kr,2026-05-15 curated,curated_universe
+105,117700,KODEX 건설,KR,KODEX,섹터,국내 건설,0.45%대,국내 중형,분배,construction_kr,2026-05-15 curated,curated_universe
+106,140710,KODEX 운송,KR,KODEX,섹터,국내 운송,0.45%대,국내 중형,분배,transport_kr,2026-05-15 curated,curated_universe
+107,266360,KODEX 미디어&엔터테인먼트,KR,KODEX,테마,미디어 엔터,0.45%대,국내 중형,분배,media_kr,2026-05-15 curated,curated_universe
+108,228800,TIGER 여행레저,KR,TIGER,테마,여행 레저,0.50%대,국내 중형,분배,travel_kr,2026-05-15 curated,curated_universe
+109,364960,TIGER KRX BBIG K-뉴딜,KR,TIGER,테마,BBIG 성장,0.40%대,국내 중형,분배,bbig_kr,2026-05-15 curated,curated_universe
+110,329200,TIGER 리츠부동산인프라,KR,TIGER,리츠,국내 리츠 인프라,0.29%대,국내 중형,분배,reit_kr,2026-05-15 curated,curated_universe
+111,371460,TIGER 차이나전기차SOLACTIVE,KR,TIGER,테마,중국 전기차,0.49%대,국내 중대형,분배,china_ev,2026-05-15 curated,curated_universe

@@ -63,7 +63,10 @@ class ParquetLake:
             if not read_dir.exists():
                 continue
             try:
-                files = sorted(read_dir.glob("*.parquet")) if read_dir.is_dir() else [read_dir]
+                if read_dir.is_dir():
+                    files = sorted(read_dir.rglob("*.parquet") if not market else read_dir.glob("*.parquet"))
+                else:
+                    files = [read_dir]
                 frames = [pd.read_parquet(path) for path in files if path.is_file()]
                 df = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
             except Exception:
@@ -71,3 +74,30 @@ class ParquetLake:
             if not df.empty:
                 return df
         return pd.DataFrame()
+
+    def read_history(self, dataset: str, market: str | None = None) -> pd.DataFrame:
+        dataset_dir = self.root / dataset
+        if not dataset_dir.exists():
+            return pd.DataFrame()
+
+        frames = []
+        snapshots = sorted(
+            [p for p in dataset_dir.glob("snapshot_date=*") if p.is_dir()],
+            key=lambda p: p.name,
+        )
+        for snapshot_dir in snapshots:
+            storage_snapshot_date = snapshot_dir.name.split("=", 1)[1]
+            read_dir = snapshot_dir / f"market={market.upper()}" if market else snapshot_dir
+            if not read_dir.exists():
+                continue
+            try:
+                files = sorted(read_dir.glob("*.parquet") if market else read_dir.rglob("*.parquet"))
+                snapshot_frames = [pd.read_parquet(path) for path in files if path.is_file()]
+            except Exception:
+                continue
+            for frame in snapshot_frames:
+                if not frame.empty:
+                    out = frame.copy()
+                    out["_storage_snapshot_date"] = storage_snapshot_date
+                    frames.append(out)
+        return pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()

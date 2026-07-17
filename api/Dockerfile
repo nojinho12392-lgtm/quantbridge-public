@@ -13,6 +13,7 @@ RUN pip install --upgrade pip \
 COPY api ./api
 COPY data ./data
 COPY quantbridge ./quantbridge
+COPY tools ./tools
 COPY sheets_client.py ./sheets_client.py
 
 EXPOSE 8000

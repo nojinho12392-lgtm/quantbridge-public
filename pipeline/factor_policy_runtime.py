@@ -26,7 +26,7 @@ def _is_true(value) -> bool:
 
 def _load_policy_from_storage() -> pd.DataFrame:
     try:
-        return QuantRepository().read_dataframe(POLICY_SHEET, market="GLOBAL")
+        return QuantRepository().read_dataframe(POLICY_SHEET, market=None)
     except Exception:
         return pd.DataFrame()
 

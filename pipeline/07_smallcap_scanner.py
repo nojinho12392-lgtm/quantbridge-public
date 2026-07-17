@@ -879,7 +879,7 @@ def main():
     print("  MarketCap       : $100M~$1B (US)   |  1000억~10조 (KR)")
     print("  Scoring         : ROIC + RevGrowth + PEG + GrossMargin")
     print("                    + FCF + Debt + VolSurge + SmallCapBonus")
-    print("  Cache           : Company_Master in QuantBridge_Demo_Workbook")
+    print("  Cache           : Company_Master in Jino_Quant_Database")
     print("=" * 65)
 
 

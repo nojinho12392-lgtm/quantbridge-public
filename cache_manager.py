@@ -5,7 +5,7 @@ Reduces redundant yfinance / Naver API calls by 80%+ by storing
 fundamental data in Company_Master (Google Sheet) and only re-fetching
 when data is stale (>90 days) or earnings have passed since last update.
 
-Two new worksheets are automatically created inside QuantBridge_Demo_Workbook:
+Two new worksheets are automatically created inside Jino_Quant_Database:
 
   Company_Master     — per-ticker fundamental + market snapshot
   Earnings_Calendar  — next earnings dates for the universe
@@ -260,7 +260,7 @@ class CacheManager:
     Parameters
     ----------
     spreadsheet : gspread.Spreadsheet
-        Already-authorized spreadsheet object (QuantBridge_Demo_Workbook).
+        Already-authorized spreadsheet object (Jino_Quant_Database).
     verbose : bool
         Print cache hit/miss messages. Default True.
     stale_days : int
@@ -2173,7 +2173,7 @@ class CacheManager:
 if __name__ == '__main__':
     """
     One-time setup:  creates Company_Master and Earnings_Calendar worksheets
-    inside QuantBridge_Demo_Workbook if they don't already exist.
+    inside Jino_Quant_Database if they don't already exist.
 
     Run:  python cache_manager.py
     """
@@ -2187,7 +2187,7 @@ if __name__ == '__main__':
     from sheets_client import get_spreadsheet
     spreadsheet = get_spreadsheet()
 
-    print("\nConnected to: QuantBridge_Demo_Workbook")
+    print("\nConnected to: Jino_Quant_Database")
 
     # This will create both worksheets (or confirm they exist)
     cache = CacheManager(spreadsheet, verbose=True)

@@ -60,6 +60,9 @@ FACTOR_BASE_WEIGHTS = {
     "Final_Score": 1.00,
     "Score_Neutral": 1.00,
     "Combined_Score": 1.00,
+    "Business_Quality_Score": 1.00,
+    "Investability_Score": 1.00,
+    "Persistence_Quality": 1.00,
 }
 
 STATUS_ORDER = {
@@ -99,7 +102,7 @@ def _to_num(df: pd.DataFrame) -> pd.DataFrame:
 
 def _load_from_storage() -> pd.DataFrame:
     try:
-        df = _repository().read_dataframe(INPUT_SHEET, market="GLOBAL")
+        df = _repository().read_dataframe(INPUT_SHEET, market=None)
     except Exception as exc:
         print(f"[POLICY] Storage read skipped: {type(exc).__name__}: {exc}")
         return pd.DataFrame(columns=INPUT_COLS)
@@ -279,14 +282,22 @@ def _fmt_df(df: pd.DataFrame) -> pd.DataFrame:
 
 def write_weight_policy(df: pd.DataFrame) -> None:
     out = _fmt_df(df)
+    dual_write_dataframe(OUTPUT_SHEET, out, market="GLOBAL")
     try:
         ws = _spreadsheet().worksheet(OUTPUT_SHEET)
     except gspread.exceptions.WorksheetNotFound:
         ws = _spreadsheet().add_worksheet(title=OUTPUT_SHEET, rows=max(100, len(out) + 10), cols=len(OUTPUT_COLS) + 2)
-    ws.clear()
-    ws.update(range_name="A1", values=[OUTPUT_COLS] + out.values.tolist(), value_input_option="USER_ENTERED")
-    dual_write_dataframe(OUTPUT_SHEET, out, market="GLOBAL")
-    print(f"[POLICY] Wrote {len(out)} rows to {OUTPUT_SHEET}")
+    except Exception as exc:
+        print(f"[POLICY] Sheet write skipped: {type(exc).__name__}: {exc}")
+        print(f"[POLICY] Wrote {len(out)} rows to local storage {OUTPUT_SHEET}")
+        return
+    try:
+        ws.clear()
+        ws.update(range_name="A1", values=[OUTPUT_COLS] + out.values.tolist(), value_input_option="USER_ENTERED")
+        print(f"[POLICY] Wrote {len(out)} rows to {OUTPUT_SHEET}")
+    except Exception as exc:
+        print(f"[POLICY] Sheet write skipped: {type(exc).__name__}: {exc}")
+        print(f"[POLICY] Wrote {len(out)} rows to local storage {OUTPUT_SHEET}")
 
 
 def main() -> None:

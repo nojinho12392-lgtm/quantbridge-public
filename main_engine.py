@@ -942,7 +942,7 @@ def main():
     print(f"\n  ⏱  Total elapsed: {elapsed_total/60:.1f} min ({elapsed_total:.0f}s)")
 
     print()
-    print("  📊  Google Sheets  →  QuantBridge_Demo_Workbook")
+    print("  📊  Google Sheets  →  Jino_Quant_Database")
     print(f"  {THIN}")
     print("  Sheet                 Contents")
     print(f"  {THIN}")

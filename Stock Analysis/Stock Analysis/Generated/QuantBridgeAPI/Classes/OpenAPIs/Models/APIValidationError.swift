@@ -45,4 +45,3 @@ public struct APIValidationError: Codable, JSONEncodable, Hashable {
         try container.encodeIfPresent(ctx, forKey: .ctx)
     }
 }
-

@@ -77,6 +77,59 @@ ENDPOINTS = {
             "group": ["label", "count", "tickers"],
         },
     },
+    "scored": {
+        "path": "/scored/{market}",
+        "markets": ["US", "KR"],
+        "query": ["limit"],
+        "response": {
+            "root": ["stocks", "count", "total_count", "generated_at", "source"],
+            "stock": [
+                "Ticker",
+                "Name",
+                "Market",
+                "Rank",
+                "Final_Score",
+                "Investability_Score",
+                "Business_Quality_Score",
+                "Quality_Data_Confidence",
+                "Quality_Red_Flags",
+                "Quality_Category",
+            ],
+        },
+    },
+    "blind_financial_quiz": {
+        "path": "/training/blind-financial-quiz",
+        "markets": ["ALL", "US", "KR"],
+        "query": ["quiz_id", "market", "refresh"],
+        "response": {
+            "root": ["id", "title", "prompt", "correct_option_id", "answer_rule", "options"],
+            "option": ["id", "blind_label", "metrics", "company"],
+            "metric": ["label", "value", "tone"],
+            "company": ["ticker", "name", "market", "currency", "logo_url", "price_points", "three_year_return_pct"],
+            "price_point": ["date", "return_pct"],
+        },
+    },
+    "policy_adjusted_ranking": {
+        "path": "/research/policy-adjusted-ranking",
+        "markets": ["US", "KR"],
+        "query": ["market", "limit"],
+        "response": {
+            "root": ["market", "items", "count", "summary", "top_up", "top_down", "source", "mode"],
+            "item": [
+                "Ticker",
+                "Name",
+                "Market",
+                "Policy_Rank",
+                "Base_Rank",
+                "Rank_Change",
+                "Policy_Final_Score",
+                "Base_Final_Score",
+                "Policy_Actions",
+                "Policy_Mode",
+            ],
+            "summary": ["Rows", "Top_Up_Ticker", "Top_Down_Ticker", "Mean_Abs_Rank_Change"],
+        },
+    },
     "etfs": {
         "path": "/etfs",
         "markets": ["ALL", "US", "KR"],
@@ -288,6 +341,21 @@ class ScoredStockModel(MobileBase):
     score_neutral: float | None = Field(default=None, alias="Score_Neutral")
     ml_score: float | None = Field(default=None, alias="ML_Score")
     combined_score: float | None = Field(default=None, alias="Combined_Score")
+    profitability_quality: float | None = Field(default=None, alias="Profitability_Quality")
+    cash_quality: float | None = Field(default=None, alias="Cash_Quality")
+    growth_quality: float | None = Field(default=None, alias="Growth_Quality")
+    balance_sheet_strength: float | None = Field(default=None, alias="BalanceSheet_Strength")
+    valuation_discipline: float | None = Field(default=None, alias="Valuation_Discipline")
+    timing_overlay: float | None = Field(default=None, alias="Timing_Overlay")
+    persistence_quality: float | None = Field(default=None, alias="Persistence_Quality")
+    business_quality_score: float | None = Field(default=None, alias="Business_Quality_Score")
+    investability_score: float | None = Field(default=None, alias="Investability_Score")
+    quality_data_confidence: float | None = Field(default=None, alias="Quality_Data_Confidence")
+    quality_red_flags: str | None = Field(default=None, alias="Quality_Red_Flags")
+    investability_rank: int | None = Field(default=None, alias="Investability_Rank")
+    business_quality_rank: int | None = Field(default=None, alias="Business_Quality_Rank")
+    quality_rank_delta: float | None = Field(default=None, alias="Quality_Rank_Delta")
+    quality_category: str | None = Field(default=None, alias="Quality_Category")
     roic: float | None = Field(default=None, alias="ROIC")
     rev_growth: float | None = Field(default=None, alias="RevGrowth")
     gross_margin: float | None = Field(default=None, alias="GrossMargin")
@@ -299,7 +367,52 @@ class ScoredStockModel(MobileBase):
 class ScoredResponse(MobileBase):
     stocks: list[ScoredStockModel] = Field(default_factory=list)
     count: int | None = None
+    total_count: int | None = None
     generated_at: str | None = None
+    source: str | None = None
+
+
+class BlindQuizMetric(MobileBase):
+    label: str
+    value: str
+    tone: str | None = None
+
+
+class BlindQuizPricePoint(MobileBase):
+    date: str
+    return_pct: float
+
+
+class BlindQuizCompany(MobileBase):
+    ticker: str
+    name: str
+    market: str
+    currency: str
+    sector: str | None = None
+    logo_url: str | None = None
+    price_points: list[BlindQuizPricePoint] = Field(default_factory=list)
+    three_year_return_pct: float | None = None
+
+
+class BlindQuizOption(MobileBase):
+    id: str
+    blind_label: str
+    thesis: str | None = None
+    metrics: list[BlindQuizMetric] = Field(default_factory=list)
+    company: BlindQuizCompany
+
+
+class BlindFinancialQuizResponse(MobileBase):
+    id: str
+    title: str
+    prompt: str
+    market: str
+    as_of: str | None = None
+    source: str | None = None
+    generated_at: str | None = None
+    correct_option_id: str
+    answer_rule: str
+    options: list[BlindQuizOption] = Field(default_factory=list)
 
 
 class SearchStockModel(MobileBase):
@@ -809,6 +922,14 @@ class PolicyBacktestResponse(TableResponse):
     proxy_evidence_count: int | None = None
     best_windows: list[dict[str, Any]] = Field(default_factory=list)
     weak_windows: list[dict[str, Any]] = Field(default_factory=list)
+    mode: str | None = None
+
+
+class PolicyAdjustedRankingResponse(TableResponse):
+    market: str | None = None
+    summary: dict[str, Any] | None = None
+    top_up: list[dict[str, Any]] = Field(default_factory=list)
+    top_down: list[dict[str, Any]] = Field(default_factory=list)
     mode: str | None = None
 
 

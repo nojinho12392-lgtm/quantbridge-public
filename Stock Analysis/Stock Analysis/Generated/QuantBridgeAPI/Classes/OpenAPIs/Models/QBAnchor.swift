@@ -22,4 +22,3 @@ public struct QBAnchor: Codable, JSONEncodable, Hashable {
         var container = encoder.container(keyedBy: CodingKeys.self)
     }
 }
-

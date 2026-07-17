@@ -15,13 +15,21 @@ def _row_dict(row: sqlite3.Row | None) -> dict | None:
     return dict(row) if row is not None else None
 
 
+class ClosingSQLiteConnection(sqlite3.Connection):
+    def __exit__(self, exc_type, exc, tb):
+        try:
+            return super().__exit__(exc_type, exc, tb)
+        finally:
+            self.close()
+
+
 class SQLiteAuthStore:
     def __init__(self, path: Path):
         self.path = Path(path)
 
     def connect(self) -> sqlite3.Connection:
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        conn = sqlite3.connect(self.path)
+        conn = sqlite3.connect(self.path, factory=ClosingSQLiteConnection)
         conn.row_factory = sqlite3.Row
         return conn
 

@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 
+import math
 import re
 from collections.abc import Mapping
+from functools import lru_cache
 from typing import Any
+
+import requests
 
 KR_COMPANY_NAMES: dict[str, str] = {
     '000270': '기아',
@@ -732,6 +736,10 @@ def _kr_code(value: object) -> str:
     return match.group(1) if match else ""
 
 
+def kr_code(value: object) -> str:
+    return _kr_code(value)
+
+
 def _is_kr_ticker(ticker: object, market: str | None = None) -> bool:
     market_key = str(market or "").strip().upper()
     if market_key == "KR":
@@ -761,6 +769,109 @@ def _is_generic_ticker_company_name(name: object, ticker: object) -> bool:
     upper_ticker = str(ticker or "").strip().upper()
     base_symbol = upper_ticker.split(".", 1)[0]
     return bool(symbol and prefix in {symbol, upper_ticker, base_symbol})
+
+
+def _is_missing_kr_name(name: object, ticker: object = "") -> bool:
+    name_text = str(name or "").strip()
+    ticker_text = str(ticker or "").strip()
+    code = _kr_code(ticker_text)
+    if not name_text:
+        return True
+    if ticker_text and name_text.upper() == ticker_text.upper():
+        return True
+    if code and name_text == code:
+        return True
+    return bool(re.fullmatch(r"\d{6}(?:\.(?:KS|KQ))?", name_text.upper()))
+
+
+def _has_kr_suffix(ticker: object) -> bool:
+    return bool(re.fullmatch(r"\d{6}\.(?:KS|KQ)", str(ticker or "").strip().upper()))
+
+
+def _safe_float(value: object) -> float | None:
+    try:
+        parsed = float(value)
+        return None if math.isnan(parsed) else parsed
+    except (TypeError, ValueError):
+        return None
+
+
+@lru_cache(maxsize=2048)
+def _naver_kr_identity(code: str) -> dict[str, Any]:
+    code = _kr_code(code)
+    if not code:
+        return {}
+    headers = {
+        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X)",
+        "Referer": "https://m.stock.naver.com/",
+    }
+    try:
+        resp = requests.get(
+            f"https://polling.finance.naver.com/api/realtime/domestic/stock/{code}",
+            headers=headers,
+            timeout=5,
+        )
+        if resp.status_code == 200:
+            data = (resp.json().get("datas") or [{}])[0]
+            name = str(data.get("stockName") or "").strip()
+            exchange_info = data.get("stockExchangeType") or {}
+            exchange = exchange_info.get("code") or data.get("stockExchangeName") or ""
+            suffix = ".KQ" if str(exchange).upper() in {"KQ", "KOSDAQ"} else ".KS"
+            market_cap = _safe_float(str(data.get("marketValueFullRaw") or "").replace(",", ""))
+            payload: dict[str, Any] = {"Ticker": f"{code}{suffix}", "Name": name}
+            if exchange:
+                payload["Exchange"] = str(exchange).upper()
+            if market_cap is not None:
+                payload["MarketCap"] = market_cap
+            if name:
+                return payload
+    except Exception:
+        pass
+
+    try:
+        resp = requests.get(
+            f"https://m.stock.naver.com/api/stock/{code}/basic",
+            headers=headers,
+            timeout=5,
+        )
+        if resp.status_code != 200:
+            return {}
+        data = resp.json()
+        name = str(data.get("stockName") or "").strip()
+        exchange = (
+            (data.get("stockExchangeType") or {}).get("code")
+            or data.get("stockExchangeName")
+            or ""
+        )
+        suffix = ".KQ" if str(exchange).upper() in {"KQ", "KOSDAQ"} else ".KS"
+        return {"Ticker": f"{code}{suffix}", "Name": name} if name else {}
+    except Exception:
+        return {}
+
+
+def enrich_kr_company_identities(records: list[dict]) -> list[dict]:
+    enriched = []
+    for row in records:
+        item = dict(row)
+        ticker = str(item.get("Ticker") or "").strip()
+        name = str(item.get("Name") or "").strip()
+        code = _kr_code(ticker or name)
+
+        if not ticker and code:
+            ticker = code
+
+        if code and (_is_missing_kr_name(name, ticker) or not _has_kr_suffix(ticker)):
+            ident = _naver_kr_identity(code)
+            if ident:
+                if not _has_kr_suffix(ticker):
+                    ticker = ident["Ticker"]
+                if _is_missing_kr_name(name, ticker):
+                    name = ident["Name"]
+
+        item["Ticker"] = ticker
+        item["Name"] = name or code or ticker
+        enriched.append(item)
+    return enriched
 
 
 def _display_override(ticker: object, market: str | None = None) -> str | None:

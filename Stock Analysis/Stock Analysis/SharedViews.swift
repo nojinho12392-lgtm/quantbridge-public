@@ -463,7 +463,20 @@ private struct LocalCompanyLogo {
 }
 
 private func localCompanyLogo(for ticker: String) -> LocalCompanyLogo? {
-    nil
+    switch shortTicker(ticker).uppercased() {
+    case "EPSN":
+        return LocalCompanyLogo(assetName: "CompanyLogoEPSN", background: .black, paddingFraction: 0.02)
+    case "RIGL":
+        return LocalCompanyLogo(assetName: "CompanyLogoRIGL", background: .white, paddingFraction: 0.02)
+    case "UNH":
+        return LocalCompanyLogo(assetName: "CompanyLogoUNH", background: .white, paddingFraction: 0.06)
+    case "MRVL":
+        return LocalCompanyLogo(assetName: "CompanyLogoMRVL", background: .black, paddingFraction: 0.04)
+    case "SNDK":
+        return LocalCompanyLogo(assetName: "CompanyLogoSNDK", background: .black, paddingFraction: 0.02)
+    default:
+        return nil
+    }
 }
 
 private enum CompanyLogoMemoryCache {

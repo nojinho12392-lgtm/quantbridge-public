@@ -9,6 +9,56 @@ from api.services.stock_detail import StockDetailService
 
 
 class ReportApiPayloadTests(unittest.TestCase):
+    def test_scored_payload_includes_quality_fields_and_metadata(self):
+        rows = [
+            {
+                "Rank": 1,
+                "Ticker": "000270.KS",
+                "Name": "기아",
+                "Market": "KR",
+                "Sector": "자동차",
+                "Final_Score": 0.93,
+                "Investability_Score": 0.88,
+                "Business_Quality_Score": 0.84,
+                "Quality_Data_Confidence": 0.95,
+                "Quality_Red_Flags": "",
+                "Quality_Category": "QARP Candidate",
+                "Last_Updated": "2026-05-25",
+            },
+            {
+                "Rank": 2,
+                "Ticker": "005930.KS",
+                "Name": "삼성전자",
+                "Market": "KR",
+                "Sector": "반도체",
+                "Final_Score": 0.90,
+                "Investability_Score": 0.80,
+                "Business_Quality_Score": 0.82,
+                "Quality_Data_Confidence": 0.94,
+                "Quality_Red_Flags": "CYCLE_SENSITIVE",
+                "Quality_Category": "Risk Review",
+                "Last_Updated": "2026-05-25",
+            },
+        ]
+
+        with (
+            patch.object(server, "_cached", side_effect=lambda key, loader, ttl=None, stale_ttl=None: loader()),
+            patch.object(server, "_load_simple", return_value=rows),
+            patch.object(server, "_enrich_portfolio_price_fields", side_effect=lambda records, market, max_fetch=0: records),
+            patch.object(server, "_utc_now_iso", return_value="2026-05-25T00:00:00+00:00"),
+            patch.dict(server._data_source_events, {}, clear=True),
+        ):
+            payload = server.scored("kr", limit=1)
+
+        self.assertEqual(payload["count"], 1)
+        self.assertEqual(payload["total_count"], 2)
+        self.assertEqual(payload["generated_at"], "2026-05-25")
+        self.assertEqual(payload["source"], "unknown")
+        self.assertEqual(len(payload["stocks"]), 1)
+        self.assertEqual(payload["stocks"][0]["Ticker"], "000270.KS")
+        self.assertEqual(payload["stocks"][0]["Quality_Category"], "QARP Candidate")
+        self.assertAlmostEqual(payload["stocks"][0]["Investability_Score"], 0.88)
+
     def test_stock_detail_uses_storage_only_when_api_external_fetch_is_disabled(self):
         class Repo:
             def read_identity(self, ticker, market=None):

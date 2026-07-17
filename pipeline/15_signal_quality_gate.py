@@ -68,6 +68,9 @@ CORE_FACTORS = [
     "Final_Score",
     "Score_Neutral",
     "Combined_Score",
+    "Business_Quality_Score",
+    "Investability_Score",
+    "Persistence_Quality",
 ]
 
 HORIZONS = ["1M", "3M", "6M"]
@@ -99,7 +102,7 @@ def _to_num(df: pd.DataFrame, cols: list[str]) -> pd.DataFrame:
 
 def _read_storage_summary() -> pd.DataFrame:
     try:
-        df = _repository().read_dataframe(REPORT_SHEET, market="GLOBAL")
+        df = _repository().read_dataframe(REPORT_SHEET, market=None)
     except Exception as exc:
         print(f"[QUALITY] Storage read skipped: {type(exc).__name__}: {exc}")
         return pd.DataFrame(columns=SUMMARY_COLS)
@@ -161,8 +164,10 @@ def load_ic_summary() -> pd.DataFrame:
 
 def _snapshot_count() -> int:
     try:
-        df = _repository().read_dataframe(SNAPSHOT_SHEET, market="GLOBAL")
+        df = _repository().read_history(SNAPSHOT_SHEET, market=None)
         if not df.empty:
+            if {"Snapshot_Date", "Market", "Ticker"}.issubset(df.columns):
+                return len(df.drop_duplicates(["Snapshot_Date", "Market", "Ticker"]))
             return len(df)
     except Exception:
         pass
@@ -334,14 +339,15 @@ def _fmt_df(df: pd.DataFrame) -> pd.DataFrame:
 
 def write_quality_gates(df: pd.DataFrame) -> None:
     out = _fmt_df(df)
-    ws = None
     try:
-        ws = _spreadsheet().worksheet(OUTPUT_SHEET)
-    except gspread.exceptions.WorksheetNotFound:
-        ws = _spreadsheet().add_worksheet(title=OUTPUT_SHEET, rows=max(100, len(out) + 10), cols=len(OUTPUT_COLS) + 2)
-
-    ws.clear()
-    ws.update(range_name="A1", values=[OUTPUT_COLS] + out.values.tolist(), value_input_option="USER_ENTERED")
+        try:
+            ws = _spreadsheet().worksheet(OUTPUT_SHEET)
+        except gspread.exceptions.WorksheetNotFound:
+            ws = _spreadsheet().add_worksheet(title=OUTPUT_SHEET, rows=max(100, len(out) + 10), cols=len(OUTPUT_COLS) + 2)
+        ws.clear()
+        ws.update(range_name="A1", values=[OUTPUT_COLS] + out.values.tolist(), value_input_option="USER_ENTERED")
+    except Exception as exc:
+        print(f"[QUALITY] Sheet write skipped: {type(exc).__name__}: {exc}")
     dual_write_dataframe(OUTPUT_SHEET, out, market="GLOBAL")
     print(f"[QUALITY] Wrote {len(out)} rows to {OUTPUT_SHEET}")
 

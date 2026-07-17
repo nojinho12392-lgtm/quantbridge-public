@@ -6,7 +6,7 @@ import hashlib
 import hmac
 import secrets
 import time
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
 from pydantic import BaseModel, Field
@@ -61,7 +61,7 @@ def init_db():
 
 
 def now() -> str:
-    return datetime.utcnow().replace(microsecond=0).isoformat()
+    return datetime.now(timezone.utc).replace(tzinfo=None, microsecond=0).isoformat()
 
 
 def _client_ip(request: Request) -> str:
@@ -136,7 +136,9 @@ def _user_payload(row: dict) -> dict:
 def _create_session(user_id: int) -> str:
     token = secrets.token_urlsafe(32)
     created_at = now()
-    expires_at = (datetime.utcnow() + timedelta(days=_TOKEN_DAYS)).replace(microsecond=0).isoformat()
+    expires_at = (
+        datetime.now(timezone.utc) + timedelta(days=_TOKEN_DAYS)
+    ).replace(tzinfo=None, microsecond=0).isoformat()
     store().create_session(user_id, _hash_token(token), created_at, expires_at)
     return token
 

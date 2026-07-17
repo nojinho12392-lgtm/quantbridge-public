@@ -86,7 +86,15 @@ HORIZON_RANK = {
     "ALL": 3,
 }
 
-AGGREGATE_FACTORS = {"Total_Score", "Final_Score", "Score_Neutral", "Combined_Score"}
+AGGREGATE_FACTORS = {
+    "Total_Score",
+    "Final_Score",
+    "Score_Neutral",
+    "Combined_Score",
+    "Business_Quality_Score",
+    "Investability_Score",
+    "Persistence_Quality",
+}
 
 
 def _repository() -> QuantRepository:
@@ -107,7 +115,7 @@ def _to_num(df: pd.DataFrame, cols: list[str]) -> pd.DataFrame:
 
 def _load_storage(sheet_name: str, cols: list[str], num_cols: list[str]) -> pd.DataFrame:
     try:
-        df = _repository().read_dataframe(sheet_name)
+        df = _repository().read_dataframe(sheet_name, market=None)
     except Exception as exc:
         print(f"[REMEDIATION] Storage read skipped for {sheet_name}: {type(exc).__name__}: {exc}")
         return pd.DataFrame(columns=cols)
@@ -384,14 +392,22 @@ def _fmt_df(df: pd.DataFrame) -> pd.DataFrame:
 
 def write_remediation_plan(df: pd.DataFrame) -> None:
     out = _fmt_df(df)
+    dual_write_dataframe(OUTPUT_SHEET, out, market="GLOBAL")
     try:
         ws = _spreadsheet().worksheet(OUTPUT_SHEET)
     except gspread.exceptions.WorksheetNotFound:
         ws = _spreadsheet().add_worksheet(title=OUTPUT_SHEET, rows=max(100, len(out) + 10), cols=len(OUTPUT_COLS) + 2)
-    ws.clear()
-    ws.update(range_name="A1", values=[OUTPUT_COLS] + out.values.tolist(), value_input_option="USER_ENTERED")
-    dual_write_dataframe(OUTPUT_SHEET, out, market="GLOBAL")
-    print(f"[REMEDIATION] Wrote {len(out)} rows to {OUTPUT_SHEET}")
+    except Exception as exc:
+        print(f"[REMEDIATION] Sheet write skipped: {type(exc).__name__}: {exc}")
+        print(f"[REMEDIATION] Wrote {len(out)} rows to local storage {OUTPUT_SHEET}")
+        return
+    try:
+        ws.clear()
+        ws.update(range_name="A1", values=[OUTPUT_COLS] + out.values.tolist(), value_input_option="USER_ENTERED")
+        print(f"[REMEDIATION] Wrote {len(out)} rows to {OUTPUT_SHEET}")
+    except Exception as exc:
+        print(f"[REMEDIATION] Sheet write skipped: {type(exc).__name__}: {exc}")
+        print(f"[REMEDIATION] Wrote {len(out)} rows to local storage {OUTPUT_SHEET}")
 
 
 def main() -> None:

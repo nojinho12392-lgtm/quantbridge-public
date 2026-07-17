@@ -2,25 +2,91 @@
 <issues format="6" by="lint 9.2.1" type="baseline" client="gradle" dependencies="true" name="AGP (9.2.1)" variant="all" version="9.2.1">
 
     <issue
+        id="ApplySharedPref"
+        message="Consider using `apply()` instead; `commit` writes its data to persistent storage immediately, whereas `apply` will handle it in the background"
+        errorLine1="            .commit()"
+        errorLine2="             ~~~~~~~~">
+        <location
+            file="src/main/java/com/qubit/quantbridge/UserPreferencesRepository.kt"
+            line="257"
+            column="14"/>
+    </issue>
+
+    <issue
+        id="ApplySharedPref"
+        message="Consider using `apply()` instead; `commit` writes its data to persistent storage immediately, whereas `apply` will handle it in the background"
+        errorLine1="        appContext.getSharedPreferences(LEGACY_ROUTINE_PREFS, Context.MODE_PRIVATE).edit().clear().commit()"
+        errorLine2="                                                                                                   ~~~~~~~~">
+        <location
+            file="src/main/java/com/qubit/quantbridge/UserPreferencesRepository.kt"
+            line="258"
+            column="100"/>
+    </issue>
+
+    <issue
+        id="ApplySharedPref"
+        message="Consider using `apply()` instead; `commit` writes its data to persistent storage immediately, whereas `apply` will handle it in the background"
+        errorLine1="        appContext.getSharedPreferences(LEGACY_ACTION_INBOX_PREFS, Context.MODE_PRIVATE).edit().clear().commit()"
+        errorLine2="                                                                                                        ~~~~~~~~">
+        <location
+            file="src/main/java/com/qubit/quantbridge/UserPreferencesRepository.kt"
+            line="259"
+            column="105"/>
+    </issue>
+
+    <issue
+        id="ApplySharedPref"
+        message="Consider using `apply()` instead; `commit` writes its data to persistent storage immediately, whereas `apply` will handle it in the background"
+        errorLine1="        appContext.getSharedPreferences(LEGACY_SEARCH_PREFS, Context.MODE_PRIVATE).edit().clear().commit()"
+        errorLine2="                                                                                                  ~~~~~~~~">
+        <location
+            file="src/main/java/com/qubit/quantbridge/UserPreferencesRepository.kt"
+            line="260"
+            column="99"/>
+    </issue>
+
+    <issue
         id="InlinedApi"
         message="Field requires API level 26 (current min is 24): `android.provider.Settings#ACTION_APP_NOTIFICATION_SETTINGS`"
-        errorLine1="                        val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)"
-        errorLine2="                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="        val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)"
+        errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/myapplication/AppScreens.kt"
-            line="1457"
-            column="45"/>
+            file="src/main/java/com/qubit/quantbridge/AppScreens.kt"
+            line="2085"
+            column="29"/>
     </issue>
 
     <issue
         id="InlinedApi"
         message="Field requires API level 26 (current min is 24): `android.provider.Settings#EXTRA_APP_PACKAGE`"
-        errorLine1="                            .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)"
-        errorLine2="                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="            .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)"
+        errorLine2="                      ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/myapplication/AppScreens.kt"
-            line="1458"
-            column="39"/>
+            file="src/main/java/com/qubit/quantbridge/AppScreens.kt"
+            line="2086"
+            column="23"/>
+    </issue>
+
+    <issue
+        id="InlinedApi"
+        message="Field requires API level 26 (current min is 24): `android.provider.Settings#ACTION_APP_NOTIFICATION_SETTINGS`"
+        errorLine1="        val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)"
+        errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/qubit/quantbridge/HomeScreen.kt"
+            line="250"
+            column="29"/>
+    </issue>
+
+    <issue
+        id="InlinedApi"
+        message="Field requires API level 26 (current min is 24): `android.provider.Settings#EXTRA_APP_PACKAGE`"
+        errorLine1="            .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)"
+        errorLine2="                      ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/qubit/quantbridge/HomeScreen.kt"
+            line="251"
+            column="23"/>
     </issue>
 
     <issue
@@ -30,7 +96,7 @@
         errorLine2="        ~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="61"
+            line="64"
             column="9"/>
     </issue>
 
@@ -40,12 +106,12 @@
         errorLine1="             marketIndicatorError = userFacingLoadFailure(&quot;주요 지표&quot;, e)"
         errorLine2="~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/myapplication/AppState.kt"
-            line="640"
+            file="src/main/java/com/qubit/quantbridge/AppState.kt"
+            line="574"
             column="1"/>
         <location
-            file="src/main/java/com/example/myapplication/AppState.kt"
-            line="639"
+            file="src/main/java/com/qubit/quantbridge/AppState.kt"
+            line="573"
             column="1"
             message="Previous line indentation here"/>
     </issue>
@@ -79,7 +145,7 @@
         errorLine2="                  ^">
         <location
             file="build.gradle.kts"
-            line="53"
+            line="56"
             column="19"/>
     </issue>
 
@@ -150,6 +216,50 @@
     </issue>
 
     <issue
+        id="GradleDependency"
+        message="A newer version of androidx.hilt:hilt-navigation-compose than 1.2.0 is available: 1.3.0"
+        errorLine1="hiltNavigationCompose = &quot;1.2.0&quot;"
+        errorLine2="                        ~~~~~~~">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="14"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.lifecycle:lifecycle-runtime-compose than 2.8.7 is available: 2.10.0"
+        errorLine1="lifecycleCompose = &quot;2.8.7&quot;"
+        errorLine2="                   ~~~~~~~">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="17"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.lifecycle:lifecycle-viewmodel-compose than 2.8.7 is available: 2.10.0"
+        errorLine1="lifecycleCompose = &quot;2.8.7&quot;"
+        errorLine2="                   ~~~~~~~">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="17"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.datastore:datastore-preferences than 1.1.1 is available: 1.2.1"
+        errorLine1="datastorePreferences = &quot;1.1.1&quot;"
+        errorLine2="                       ~~~~~~~">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="21"
+            column="24"/>
+    </issue>
+
+    <issue
         id="NewerVersionAvailable"
         message="A newer version of org.jetbrains.kotlin.plugin.compose than 2.2.10 is available: 2.3.21"
         errorLine1="kotlin = &quot;2.2.10&quot;"
@@ -161,14 +271,69 @@
     </issue>
 
     <issue
-        id="UnusedContentLambdaTargetStateParameter"
-        message="Target state parameter `it` is not used"
-        errorLine1="                    ) {"
-        errorLine2="                      ^">
+        id="NewerVersionAvailable"
+        message="A newer version of org.jetbrains.kotlin.plugin.serialization than 2.2.10 is available: 2.3.21"
+        errorLine1="kotlin = &quot;2.2.10&quot;"
+        errorLine2="         ~~~~~~~~">
         <location
-            file="src/main/java/com/example/myapplication/HomeScreen.kt"
-            line="1657"
-            column="23"/>
+            file="../gradle/libs.versions.toml"
+            line="9"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of org.jetbrains.kotlinx:kotlinx-serialization-json than 1.7.3 is available: 1.11.0"
+        errorLine1="kotlinxSerialization = &quot;1.7.3&quot;"
+        errorLine2="                       ~~~~~~~">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="16"
+            column="24"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of com.squareup.okhttp3:logging-interceptor than 4.12.0 is available: 5.3.2"
+        errorLine1="okhttp = &quot;4.12.0&quot;"
+        errorLine2="         ~~~~~~~~">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="18"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of com.squareup.okhttp3:okhttp than 4.12.0 is available: 5.3.2"
+        errorLine1="okhttp = &quot;4.12.0&quot;"
+        errorLine2="         ~~~~~~~~">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="18"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of com.squareup.retrofit2:retrofit than 2.11.0 is available: 3.0.0"
+        errorLine1="retrofit = &quot;2.11.0&quot;"
+        errorLine2="           ~~~~~~~~">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="19"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="ModifierParameter"
+        message="Modifier parameter should be the first optional parameter"
+        errorLine1="    modifier: Modifier = Modifier"
+        errorLine2="    ~~~~~~~~">
+        <location
+            file="src/main/java/com/qubit/quantbridge/AppScreens.kt"
+            line="5735"
+            column="5"/>
     </issue>
 
     <issue
@@ -177,8 +342,8 @@
         errorLine1="                                    settings.javaScriptEnabled = true"
         errorLine2="                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/myapplication/screens/NewsScreen.kt"
-            line="407"
+            file="src/main/java/com/qubit/quantbridge/screens/NewsScreen.kt"
+            line="405"
             column="37"/>
     </issue>
 
@@ -199,20 +364,9 @@
         errorLine1="    var logoIndex by remember(logoUrls) { mutableStateOf(0) }"
         errorLine2="                                          ~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/myapplication/AppScreens.kt"
-            line="4848"
+            file="src/main/java/com/qubit/quantbridge/AppScreens.kt"
+            line="5890"
             column="43"/>
-    </issue>
-
-    <issue
-        id="AutoboxingStateCreation"
-        message="Prefer `mutableIntStateOf` instead of `mutableStateOf`"
-        errorLine1="    var detailRetryKey by remember { mutableStateOf(0) }"
-        errorLine2="                                     ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/example/myapplication/MainActivity.kt"
-            line="276"
-            column="38"/>
     </issue>
 
     <issue
@@ -221,8 +375,8 @@
         errorLine1="    var routeDirection by remember { mutableStateOf(1) }"
         errorLine2="                                     ~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/myapplication/MainActivity.kt"
-            line="277"
+            file="src/main/java/com/qubit/quantbridge/MainActivity.kt"
+            line="288"
             column="38"/>
     </issue>
 
@@ -232,8 +386,8 @@
         errorLine1="    var detailReturnPage by remember { mutableStateOf(pagerState.currentPage) }"
         errorLine2="                                       ~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/myapplication/MainActivity.kt"
-            line="281"
+            file="src/main/java/com/qubit/quantbridge/MainActivity.kt"
+            line="292"
             column="40"/>
     </issue>
 
@@ -243,8 +397,8 @@
         errorLine1="    var currentIndex by remember(indices) { mutableStateOf(0) }"
         errorLine2="                                            ~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/myapplication/MainActivity.kt"
-            line="788"
+            file="src/main/java/com/qubit/quantbridge/MainActivity.kt"
+            line="810"
             column="45"/>
     </issue>
 
@@ -400,7 +554,7 @@
         errorLine1="                    .offset(x = indicatorOffset)"
         errorLine2="                     ~~~~~~">
         <location
-            file="src/main/java/com/example/myapplication/UxComponents.kt"
+            file="src/main/java/com/qubit/quantbridge/UxComponents.kt"
             line="219"
             column="22"/>
     </issue>
@@ -539,89 +693,12 @@
 
     <issue
         id="UseKtx"
-        message="Use the KTX extension function `SharedPreferences.edit` instead?"
-        errorLine1="        prefs.edit().putString(WATCHLIST_PENDING_PREF_KEY, array.toString()).apply()"
-        errorLine2="        ~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/example/myapplication/AppState.kt"
-            line="1337"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="UseKtx"
-        message="Use the KTX extension function `SharedPreferences.edit` instead?"
-        errorLine1="        prefs.edit().putString(WATCHLIST_PREF_KEY, array.toString()).apply()"
-        errorLine2="        ~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/example/myapplication/AppState.kt"
-            line="1402"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="UseKtx"
-        message="Use the KTX extension function `SharedPreferences.edit` instead?"
-        errorLine1="        prefs.edit().putString(COMPARISON_PREF_KEY, array.toString()).apply()"
-        errorLine2="        ~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/example/myapplication/AppState.kt"
-            line="1473"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="UseKtx"
-        message="Use the KTX extension function `SharedPreferences.edit` instead?"
-        errorLine1="            prefs.edit()"
-        errorLine2="            ~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/example/myapplication/HomeScreen.kt"
-            line="771"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UseKtx"
-        message="Use the KTX extension function `SharedPreferences.edit` instead?"
-        errorLine1="        prefs.edit()"
-        errorLine2="        ~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/example/myapplication/HomeScreen.kt"
-            line="790"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="UseKtx"
-        message="Use the KTX extension function `SharedPreferences.edit` instead?"
-        errorLine1="            prefs.edit()"
-        errorLine2="            ~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/example/myapplication/HomeScreen.kt"
-            line="1527"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UseKtx"
-        message="Use the KTX extension function `SharedPreferences.edit` instead?"
-        errorLine1="        prefs.edit()"
-        errorLine2="        ~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/example/myapplication/HomeScreen.kt"
-            line="1547"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="UseKtx"
         message="Use the KTX extension function `String.toUri` instead?"
         errorLine1="            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(target)))"
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/myapplication/screens/NewsScreen.kt"
-            line="330"
+            file="src/main/java/com/qubit/quantbridge/screens/NewsScreen.kt"
+            line="328"
             column="62"/>
     </issue>
 
@@ -631,30 +708,74 @@
         errorLine1="    val uri = runCatching { Uri.parse(clean) }.getOrNull() ?: return null"
         errorLine2="                            ~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/myapplication/screens/NewsScreen.kt"
-            line="510"
+            file="src/main/java/com/qubit/quantbridge/screens/NewsScreen.kt"
+            line="508"
             column="29"/>
     </issue>
 
     <issue
         id="UseKtx"
         message="Use the KTX extension function `SharedPreferences.edit` instead?"
-        errorLine1="        recentSearchPrefs.edit().putString(RECENT_SEARCH_KEY, next).apply()"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="        prefs(context).edit().putBoolean(KEY_ENABLED, enabled).apply()"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/myapplication/screens/SearchScreen.kt"
-            line="248"
+            file="src/main/java/com/qubit/quantbridge/QubitNotificationScheduler.kt"
+            line="74"
             column="9"/>
     </issue>
 
     <issue
         id="UseKtx"
         message="Use the KTX extension function `SharedPreferences.edit` instead?"
-        errorLine1="        recentSearchPrefs.edit().remove(RECENT_SEARCH_KEY).apply()"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="        prefs(context).edit().putStringSet(KEY_WATCH_IDS, scheduledIds).apply()"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/myapplication/screens/SearchScreen.kt"
-            line="252"
+            file="src/main/java/com/qubit/quantbridge/QubitNotificationScheduler.kt"
+            line="121"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `SharedPreferences.edit` instead?"
+        errorLine1="        prefs(context).edit().putStringSet(KEY_WATCH_IDS, emptySet()).apply()"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/qubit/quantbridge/QubitNotificationScheduler.kt"
+            line="235"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `String.toUri` instead?"
+        errorLine1="            .setData(Uri.parse(&quot;qubit://notification/$id&quot;))"
+        errorLine2="                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/qubit/quantbridge/QubitNotificationScheduler.kt"
+            line="264"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `SharedPreferences.edit` instead?"
+        errorLine1="        prefs(context).edit().putString(KEY_LAST_SUMMARY, value).apply()"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/qubit/quantbridge/QubitNotificationScheduler.kt"
+            line="279"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `SharedPreferences.edit` instead?"
+        errorLine1="        prefs(context).edit().putString(KEY_HISTORY, array.toString()).apply()"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/qubit/quantbridge/QubitNotificationScheduler.kt"
+            line="319"
             column="9"/>
     </issue>
 
@@ -664,7 +785,7 @@
         errorLine1="        legacyPrefs.edit().remove(LEGACY_TOKEN_KEY).apply()"
         errorLine2="        ~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/myapplication/SecureTokenStore.kt"
+            file="src/main/java/com/qubit/quantbridge/SecureTokenStore.kt"
             line="48"
             column="9"/>
     </issue>
@@ -675,7 +796,7 @@
         errorLine1="        securePrefs.edit().putEncrypted(USER_CIPHERTEXT_KEY, USER_IV_KEY, encrypted).apply()"
         errorLine2="        ~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/myapplication/SecureTokenStore.kt"
+            file="src/main/java/com/qubit/quantbridge/SecureTokenStore.kt"
             line="77"
             column="9"/>
     </issue>
@@ -686,7 +807,7 @@
         errorLine1="        legacyPrefs.edit().remove(LEGACY_TOKEN_KEY).apply()"
         errorLine2="        ~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/myapplication/SecureTokenStore.kt"
+            file="src/main/java/com/qubit/quantbridge/SecureTokenStore.kt"
             line="85"
             column="9"/>
     </issue>
@@ -697,7 +818,7 @@
         errorLine1="        securePrefs.edit()"
         errorLine2="        ~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/myapplication/SecureTokenStore.kt"
+            file="src/main/java/com/qubit/quantbridge/SecureTokenStore.kt"
             line="89"
             column="9"/>
     </issue>
@@ -708,7 +829,7 @@
         errorLine1="            legacyPrefs.edit().remove(LEGACY_TOKEN_KEY).apply()"
         errorLine2="            ~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/myapplication/SecureTokenStore.kt"
+            file="src/main/java/com/qubit/quantbridge/SecureTokenStore.kt"
             line="109"
             column="13"/>
     </issue>
@@ -720,7 +841,7 @@
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="111"
+            line="114"
             column="27"/>
     </issue>
 
@@ -731,7 +852,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="115"
+            line="118"
             column="20"/>
     </issue>
 

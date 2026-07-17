@@ -14,18 +14,24 @@ public struct QBScoredResponse: Codable, JSONEncodable, Hashable {
 
     public var stocks: [QBScoredStockModel]?
     public var count: Int?
+    public var totalCount: Int?
     public var generatedAt: String?
+    public var source: String?
 
-    public init(stocks: [QBScoredStockModel]? = nil, count: Int? = nil, generatedAt: String? = nil) {
+    public init(stocks: [QBScoredStockModel]? = nil, count: Int? = nil, totalCount: Int? = nil, generatedAt: String? = nil, source: String? = nil) {
         self.stocks = stocks
         self.count = count
+        self.totalCount = totalCount
         self.generatedAt = generatedAt
+        self.source = source
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case stocks
         case count
+        case totalCount = "total_count"
         case generatedAt = "generated_at"
+        case source
     }
 
     public var additionalProperties: [String: AnyCodable] = [:]
@@ -49,7 +55,9 @@ public struct QBScoredResponse: Codable, JSONEncodable, Hashable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(stocks, forKey: .stocks)
         try container.encodeIfPresent(count, forKey: .count)
+        try container.encodeIfPresent(totalCount, forKey: .totalCount)
         try container.encodeIfPresent(generatedAt, forKey: .generatedAt)
+        try container.encodeIfPresent(source, forKey: .source)
         var additionalPropertiesContainer = encoder.container(keyedBy: String.self)
         try additionalPropertiesContainer.encodeMap(additionalProperties)
     }
@@ -61,13 +69,16 @@ public struct QBScoredResponse: Codable, JSONEncodable, Hashable {
 
         stocks = try container.decodeIfPresent([QBScoredStockModel].self, forKey: .stocks)
         count = try container.decodeIfPresent(Int.self, forKey: .count)
+        totalCount = try container.decodeIfPresent(Int.self, forKey: .totalCount)
         generatedAt = try container.decodeIfPresent(String.self, forKey: .generatedAt)
+        source = try container.decodeIfPresent(String.self, forKey: .source)
         var nonAdditionalPropertyKeys = Set<String>()
         nonAdditionalPropertyKeys.insert("stocks")
         nonAdditionalPropertyKeys.insert("count")
+        nonAdditionalPropertyKeys.insert("total_count")
         nonAdditionalPropertyKeys.insert("generated_at")
+        nonAdditionalPropertyKeys.insert("source")
         let additionalPropertiesContainer = try decoder.container(keyedBy: String.self)
         additionalProperties = try additionalPropertiesContainer.decodeMap(AnyCodable.self, excludedKeys: nonAdditionalPropertyKeys)
     }
 }
-

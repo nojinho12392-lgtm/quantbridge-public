@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import api.services.company_names as company_names_module
 from api.services.company_names import (
     KR_COMPANY_NAMES,
     US_COMPANY_NAMES_KO,
     apply_localized_names,
     contains_hangul,
+    enrich_kr_company_identities,
     localize_company_name_fields,
     localized_company_name,
 )
@@ -46,6 +48,18 @@ def test_apply_localized_names_recurses_through_api_payloads():
     assert localized["stocks"][0]["Name"] == "애플"
     assert localized["stocks"][1]["name"] == "삼성전자"
     assert localized["meta"]["Name"] == "not a stock"
+
+
+def test_enrich_kr_company_identities_normalizes_missing_kr_names(monkeypatch):
+    monkeypatch.setattr(
+        company_names_module,
+        "_naver_kr_identity",
+        lambda _code: {"Ticker": "005930.KS", "Name": "삼성전자", "Exchange": "KS"},
+    )
+
+    enriched = enrich_kr_company_identities([{"Ticker": "005930", "Name": "005930"}])
+
+    assert enriched == [{"Ticker": "005930.KS", "Name": "삼성전자"}]
 
 
 def test_portfolio_service_applies_localized_names_to_response():

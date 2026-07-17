@@ -50,4 +50,3 @@ public struct QBWatchlistRequest: Codable, JSONEncodable, Hashable {
         try container.encodeIfPresent(note, forKey: .note)
     }
 }
-

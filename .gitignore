@@ -1,4 +1,5 @@
 key.json
+key.json/
 kiwoom_credentials.json
 **/docs_cache/
 data_lake/
@@ -7,14 +8,23 @@ Icon?
 ._*
 * 2/
 * 2.*
+* 2
+* (2).*
+* (2)
 .venv/
 .pytest_cache/
+.cache/
 .coverage
 htmlcov/
 .claude/
 .codex/
+.agents/
 .idea/
+**/.idea/
 .gradle/
+/plugins/
+docs/NOTEBOOKLM_PRESENTATION_BRIEF.md
+docs/notebooklm_upload_bundle/
 cache.db
 cache.db-wal
 cache.db-shm
@@ -24,8 +34,6 @@ cache.db-shm
 __pycache__/
 *.pyc
 .env
-.env.*
-!.env.example
 deploy/azure/staging.env
 .prefect/
 logs/
@@ -33,10 +41,11 @@ artifacts/
 *.pt
 *.parquet
 *.log
+delete_icon.py
+APK/
 *.apk
 *.aab
 *.ipa
-delete_icon.py
 
 # Android local/build files
 android/.gradle/

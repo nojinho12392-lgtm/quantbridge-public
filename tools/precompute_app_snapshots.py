@@ -76,11 +76,19 @@ def _jobs(include_detail: bool) -> list[tuple[str, object]]:
     from api import server
 
     server._clear_runtime_state()
-    jobs = list(server._cache_warm_jobs())
+    job_factory = getattr(server, "_api_cache_warm_jobs", None)
+    if job_factory is not None:
+        jobs = list(job_factory.primary_jobs())
+        stock_tickers = list(job_factory.stock_tickers())
+        etf_tickers = list(job_factory.etf_tickers())
+    else:
+        jobs = list(server._cache_warm_jobs())
+        stock_tickers = list(server._cache_warm_stock_tickers())
+        etf_tickers = list(server._cache_warm_etf_tickers())
     if not include_detail:
         return jobs
 
-    detail_tickers = sorted(set(server._cache_warm_stock_tickers()) | set(server._cache_warm_etf_tickers()))
+    detail_tickers = sorted(set(stock_tickers) | set(etf_tickers))
     jobs.extend(
         (f"stock/{ticker}", lambda ticker=ticker: server._stock_detail_service.detail(
             ticker=ticker,
@@ -91,7 +99,7 @@ def _jobs(include_detail: bool) -> list[tuple[str, object]]:
     )
     jobs.extend(
         (f"etf/{ticker}", lambda ticker=ticker: server._etf_api_service.etf_detail(ticker))
-        for ticker in server._cache_warm_etf_tickers()
+        for ticker in etf_tickers
     )
     return jobs
 

@@ -4,6 +4,7 @@ import unittest
 from unittest.mock import Mock, patch
 
 from api import server
+from api.services.news_internal import InternalNewsBuilder
 
 
 class NewsChangeFieldTests(unittest.TestCase):
@@ -30,6 +31,34 @@ class NewsChangeFieldTests(unittest.TestCase):
         self.assertEqual(public["thumbnail"], "")
         self.assertEqual(public["content_mode"], "link_analysis")
         self.assertNotIn("naver_link", public)
+
+    def test_news_image_parser_resolves_relative_open_graph_url(self):
+        body = '<html><head><meta property="og:image" content="/images/story.jpg"></head></html>'
+
+        image_url = server._extract_news_image_url(body, "https://example.com/news/story")
+
+        self.assertEqual(image_url, "https://example.com/images/story.jpg")
+
+    def test_internal_news_builder_returns_setup_item_when_empty(self):
+        builder = InternalNewsBuilder(
+            utc_now_iso=lambda: "2026-05-27T00:00:00",
+            macro_payload=lambda: {},
+            load_simple=lambda _sheet, _cols: [],
+            safe_float=lambda value: float(value) if value not in ("", None) else None,
+            enrich_kr_company_identities=lambda rows: rows,
+            risk_drift_payload=lambda: {"items": []},
+            order_flow_payload=lambda _limit: {"items": []},
+        )
+
+        items = builder.internal_issue_news("US", limit=3)
+
+        self.assertEqual(items[0]["id"], "internal-news-ready")
+        self.assertEqual(items[0]["kind"], "setup")
+
+    def test_rss_url_key_normalizes_case_query_and_fragment(self):
+        key = server._normalize_url_key("HTTPS://Example.COM/markets/story/?utm=1#section")
+
+        self.assertEqual(key, "https://example.com/markets/story")
 
     @patch("api.server._portfolio_daily_change_batch")
     @patch("api.server._portfolio_price_snapshot_batch")
@@ -87,7 +116,7 @@ class NewsChangeFieldTests(unittest.TestCase):
         market_change.assert_not_called()
 
     @patch("api.server._cached", side_effect=lambda _key, loader, ttl=None: loader())
-    @patch("api.server.requests.get")
+    @patch("api.services.news_changes.requests.get")
     def test_naver_kr_stock_change_batch_parses_realtime_change(self, get, _cached):
         response = Mock()
         response.status_code = 200

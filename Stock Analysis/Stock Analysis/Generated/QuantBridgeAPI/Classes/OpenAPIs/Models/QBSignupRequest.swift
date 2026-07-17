@@ -40,4 +40,3 @@ public struct QBSignupRequest: Codable, JSONEncodable, Hashable {
         try container.encodeIfPresent(displayName, forKey: .displayName)
     }
 }
-

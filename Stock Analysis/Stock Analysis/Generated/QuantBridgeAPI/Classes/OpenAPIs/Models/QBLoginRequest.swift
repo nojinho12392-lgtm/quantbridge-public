@@ -35,4 +35,3 @@ public struct QBLoginRequest: Codable, JSONEncodable, Hashable {
         try container.encode(password, forKey: .password)
     }
 }
-

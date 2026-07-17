@@ -90,6 +90,29 @@ class KoreanPitBacktestTests(unittest.TestCase):
         self.assertFalse(scored[["Value_Score", "Quality_Score", "Momentum_Score", "Total_Score"]].isna().any().any())
         self.assertGreater(scored.loc["AAA.KS", "Total_Score"], scored.loc["BBB.KS", "Total_Score"])
 
+    def test_kr_factor_scores_penalize_nonpositive_valuation_inputs(self):
+        features = pd.DataFrame(
+            {
+                "PER": [10.0, -8.0, 35.0],
+                "PBR": [1.2, -0.5, 4.0],
+                "ROE": [0.20, 0.18, 0.16],
+                "OperatingMargin": [0.15, 0.13, 0.11],
+                "DebtToEquity": [30, 35, 40],
+                "RevGrowth": [0.20, 0.18, 0.16],
+                "DivYield": [0.02, 0.00, 0.01],
+                "Mom_3M": [0.10, 0.09, 0.08],
+            },
+            index=["VALUE.KS", "LOSS.KS", "EXPENSIVE.KS"],
+        )
+
+        scored = compute_kr_factor_scores(features, mom_series=pd.Series({
+            "VALUE.KS": 0.20,
+            "LOSS.KS": 0.18,
+            "EXPENSIVE.KS": 0.16,
+        }))
+
+        self.assertLess(scored.loc["LOSS.KS", "Value_Score"], scored.loc["EXPENSIVE.KS", "Value_Score"])
+
     def test_fetch_kr_pit_financials_respects_api_budget(self):
         class FakeDart:
             def __init__(self, key):

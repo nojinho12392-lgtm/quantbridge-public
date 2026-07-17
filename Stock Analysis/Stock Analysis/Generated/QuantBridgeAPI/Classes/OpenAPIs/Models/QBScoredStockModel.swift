@@ -26,6 +26,21 @@ public struct QBScoredStockModel: Codable, JSONEncodable, Hashable {
     public var scoreNeutral: Double?
     public var mLScore: Double?
     public var combinedScore: Double?
+    public var profitabilityQuality: Double?
+    public var cashQuality: Double?
+    public var growthQuality: Double?
+    public var balanceSheetStrength: Double?
+    public var valuationDiscipline: Double?
+    public var timingOverlay: Double?
+    public var persistenceQuality: Double?
+    public var businessQualityScore: Double?
+    public var investabilityScore: Double?
+    public var qualityDataConfidence: Double?
+    public var qualityRedFlags: String?
+    public var investabilityRank: Int?
+    public var businessQualityRank: Int?
+    public var qualityRankDelta: Double?
+    public var qualityCategory: String?
     public var ROIC: Double?
     public var revGrowth: Double?
     public var grossMargin: Double?
@@ -33,7 +48,7 @@ public struct QBScoredStockModel: Codable, JSONEncodable, Hashable {
     public var debtEBITDA: Double?
     public var PEG: Double?
 
-    public init(rank: Int? = nil, ticker: String? = nil, name: String? = nil, market: String? = nil, sector: String? = nil, marketCap: Double? = nil, valueScore: Double? = nil, qualityScore: Double? = nil, momentumScore: Double? = nil, totalScore: Double? = nil, finalScore: Double? = nil, scoreNeutral: Double? = nil, mLScore: Double? = nil, combinedScore: Double? = nil, ROIC: Double? = nil, revGrowth: Double? = nil, grossMargin: Double? = nil, fCFMargin: Double? = nil, debtEBITDA: Double? = nil, PEG: Double? = nil) {
+    public init(rank: Int? = nil, ticker: String? = nil, name: String? = nil, market: String? = nil, sector: String? = nil, marketCap: Double? = nil, valueScore: Double? = nil, qualityScore: Double? = nil, momentumScore: Double? = nil, totalScore: Double? = nil, finalScore: Double? = nil, scoreNeutral: Double? = nil, mLScore: Double? = nil, combinedScore: Double? = nil, profitabilityQuality: Double? = nil, cashQuality: Double? = nil, growthQuality: Double? = nil, balanceSheetStrength: Double? = nil, valuationDiscipline: Double? = nil, timingOverlay: Double? = nil, persistenceQuality: Double? = nil, businessQualityScore: Double? = nil, investabilityScore: Double? = nil, qualityDataConfidence: Double? = nil, qualityRedFlags: String? = nil, investabilityRank: Int? = nil, businessQualityRank: Int? = nil, qualityRankDelta: Double? = nil, qualityCategory: String? = nil, ROIC: Double? = nil, revGrowth: Double? = nil, grossMargin: Double? = nil, fCFMargin: Double? = nil, debtEBITDA: Double? = nil, PEG: Double? = nil) {
         self.rank = rank
         self.ticker = ticker
         self.name = name
@@ -48,6 +63,21 @@ public struct QBScoredStockModel: Codable, JSONEncodable, Hashable {
         self.scoreNeutral = scoreNeutral
         self.mLScore = mLScore
         self.combinedScore = combinedScore
+        self.profitabilityQuality = profitabilityQuality
+        self.cashQuality = cashQuality
+        self.growthQuality = growthQuality
+        self.balanceSheetStrength = balanceSheetStrength
+        self.valuationDiscipline = valuationDiscipline
+        self.timingOverlay = timingOverlay
+        self.persistenceQuality = persistenceQuality
+        self.businessQualityScore = businessQualityScore
+        self.investabilityScore = investabilityScore
+        self.qualityDataConfidence = qualityDataConfidence
+        self.qualityRedFlags = qualityRedFlags
+        self.investabilityRank = investabilityRank
+        self.businessQualityRank = businessQualityRank
+        self.qualityRankDelta = qualityRankDelta
+        self.qualityCategory = qualityCategory
         self.ROIC = ROIC
         self.revGrowth = revGrowth
         self.grossMargin = grossMargin
@@ -71,6 +101,21 @@ public struct QBScoredStockModel: Codable, JSONEncodable, Hashable {
         case scoreNeutral = "Score_Neutral"
         case mLScore = "ML_Score"
         case combinedScore = "Combined_Score"
+        case profitabilityQuality = "Profitability_Quality"
+        case cashQuality = "Cash_Quality"
+        case growthQuality = "Growth_Quality"
+        case balanceSheetStrength = "BalanceSheet_Strength"
+        case valuationDiscipline = "Valuation_Discipline"
+        case timingOverlay = "Timing_Overlay"
+        case persistenceQuality = "Persistence_Quality"
+        case businessQualityScore = "Business_Quality_Score"
+        case investabilityScore = "Investability_Score"
+        case qualityDataConfidence = "Quality_Data_Confidence"
+        case qualityRedFlags = "Quality_Red_Flags"
+        case investabilityRank = "Investability_Rank"
+        case businessQualityRank = "Business_Quality_Rank"
+        case qualityRankDelta = "Quality_Rank_Delta"
+        case qualityCategory = "Quality_Category"
         case ROIC
         case revGrowth = "RevGrowth"
         case grossMargin = "GrossMargin"
@@ -112,6 +157,21 @@ public struct QBScoredStockModel: Codable, JSONEncodable, Hashable {
         try container.encodeIfPresent(scoreNeutral, forKey: .scoreNeutral)
         try container.encodeIfPresent(mLScore, forKey: .mLScore)
         try container.encodeIfPresent(combinedScore, forKey: .combinedScore)
+        try container.encodeIfPresent(profitabilityQuality, forKey: .profitabilityQuality)
+        try container.encodeIfPresent(cashQuality, forKey: .cashQuality)
+        try container.encodeIfPresent(growthQuality, forKey: .growthQuality)
+        try container.encodeIfPresent(balanceSheetStrength, forKey: .balanceSheetStrength)
+        try container.encodeIfPresent(valuationDiscipline, forKey: .valuationDiscipline)
+        try container.encodeIfPresent(timingOverlay, forKey: .timingOverlay)
+        try container.encodeIfPresent(persistenceQuality, forKey: .persistenceQuality)
+        try container.encodeIfPresent(businessQualityScore, forKey: .businessQualityScore)
+        try container.encodeIfPresent(investabilityScore, forKey: .investabilityScore)
+        try container.encodeIfPresent(qualityDataConfidence, forKey: .qualityDataConfidence)
+        try container.encodeIfPresent(qualityRedFlags, forKey: .qualityRedFlags)
+        try container.encodeIfPresent(investabilityRank, forKey: .investabilityRank)
+        try container.encodeIfPresent(businessQualityRank, forKey: .businessQualityRank)
+        try container.encodeIfPresent(qualityRankDelta, forKey: .qualityRankDelta)
+        try container.encodeIfPresent(qualityCategory, forKey: .qualityCategory)
         try container.encodeIfPresent(ROIC, forKey: .ROIC)
         try container.encodeIfPresent(revGrowth, forKey: .revGrowth)
         try container.encodeIfPresent(grossMargin, forKey: .grossMargin)
@@ -141,6 +201,21 @@ public struct QBScoredStockModel: Codable, JSONEncodable, Hashable {
         scoreNeutral = try container.decodeIfPresent(Double.self, forKey: .scoreNeutral)
         mLScore = try container.decodeIfPresent(Double.self, forKey: .mLScore)
         combinedScore = try container.decodeIfPresent(Double.self, forKey: .combinedScore)
+        profitabilityQuality = try container.decodeIfPresent(Double.self, forKey: .profitabilityQuality)
+        cashQuality = try container.decodeIfPresent(Double.self, forKey: .cashQuality)
+        growthQuality = try container.decodeIfPresent(Double.self, forKey: .growthQuality)
+        balanceSheetStrength = try container.decodeIfPresent(Double.self, forKey: .balanceSheetStrength)
+        valuationDiscipline = try container.decodeIfPresent(Double.self, forKey: .valuationDiscipline)
+        timingOverlay = try container.decodeIfPresent(Double.self, forKey: .timingOverlay)
+        persistenceQuality = try container.decodeIfPresent(Double.self, forKey: .persistenceQuality)
+        businessQualityScore = try container.decodeIfPresent(Double.self, forKey: .businessQualityScore)
+        investabilityScore = try container.decodeIfPresent(Double.self, forKey: .investabilityScore)
+        qualityDataConfidence = try container.decodeIfPresent(Double.self, forKey: .qualityDataConfidence)
+        qualityRedFlags = try container.decodeIfPresent(String.self, forKey: .qualityRedFlags)
+        investabilityRank = try container.decodeIfPresent(Int.self, forKey: .investabilityRank)
+        businessQualityRank = try container.decodeIfPresent(Int.self, forKey: .businessQualityRank)
+        qualityRankDelta = try container.decodeIfPresent(Double.self, forKey: .qualityRankDelta)
+        qualityCategory = try container.decodeIfPresent(String.self, forKey: .qualityCategory)
         ROIC = try container.decodeIfPresent(Double.self, forKey: .ROIC)
         revGrowth = try container.decodeIfPresent(Double.self, forKey: .revGrowth)
         grossMargin = try container.decodeIfPresent(Double.self, forKey: .grossMargin)
@@ -162,6 +237,21 @@ public struct QBScoredStockModel: Codable, JSONEncodable, Hashable {
         nonAdditionalPropertyKeys.insert("Score_Neutral")
         nonAdditionalPropertyKeys.insert("ML_Score")
         nonAdditionalPropertyKeys.insert("Combined_Score")
+        nonAdditionalPropertyKeys.insert("Profitability_Quality")
+        nonAdditionalPropertyKeys.insert("Cash_Quality")
+        nonAdditionalPropertyKeys.insert("Growth_Quality")
+        nonAdditionalPropertyKeys.insert("BalanceSheet_Strength")
+        nonAdditionalPropertyKeys.insert("Valuation_Discipline")
+        nonAdditionalPropertyKeys.insert("Timing_Overlay")
+        nonAdditionalPropertyKeys.insert("Persistence_Quality")
+        nonAdditionalPropertyKeys.insert("Business_Quality_Score")
+        nonAdditionalPropertyKeys.insert("Investability_Score")
+        nonAdditionalPropertyKeys.insert("Quality_Data_Confidence")
+        nonAdditionalPropertyKeys.insert("Quality_Red_Flags")
+        nonAdditionalPropertyKeys.insert("Investability_Rank")
+        nonAdditionalPropertyKeys.insert("Business_Quality_Rank")
+        nonAdditionalPropertyKeys.insert("Quality_Rank_Delta")
+        nonAdditionalPropertyKeys.insert("Quality_Category")
         nonAdditionalPropertyKeys.insert("ROIC")
         nonAdditionalPropertyKeys.insert("RevGrowth")
         nonAdditionalPropertyKeys.insert("GrossMargin")
@@ -172,4 +262,3 @@ public struct QBScoredStockModel: Codable, JSONEncodable, Hashable {
         additionalProperties = try additionalPropertiesContainer.decodeMap(AnyCodable.self, excludedKeys: nonAdditionalPropertyKeys)
     }
 }
-

@@ -1,0 +1,47 @@
+name: Dashboard CI
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "GitHub/my-quant-dashboard/**"
+  pull_request:
+    paths:
+      - "GitHub/my-quant-dashboard/**"
+  workflow_dispatch:
+
+concurrency:
+  group: dashboard-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  dashboard:
+    name: Streamlit dashboard checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: GitHub/my-quant-dashboard
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: GitHub/my-quant-dashboard/requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Compile dashboard modules
+        run: python -m py_compile app.py data_loader.py ui_components.py ui_dialogs.py ui_charts.py
+      - name: Import data loader
+        run: python - <<'PY'
+          import data_loader
+          print('data_loader import OK')
+          PY

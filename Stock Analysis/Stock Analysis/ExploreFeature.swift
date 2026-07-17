@@ -30,7 +30,7 @@ enum ExploreMode: String, CaseIterable, Identifiable, Hashable {
         case .strategy:
             return "개발자 전략 점검"
         case .diagnostics:
-            return "개발자 품질 진단"
+            return "추천 품질 점검"
         }
     }
 
@@ -43,7 +43,7 @@ enum ExploreMode: String, CaseIterable, Identifiable, Hashable {
         case .strategy:
             return "백테스트, 리스크, 리밸런싱, 섀도우 성과를 운영 관점에서 확인합니다."
         case .diagnostics:
-            return "리서치 품질, 모델 보정, API 운영 상태를 개발자 관점에서 점검합니다."
+            return "리서치 품질, AI 보정, 정책 섀도 랭킹, API 상태를 함께 확인합니다."
         }
     }
 
@@ -110,6 +110,11 @@ struct ScoredStock: Decodable, Identifiable, Hashable {
     let scoreNeutral: Double?
     let mlScore: Double?
     let combinedScore: Double?
+    let businessQualityScore: Double?
+    let investabilityScore: Double?
+    let qualityDataConfidence: Double?
+    let qualityRedFlags: String?
+    let qualityCategory: String?
     let roic: Double?
     let revGrowth: Double?
     let grossMargin: Double?
@@ -132,6 +137,11 @@ struct ScoredStock: Decodable, Identifiable, Hashable {
         case scoreNeutral = "Score_Neutral"
         case mlScore = "ML_Score"
         case combinedScore = "Combined_Score"
+        case businessQualityScore = "Business_Quality_Score"
+        case investabilityScore = "Investability_Score"
+        case qualityDataConfidence = "Quality_Data_Confidence"
+        case qualityRedFlags = "Quality_Red_Flags"
+        case qualityCategory = "Quality_Category"
         case roic = "ROIC"
         case revGrowth = "RevGrowth"
         case grossMargin = "GrossMargin"
@@ -226,6 +236,162 @@ struct MLBlendItem: Decodable, Identifiable, Hashable {
         case top5 = "Top5"
         case notes = "Notes"
         case status = "Status"
+    }
+}
+
+struct PolicyAdjustedRankingResponse: Decodable {
+    let market: String?
+    let summary: PolicyAdjustedRankingSummary?
+    let items: [PolicyAdjustedRankingItem]
+    let topUp: [PolicyAdjustedRankingItem]
+    let topDown: [PolicyAdjustedRankingItem]
+    let mode: String?
+
+    enum CodingKeys: String, CodingKey {
+        case market
+        case summary
+        case items
+        case topUp = "top_up"
+        case topDown = "top_down"
+        case mode
+    }
+}
+
+struct PolicyAdjustedRankingSummary: Decodable, Hashable {
+    let generated: String?
+    let market: String
+    let policyMode: String?
+    let rows: Int?
+    let positiveMovers: Int?
+    let negativeMovers: Int?
+    let unchanged: Int?
+    let meanAbsRankChange: Double?
+    let topUpTicker: String?
+    let topUpName: String?
+    let topUpRankChange: Int?
+    let topDownTicker: String?
+    let topDownName: String?
+    let topDownRankChange: Int?
+    let topBaseTicker: String?
+    let topPolicyTicker: String?
+    let multipliers: String?
+    let evidenceSource: String?
+    let productionReady: Bool?
+    let note: String?
+
+    enum CodingKeys: String, CodingKey {
+        case generated = "Generated"
+        case market = "Market"
+        case policyMode = "Policy_Mode"
+        case rows = "Rows"
+        case positiveMovers = "Positive_Movers"
+        case negativeMovers = "Negative_Movers"
+        case unchanged = "Unchanged"
+        case meanAbsRankChange = "Mean_Abs_Rank_Change"
+        case topUpTicker = "Top_Up_Ticker"
+        case topUpName = "Top_Up_Name"
+        case topUpRankChange = "Top_Up_Rank_Change"
+        case topDownTicker = "Top_Down_Ticker"
+        case topDownName = "Top_Down_Name"
+        case topDownRankChange = "Top_Down_Rank_Change"
+        case topBaseTicker = "Top_Base_Ticker"
+        case topPolicyTicker = "Top_Policy_Ticker"
+        case multipliers = "Multipliers"
+        case evidenceSource = "Evidence_Source"
+        case productionReady = "Production_Ready"
+        case note = "Note"
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        generated = try container.decodeLossyStringIfPresent(.generated)
+        market = try container.decodeLossyStringIfPresent(.market) ?? "-"
+        policyMode = try container.decodeLossyStringIfPresent(.policyMode)
+        rows = try container.decodeLossyIntIfPresent(.rows)
+        positiveMovers = try container.decodeLossyIntIfPresent(.positiveMovers)
+        negativeMovers = try container.decodeLossyIntIfPresent(.negativeMovers)
+        unchanged = try container.decodeLossyIntIfPresent(.unchanged)
+        meanAbsRankChange = try container.decodeLossyDoubleIfPresent(.meanAbsRankChange)
+        topUpTicker = try container.decodeLossyStringIfPresent(.topUpTicker)
+        topUpName = try container.decodeLossyStringIfPresent(.topUpName)
+        topUpRankChange = try container.decodeLossyIntIfPresent(.topUpRankChange)
+        topDownTicker = try container.decodeLossyStringIfPresent(.topDownTicker)
+        topDownName = try container.decodeLossyStringIfPresent(.topDownName)
+        topDownRankChange = try container.decodeLossyIntIfPresent(.topDownRankChange)
+        topBaseTicker = try container.decodeLossyStringIfPresent(.topBaseTicker)
+        topPolicyTicker = try container.decodeLossyStringIfPresent(.topPolicyTicker)
+        multipliers = try container.decodeLossyStringIfPresent(.multipliers)
+        evidenceSource = try container.decodeLossyStringIfPresent(.evidenceSource)
+        productionReady = try container.decodeLossyBoolIfPresent(.productionReady)
+        note = try container.decodeLossyStringIfPresent(.note)
+    }
+}
+
+struct PolicyAdjustedRankingItem: Decodable, Identifiable, Hashable {
+    var id: String { "\(market):\(ticker):\(policyRank ?? 0):\(rankChange ?? 0)" }
+    let policyRank: Int?
+    let baseRank: Int?
+    let rankChange: Int?
+    let ticker: String
+    let name: String
+    let market: String
+    let sector: String?
+    let policyFinalScore: Double?
+    let baseFinalScore: Double?
+    let scoreChange: Double?
+    let valueMultiplier: Double?
+    let qualityMultiplier: Double?
+    let momentumMultiplier: Double?
+    let policyMode: String?
+    let evidenceSource: String?
+    let productionReady: Bool?
+    let actions: String?
+    let qualityDataConfidence: Double?
+    let generated: String?
+
+    enum CodingKeys: String, CodingKey {
+        case policyRank = "Policy_Rank"
+        case baseRank = "Base_Rank"
+        case rankChange = "Rank_Change"
+        case ticker = "Ticker"
+        case name = "Name"
+        case market = "Market"
+        case sector = "Sector"
+        case policyFinalScore = "Policy_Final_Score"
+        case baseFinalScore = "Base_Final_Score"
+        case scoreChange = "Score_Change"
+        case valueMultiplier = "Value_Multiplier"
+        case qualityMultiplier = "Quality_Multiplier"
+        case momentumMultiplier = "Momentum_Multiplier"
+        case policyMode = "Policy_Mode"
+        case evidenceSource = "Policy_Evidence_Source"
+        case productionReady = "Policy_Production_Ready"
+        case actions = "Policy_Actions"
+        case qualityDataConfidence = "Quality_Data_Confidence"
+        case generated = "Generated"
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        policyRank = try container.decodeLossyIntIfPresent(.policyRank)
+        baseRank = try container.decodeLossyIntIfPresent(.baseRank)
+        rankChange = try container.decodeLossyIntIfPresent(.rankChange)
+        ticker = try container.decodeLossyStringIfPresent(.ticker) ?? "-"
+        name = try container.decodeLossyStringIfPresent(.name) ?? ticker
+        market = try container.decodeLossyStringIfPresent(.market) ?? "-"
+        sector = try container.decodeLossyStringIfPresent(.sector)
+        policyFinalScore = try container.decodeLossyDoubleIfPresent(.policyFinalScore)
+        baseFinalScore = try container.decodeLossyDoubleIfPresent(.baseFinalScore)
+        scoreChange = try container.decodeLossyDoubleIfPresent(.scoreChange)
+        valueMultiplier = try container.decodeLossyDoubleIfPresent(.valueMultiplier)
+        qualityMultiplier = try container.decodeLossyDoubleIfPresent(.qualityMultiplier)
+        momentumMultiplier = try container.decodeLossyDoubleIfPresent(.momentumMultiplier)
+        policyMode = try container.decodeLossyStringIfPresent(.policyMode)
+        evidenceSource = try container.decodeLossyStringIfPresent(.evidenceSource)
+        productionReady = try container.decodeLossyBoolIfPresent(.productionReady)
+        actions = try container.decodeLossyStringIfPresent(.actions)
+        qualityDataConfidence = try container.decodeLossyDoubleIfPresent(.qualityDataConfidence)
+        generated = try container.decodeLossyStringIfPresent(.generated)
     }
 }
 
@@ -564,6 +730,70 @@ private struct DiagnosticInfo: Identifiable {
     let details: [String]
 }
 
+private extension KeyedDecodingContainer {
+    func decodeLossyStringIfPresent(_ key: Key) throws -> String? {
+        if let value = try? decodeIfPresent(String.self, forKey: key) {
+            let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
+            return trimmed.isEmpty ? nil : trimmed
+        }
+        if let value = try? decodeIfPresent(Int.self, forKey: key) {
+            return String(value)
+        }
+        if let value = try? decodeIfPresent(Double.self, forKey: key), value.isFinite {
+            return String(value)
+        }
+        if let value = try? decodeIfPresent(Bool.self, forKey: key) {
+            return value ? "true" : "false"
+        }
+        return nil
+    }
+
+    func decodeLossyDoubleIfPresent(_ key: Key) throws -> Double? {
+        if let value = try? decodeIfPresent(Double.self, forKey: key), value.isFinite {
+            return value
+        }
+        if let value = try? decodeIfPresent(Int.self, forKey: key) {
+            return Double(value)
+        }
+        if let raw = try? decodeIfPresent(String.self, forKey: key) {
+            let value = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+                .replacingOccurrences(of: ",", with: "")
+            return Double(value).flatMap { $0.isFinite ? $0 : nil }
+        }
+        return nil
+    }
+
+    func decodeLossyIntIfPresent(_ key: Key) throws -> Int? {
+        if let value = try? decodeIfPresent(Int.self, forKey: key) {
+            return value
+        }
+        if let value = try? decodeLossyDoubleIfPresent(key) {
+            return Int(value)
+        }
+        return nil
+    }
+
+    func decodeLossyBoolIfPresent(_ key: Key) throws -> Bool? {
+        if let value = try? decodeIfPresent(Bool.self, forKey: key) {
+            return value
+        }
+        if let value = try? decodeIfPresent(Int.self, forKey: key) {
+            return value != 0
+        }
+        if let raw = try? decodeIfPresent(String.self, forKey: key) {
+            switch raw.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() {
+            case "true", "1", "yes", "y":
+                return true
+            case "false", "0", "no", "n":
+                return false
+            default:
+                return nil
+            }
+        }
+        return nil
+    }
+}
+
 extension APIClientProtocol {
     func searchUniverse(query: String, limit: Int = 100) async throws -> SearchResponse {
         try await fetch(
@@ -588,6 +818,16 @@ extension APIClientProtocol {
 
     func fetchMLBlendReport() async throws -> MLBlendReport {
         try await fetch(["research", "ml-blend"])
+    }
+
+    func fetchPolicyAdjustedRanking(market: Market, limit: Int = 12) async throws -> PolicyAdjustedRankingResponse {
+        try await fetch(
+            ["research", "policy-adjusted-ranking"],
+            queryItems: [
+                URLQueryItem(name: "market", value: market.rawValue),
+                URLQueryItem(name: "limit", value: "\(limit)")
+            ]
+        )
     }
 
     func fetchOpsHealth() async throws -> OpsHealth {
@@ -650,6 +890,7 @@ final class ExploreVM: ObservableObject {
     @Published var krScored: [ScoredStock] = []
     @Published var researchQuality: ResearchQuality?
     @Published var mlBlendReport: MLBlendReport?
+    @Published var policyAdjustedRankings: [PolicyAdjustedRankingResponse] = []
     @Published var opsHealth: OpsHealth?
     @Published var backtests: [BacktestSummary] = []
     @Published var driftItems: [DriftItem] = []
@@ -755,9 +996,11 @@ final class ExploreVM: ObservableObject {
     private func loadDiagnostics() async -> [String] {
         async let quality = resultOf { try await self.api.fetchResearchQuality() }
         async let mlBlend = resultOf { try await self.api.fetchMLBlendReport() }
+        async let usPolicy = resultOf { try await self.api.fetchPolicyAdjustedRanking(market: .us) }
+        async let krPolicy = resultOf { try await self.api.fetchPolicyAdjustedRanking(market: .kr) }
         async let ops = resultOf { try await self.api.fetchOpsHealth() }
 
-        let results = await (quality, mlBlend, ops)
+        let results = await (quality, mlBlend, usPolicy, krPolicy, ops)
         var failures: [String] = []
 
         switch results.0 {
@@ -772,7 +1015,23 @@ final class ExploreVM: ObservableObject {
         case .failure(let error):
             failures.append("AI 보정: \(error.localizedDescription)")
         }
+        var policyRankings: [PolicyAdjustedRankingResponse] = []
         switch results.2 {
+        case .success(let value):
+            policyRankings.append(value)
+        case .failure(let error):
+            failures.append("US 정책 섀도 랭킹: \(error.localizedDescription)")
+        }
+        switch results.3 {
+        case .success(let value):
+            policyRankings.append(value)
+        case .failure(let error):
+            failures.append("KR 정책 섀도 랭킹: \(error.localizedDescription)")
+        }
+        if !policyRankings.isEmpty {
+            self.policyAdjustedRankings = policyRankings.sorted { ($0.market ?? "") < ($1.market ?? "") }
+        }
+        switch results.4 {
         case .success(let value):
             opsHealth = value
         case .failure(let error):
@@ -907,7 +1166,7 @@ struct ExploreView: View {
     }
 
     private var availableModes: [ExploreMode] {
-        showsAdvancedModes ? ExploreMode.allCases : [.companies, .scores]
+        showsAdvancedModes ? ExploreMode.allCases : [.companies, .scores, .diagnostics]
     }
 
     private var visibleCompanies: [SearchStock] {
@@ -1057,7 +1316,7 @@ struct ExploreView: View {
         case .strategy:
             return !vm.backtests.isEmpty || !vm.riskHoldings.isEmpty || !vm.rebalanceOrders.isEmpty || !vm.shadowItems.isEmpty
         case .diagnostics:
-            return vm.researchQuality != nil || vm.mlBlendReport != nil || vm.opsHealth != nil
+            return vm.researchQuality != nil || vm.mlBlendReport != nil || !vm.policyAdjustedRankings.isEmpty || vm.opsHealth != nil
         }
     }
 
@@ -1183,7 +1442,7 @@ struct ExploreView: View {
         case .strategy:
             return visibleRiskHoldings.count + visibleRiskSectors.count + visibleRebalanceOrders.count + visibleShadowItems.count
         case .diagnostics:
-            return [vm.researchQuality != nil, vm.mlBlendReport != nil, vm.opsHealth != nil].filter { $0 }.count
+            return [vm.researchQuality != nil, vm.mlBlendReport != nil, !vm.policyAdjustedRankings.isEmpty, vm.opsHealth != nil].filter { $0 }.count
         }
     }
 
@@ -1196,7 +1455,7 @@ struct ExploreView: View {
         case .strategy:
             return vm.riskHoldings.count + vm.riskSectors.count + vm.rebalanceOrders.count + vm.shadowItems.count
         case .diagnostics:
-            return 3
+            return 4
         }
     }
 
@@ -1360,6 +1619,7 @@ struct ExploreView: View {
     private var diagnosticsSections: some View {
         let quality = vm.researchQuality
         let mlBlend = vm.mlBlendReport
+        let policyRankings = vm.policyAdjustedRankings
         let ops = vm.opsHealth
 
         return Group {
@@ -1393,6 +1653,20 @@ struct ExploreView: View {
                 .accessibilityHint("AI 보정 설명 열기")
 
                 Button {
+                    selectedDiagnosticInfo = policyAdjustedRankingDiagnosticInfo(policyRankings)
+                } label: {
+                    ExploreSummaryCard(
+                        title: "정책 섀도 랭킹",
+                        value: policyRankingHeaderValue(policyRankings),
+                        subtitle: policyRankingHeaderSubtitle(policyRankings),
+                        status: policyRankings.map(\.items.count).reduce(0, +) > 0 ? "\(policyRankings.map(\.items.count).reduce(0, +))" : "-"
+                    )
+                }
+                .buttonStyle(.plain)
+                .listRowBackground(AppTheme.card)
+                .accessibilityHint("정책 섀도 랭킹 설명 열기")
+
+                Button {
                     selectedDiagnosticInfo = opsHealthDiagnosticInfo(ops)
                 } label: {
                     ExploreSummaryCard(
@@ -1405,6 +1679,39 @@ struct ExploreView: View {
                 .buttonStyle(.plain)
                 .listRowBackground(AppTheme.card)
                 .accessibilityHint("운영 상태 설명 열기")
+            }
+
+            Section("정책 조정 섀도 랭킹 (\(policyRankings.count))") {
+                if policyRankings.isEmpty {
+                    EmptyMsg(icon: "scope", msg: "정책 섀도 랭킹 없음")
+                } else {
+                    ForEach(policyRankings, id: \.market) { ranking in
+                        StatusListRow(
+                            title: "\(ranking.market ?? "-") 정책 조정",
+                            status: ranking.summary?.productionReady == true ? "READY" : "HOLD",
+                            subtitle: policyRankingSummarySubtitle(ranking)
+                        )
+                        .listRowBackground(AppTheme.card)
+
+                        ForEach(Array(ranking.topUp.prefix(3))) { item in
+                            StatusListRow(
+                                title: "상승 \(item.name)",
+                                status: signedStep(item.rankChange),
+                                subtitle: policyAdjustedRankingItemSubtitle(item)
+                            )
+                            .listRowBackground(AppTheme.card)
+                        }
+
+                        ForEach(Array(ranking.topDown.prefix(3))) { item in
+                            StatusListRow(
+                                title: "하락 \(item.name)",
+                                status: signedStep(item.rankChange),
+                                subtitle: policyAdjustedRankingItemSubtitle(item)
+                            )
+                            .listRowBackground(AppTheme.card)
+                        }
+                    }
+                }
             }
 
             Section("AI 보정 리포트 (\(mlBlend?.items.count ?? 0))") {
@@ -1844,6 +2151,9 @@ private struct ScoredStockRow: View {
                     if let mlScore = stock.mlScore {
                         Kpi(label: "AI", value: factorNumber(mlScore))
                     }
+                    if let investabilityScore = stock.investabilityScore {
+                        Kpi(label: "투자", value: factorNumber(investabilityScore))
+                    }
                     if stock.valueScore == nil && stock.qualityScore == nil && stock.momentumScore == nil {
                         Kpi(label: "ROIC", value: pct(stock.roic, signed: false))
                         Kpi(label: "성장", value: pct(stock.revGrowth))
@@ -2074,6 +2384,10 @@ private func scoredDetail(_ stock: ScoredStock) -> StockDetailSelection {
             StaticMetric(label: "Value", value: factorNumber(stock.valueScore), color: scoreColor(stock.valueScore)),
             StaticMetric(label: "Quality", value: factorNumber(stock.qualityScore), color: scoreColor(stock.qualityScore)),
             StaticMetric(label: "Momentum", value: factorNumber(stock.momentumScore), color: scoreColor(stock.momentumScore)),
+            StaticMetric(label: "기업품질", value: factorNumber(stock.businessQualityScore), color: scoreColor(stock.businessQualityScore)),
+            StaticMetric(label: "투자가능", value: factorNumber(stock.investabilityScore), color: scoreColor(stock.investabilityScore)),
+            StaticMetric(label: "품질분류", value: cleanQualityText(stock.qualityCategory) ?? "-"),
+            StaticMetric(label: "데이터 신뢰도", value: factorNumber(stock.qualityDataConfidence), color: scoreColor(stock.qualityDataConfidence)),
             StaticMetric(label: "ROIC", value: pct(stock.roic, signed: false)),
             StaticMetric(label: "매출성장", value: pct(stock.revGrowth), color: (stock.revGrowth ?? 0) >= 0 ? AppTheme.positive : AppTheme.negative),
             StaticMetric(label: "시가총액", value: cap(stock.marketCap, currency: currency))
@@ -2107,7 +2421,21 @@ private func scoredSignals(_ stock: ScoredStock) -> [InvestmentSignal] {
             detail: "랜덤 포레스트 예측이 같은 유니버스 안에서 상위권입니다.",
             systemImage: "brain.head.profile",
             color: AppTheme.accent
-        ) : nil
+        ) : nil,
+        (stock.investabilityScore ?? 0) >= 0.7 ? .init(
+            title: "투자가능성 우수",
+            detail: "기업 품질, 밸류에이션, 타이밍을 함께 반영한 전문가형 품질 점수가 높습니다.",
+            systemImage: "checkmark.seal.fill",
+            color: AppTheme.quality
+        ) : nil,
+        cleanQualityText(stock.qualityRedFlags).map { flags in
+            .init(
+                title: "품질 플래그 확인",
+                detail: flags,
+                systemImage: "exclamationmark.triangle.fill",
+                color: AppTheme.warning
+            )
+        }
     ]
     let compacted = signals.compactMap { $0 }
     if compacted.isEmpty {
@@ -2119,6 +2447,11 @@ private func scoredSignals(_ stock: ScoredStock) -> [InvestmentSignal] {
         )]
     }
     return compacted
+}
+
+private func cleanQualityText(_ value: String?) -> String? {
+    let text = (value ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+    return text.isEmpty || text == "-" ? nil : text
 }
 
 private func bestScoredValue(_ stock: ScoredStock) -> Double? {
@@ -2170,6 +2503,41 @@ private func backtestTitle(_ summary: BacktestSummary) -> String {
     return "\(summary.market) 분석"
 }
 
+private func policyRankingHeaderValue(_ rankings: [PolicyAdjustedRankingResponse]) -> String {
+    guard !rankings.isEmpty else { return "-" }
+    let readyCount = rankings.filter { $0.summary?.productionReady == true }.count
+    return readyCount == rankings.count ? "READY" : "HOLD"
+}
+
+private func policyRankingHeaderSubtitle(_ rankings: [PolicyAdjustedRankingResponse]) -> String {
+    guard !rankings.isEmpty else { return "정책 조정 랭킹 대기" }
+    return rankings.map { ranking in
+        let market = ranking.market ?? "-"
+        let upwardTicker = ranking.summary?.topUpTicker ?? ranking.topUp.first?.ticker ?? "-"
+        let downwardTicker = ranking.summary?.topDownTicker ?? ranking.topDown.first?.ticker ?? "-"
+        return "\(market) \(upwardTicker)↑ · \(downwardTicker)↓"
+    }.joined(separator: " / ")
+}
+
+private func policyRankingSummarySubtitle(_ ranking: PolicyAdjustedRankingResponse) -> String {
+    let positiveMovers = ranking.summary?.positiveMovers ?? 0
+    let negativeMovers = ranking.summary?.negativeMovers ?? 0
+    let meanChange = factorNumber(ranking.summary?.meanAbsRankChange)
+    let multipliers = ranking.summary?.multipliers ?? "-"
+    return "상승 \(positiveMovers) · 하락 \(negativeMovers) · 평균 변화 \(meanChange)계단 · \(multipliers)"
+}
+
+private func policyAdjustedRankingItemSubtitle(_ item: PolicyAdjustedRankingItem) -> String {
+    let baseRank = item.baseRank.map(String.init) ?? "-"
+    let policyRank = item.policyRank.map(String.init) ?? "-"
+    return "\(item.ticker) · 기준 #\(baseRank) → 정책 #\(policyRank) · 점수 \(factorNumber(item.policyFinalScore)) · 변화 \(pct(item.scoreChange))"
+}
+
+private func signedStep(_ value: Int?) -> String {
+    guard let value else { return "-" }
+    return value > 0 ? "+\(value)" : "\(value)"
+}
+
 private func researchQualityDiagnosticInfo(_ quality: ResearchQuality?) -> DiagnosticInfo {
     DiagnosticInfo(
         id: "research-quality",
@@ -2202,6 +2570,25 @@ private func mlBlendDiagnosticInfo(_ report: MLBlendReport?) -> DiagnosticInfo {
     )
 }
 
+private func policyAdjustedRankingDiagnosticInfo(_ rankings: [PolicyAdjustedRankingResponse]) -> DiagnosticInfo {
+    let markets = rankings.compactMap(\.market).joined(separator: " / ")
+    let rows = rankings.map(\.items.count).reduce(0, +)
+    let summaries = rankings.compactMap(\.summary)
+    let ready = summaries.filter { $0.productionReady == true }.count
+    return DiagnosticInfo(
+        id: "policy-adjusted-ranking",
+        title: "정책 섀도 랭킹",
+        status: markets.isEmpty ? "-" : markets,
+        summary: "팩터 정책을 실제 점수 테이블에 적용하기 전에 순위가 어떻게 바뀌는지 확인합니다.",
+        details: [
+            "현재 표시된 종목 수는 \(rows)개이며, 시장별 상위 상승/하락 종목을 분리해서 보여줍니다.",
+            "Ready 시장은 \(ready)/\(summaries.count)개입니다. Hold는 운영 점수에 바로 반영하지 않고 관찰해야 한다는 뜻입니다.",
+            "Rank Change가 양수이면 정책 적용 후 순위가 올라간 종목이고, 음수이면 내려간 종목입니다.",
+            "이 랭킹은 shadow 결과라서 기존 추천 순위는 바꾸지 않습니다. 검증이 쌓이면 운영 정책으로 승격할 후보입니다."
+        ]
+    )
+}
+
 private func opsHealthDiagnosticInfo(_ ops: OpsHealth?) -> DiagnosticInfo {
     DiagnosticInfo(
         id: "ops-health",
@@ -2219,13 +2606,13 @@ private func opsHealthDiagnosticInfo(_ ops: OpsHealth?) -> DiagnosticInfo {
 
 private func statusColor(_ status: String) -> Color {
     let upper = status.uppercased()
-    if ["OK", "PASS", "IMPROVED", "ML_STRONG"].contains(upper) {
+    if ["OK", "PASS", "IMPROVED", "ML_STRONG", "READY"].contains(upper) {
         return .green
     }
     if ["FAIL", "FAILED", "WORSE"].contains(upper) {
         return .red
     }
-    if ["WATCH", "WARN", "DEGRADED", "INSUFFICIENT", "STALE", "UNAVAILABLE", "REVIEW", "ML_OFF", "ML_WEAK", "확인"].contains(upper) {
+    if ["WATCH", "WARN", "DEGRADED", "INSUFFICIENT", "STALE", "UNAVAILABLE", "REVIEW", "ML_OFF", "ML_WEAK", "HOLD", "확인"].contains(upper) {
         return .orange
     }
     return AppTheme.accent

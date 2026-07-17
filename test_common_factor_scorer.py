@@ -61,6 +61,29 @@ class CommonFactorScorerTests(unittest.TestCase):
 
         self.assertFalse(scored[["Value_Score", "Quality_Score", "Momentum_Score", "Total_Score"]].isna().any().any())
 
+    def test_nonpositive_us_valuation_inputs_rank_as_worst_not_neutral(self):
+        df = pd.DataFrame(
+            {
+                "Ticker": ["PROFITABLE", "LOSSMAKER", "EXPENSIVE"],
+                "PEG": [1.0, -2.0, 3.0],
+                "EV_EBITDA": [10.0, -5.0, 25.0],
+                "RevGrowth": [0.20, 0.18, 0.16],
+                "DivYield": [0.02, 0.00, 0.01],
+                "ROIC": [0.20, 0.19, 0.18],
+                "FCF_NI": [1.1, 1.0, 0.9],
+                "ROE": [0.22, 0.20, 0.18],
+                "InterestCoverage": [16.0, 14.0, 12.0],
+                "FCF_Margin": [0.18, 0.16, 0.14],
+                "OperatingMargin": [0.24, 0.22, 0.20],
+                "Mom_12M_1M": [0.20, 0.18, 0.16],
+                "Mom_3M": [0.06, 0.05, 0.04],
+            }
+        ).set_index("Ticker")
+
+        scored = compute_us_factor_scores(df)
+
+        self.assertLess(scored.loc["LOSSMAKER", "Value_Score"], scored.loc["EXPENSIVE", "Value_Score"])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -39,11 +39,10 @@ import numpy as np
 import pandas as pd
 import yfinance as yf
 from sheets_client import get_spreadsheet
+from quantbridge.storage import QuantRepository
 from quantbridge.writers.dual_write import dual_write_dataframe
 
 warnings.filterwarnings("ignore")
-
-spreadsheet = get_spreadsheet()
 
 SNAPSHOT_SHEET = "Factor_Score_Snapshots"
 REPORT_SHEET = "Factor_IC_Report"
@@ -52,6 +51,7 @@ SNAPSHOT_COLS = [
     "Snapshot_Date", "Market", "Ticker", "Name", "Sector",
     "Value_Score", "Quality_Score", "Momentum_Score",
     "Total_Score", "Final_Score", "Score_Neutral", "Combined_Score",
+    "Business_Quality_Score", "Investability_Score", "Persistence_Quality",
     "Snapshot_Source",
 ]
 
@@ -73,6 +73,7 @@ DETAIL_COLS = [
 FACTOR_COLS = [
     "Value_Score", "Quality_Score", "Momentum_Score",
     "Total_Score", "Final_Score", "Score_Neutral", "Combined_Score",
+    "Business_Quality_Score", "Investability_Score", "Persistence_Quality",
 ]
 
 HORIZONS = {
@@ -88,11 +89,19 @@ MIN_LIVE_SNAPSHOTS_FOR_PRODUCTION = 3
 MAX_PROXY_RATIO_FOR_PRODUCTION = 0.50
 
 
+def _repository() -> QuantRepository:
+    return QuantRepository()
+
+
+def _spreadsheet():
+    return get_spreadsheet()
+
+
 def _get_or_create_sheet(name: str, rows: int, cols: int):
     try:
-        return spreadsheet.worksheet(name)
+        return _spreadsheet().worksheet(name)
     except gspread.exceptions.WorksheetNotFound:
-        return spreadsheet.add_worksheet(title=name, rows=rows, cols=cols)
+        return _spreadsheet().add_worksheet(title=name, rows=rows, cols=cols)
 
 
 def _to_num(df: pd.DataFrame, cols: list[str]) -> pd.DataFrame:
@@ -104,16 +113,26 @@ def _to_num(df: pd.DataFrame, cols: list[str]) -> pd.DataFrame:
 
 def _read_scored_sheet(sheet_name: str, market: str) -> pd.DataFrame:
     try:
-        ws = spreadsheet.worksheet(sheet_name)
-        rows = ws.get_all_values()
-    except gspread.exceptions.WorksheetNotFound:
-        print(f"[IC] Missing scored sheet: {sheet_name}")
-        return pd.DataFrame()
+        df = _repository().read_dataframe(sheet_name, market=market)
+    except Exception as exc:
+        print(f"[IC] Storage read skipped for {sheet_name}: {type(exc).__name__}: {exc}")
+        df = pd.DataFrame()
 
-    if len(rows) < 2:
-        return pd.DataFrame()
+    if df.empty:
+        try:
+            ws = _spreadsheet().worksheet(sheet_name)
+            rows = ws.get_all_values()
+        except gspread.exceptions.WorksheetNotFound:
+            print(f"[IC] Missing scored sheet: {sheet_name}")
+            return pd.DataFrame()
+        except Exception as exc:
+            print(f"[IC] Sheet read skipped for {sheet_name}: {type(exc).__name__}: {exc}")
+            return pd.DataFrame()
 
-    df = pd.DataFrame(rows[1:], columns=rows[0])
+        if len(rows) < 2:
+            return pd.DataFrame()
+        df = pd.DataFrame(rows[1:], columns=rows[0])
+
     if "Ticker" not in df.columns:
         return pd.DataFrame()
 
@@ -130,33 +149,71 @@ def _read_scored_sheet(sheet_name: str, market: str) -> pd.DataFrame:
     return _to_num(df, FACTOR_COLS)
 
 
+def _prepare_snapshot_frame(df: pd.DataFrame) -> pd.DataFrame:
+    if df.empty:
+        return pd.DataFrame(columns=SNAPSHOT_COLS)
+
+    out = df.copy()
+    for col in SNAPSHOT_COLS:
+        if col not in out.columns:
+            out[col] = ""
+
+    out = out[out["Ticker"].astype(str).str.strip() != ""].copy()
+    out["Market"] = out["Market"].fillna("").astype(str).str.upper()
+    out = out[out["Market"].isin(["US", "KR"])].copy()
+
+    logical_dates = pd.to_datetime(out["Snapshot_Date"], errors="coerce")
+    out = out[logical_dates.notna()].copy()
+    logical_dates = logical_dates[logical_dates.notna()]
+    out["Snapshot_Date"] = logical_dates.dt.strftime("%Y-%m-%d")
+
+    if "_storage_snapshot_date" in out.columns:
+        out["_storage_snapshot_order"] = pd.to_datetime(out["_storage_snapshot_date"], errors="coerce")
+    else:
+        out["_storage_snapshot_order"] = logical_dates
+
+    out = (
+        out.sort_values(["Snapshot_Date", "Market", "Ticker", "_storage_snapshot_order"], na_position="first")
+        .drop_duplicates(subset=["Snapshot_Date", "Market", "Ticker"], keep="last")
+    )
+    out = out[SNAPSHOT_COLS].copy()
+    return _to_num(out, FACTOR_COLS)
+
+
 def _read_snapshots() -> pd.DataFrame:
     try:
-        ws = spreadsheet.worksheet(SNAPSHOT_SHEET)
+        df = _repository().read_history(SNAPSHOT_SHEET, market=None)
+    except Exception as exc:
+        print(f"[IC] Storage read skipped for {SNAPSHOT_SHEET}: {type(exc).__name__}: {exc}")
+        df = pd.DataFrame()
+    if not df.empty:
+        return _prepare_snapshot_frame(df)
+
+    try:
+        ws = _spreadsheet().worksheet(SNAPSHOT_SHEET)
         rows = ws.get_all_values()
     except gspread.exceptions.WorksheetNotFound:
+        return pd.DataFrame(columns=SNAPSHOT_COLS)
+    except Exception as exc:
+        print(f"[IC] Sheet read skipped for {SNAPSHOT_SHEET}: {type(exc).__name__}: {exc}")
         return pd.DataFrame(columns=SNAPSHOT_COLS)
 
     if len(rows) < 2:
         return pd.DataFrame(columns=SNAPSHOT_COLS)
 
     df = pd.DataFrame(rows[1:], columns=rows[0])
-    for col in SNAPSHOT_COLS:
-        if col not in df.columns:
-            df[col] = ""
-    df = df[SNAPSHOT_COLS].copy()
-    return _to_num(df, FACTOR_COLS)
+    return _prepare_snapshot_frame(df)
 
 
 def _write_snapshots(df: pd.DataFrame) -> None:
-    ws = _get_or_create_sheet(SNAPSHOT_SHEET, rows=max(1000, len(df) + 50), cols=len(SNAPSHOT_COLS) + 2)
     out = df[SNAPSHOT_COLS].fillna("").astype(str)
     try:
+        ws = _get_or_create_sheet(SNAPSHOT_SHEET, rows=max(1000, len(df) + 50), cols=len(SNAPSHOT_COLS) + 2)
         ws.resize(rows=max(1000, len(out) + 50), cols=len(SNAPSHOT_COLS) + 2)
+        ws.clear()
+        ws.update(range_name="A1", values=[SNAPSHOT_COLS] + out.values.tolist(), value_input_option="USER_ENTERED")
     except Exception:
-        pass
-    ws.clear()
-    ws.update(range_name="A1", values=[SNAPSHOT_COLS] + out.values.tolist(), value_input_option="USER_ENTERED")
+        print(f"[IC] Sheet write skipped for {SNAPSHOT_SHEET}.")
     dual_write_dataframe(SNAPSHOT_SHEET, out, market="GLOBAL")
 
 
@@ -436,7 +493,6 @@ def _fmt_df(df: pd.DataFrame, cols: list[str]) -> pd.DataFrame:
 
 def write_report(summary: pd.DataFrame, detail: pd.DataFrame) -> None:
     generated = datetime.now().strftime("%Y-%m-%d %H:%M")
-    ws = _get_or_create_sheet(REPORT_SHEET, rows=800, cols=max(len(SUMMARY_COLS), len(DETAIL_COLS)) + 2)
 
     if summary.empty:
         rows = [
@@ -462,8 +518,12 @@ def write_report(summary: pd.DataFrame, detail: pd.DataFrame) -> None:
         rows += [["", ""], DETAIL_COLS]
         rows += detail_out.values.tolist()
 
-    ws.clear()
-    ws.update(range_name="A1", values=rows, value_input_option="USER_ENTERED")
+    try:
+        ws = _get_or_create_sheet(REPORT_SHEET, rows=800, cols=max(len(SUMMARY_COLS), len(DETAIL_COLS)) + 2)
+        ws.clear()
+        ws.update(range_name="A1", values=rows, value_input_option="USER_ENTERED")
+    except Exception:
+        print(f"[IC] Sheet write skipped for {REPORT_SHEET}.")
     if not summary.empty:
         dual_write_dataframe(REPORT_SHEET, summary, market="GLOBAL")
     if not detail.empty:

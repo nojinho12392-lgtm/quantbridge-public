@@ -16,7 +16,7 @@ if (localPropertiesFile.exists()) {
     localPropertiesFile.inputStream().use { localProperties.load(it) }
 }
 
-val defaultStagingApiBaseUrl = "https://api.example.invalid"
+val defaultStagingApiBaseUrl = "https://qbjinho05082315-api.bravepond-eb5e2096.koreacentral.azurecontainerapps.io"
 val defaultDebugApiBaseUrl = "http://10.0.2.2:8000"
 val localApiBaseUrl = providers.gradleProperty("quantApiDebugBaseUrl")
     .orElse(providers.environmentVariable("QUANT_API_BASE_URL"))
@@ -51,7 +51,7 @@ fun deleteDuplicatedAndroidBuildArtifacts() {
 }
 
 android {
-    namespace = "com.example.myapplication"
+    namespace = "com.qubit.quantbridge"
     compileSdk {
         version = release(36) {
             minorApiLevel = 1
@@ -59,7 +59,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.myapplication"
+        applicationId = "com.qubit.quantbridge"
         minSdk = 24
         targetSdk = 36
         versionCode = 2

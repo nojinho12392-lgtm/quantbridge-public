@@ -12,7 +12,7 @@ import os
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable, TypeVar
 
@@ -31,6 +31,10 @@ _locks_guard = threading.Lock()
 _refreshing: set[str] = set()
 _refresh_executor = ThreadPoolExecutor(max_workers=4, thread_name_prefix="api-cache-refresh")
 _perf_events: dict[str, dict] = {}
+
+
+def _utc_now_iso() -> str:
+    return datetime.now(timezone.utc).replace(tzinfo=None).isoformat()
 
 
 def cached(
@@ -217,7 +221,7 @@ def record_data_source(
         "last_source": source,
         "last_rows": int(rows or 0),
         "last_detail": detail,
-        "last_seen_at": datetime.utcnow().isoformat(),
+        "last_seen_at": _utc_now_iso(),
         count_key: int(previous.get(count_key, 0)) + 1,
     }
 
@@ -235,7 +239,7 @@ def data_source_payload() -> dict:
         "count": len(items),
         "summary": summary,
         "items": items,
-        "generated_at": datetime.utcnow().isoformat(),
+        "generated_at": _utc_now_iso(),
     }
 
 
@@ -252,7 +256,7 @@ def record_api_timing(method: str, path: str, status_code: int, elapsed_ms: floa
         "max_ms": round(worst, 1),
         "last_ms": round(elapsed_ms, 1),
         "last_status": int(status_code or 0),
-        "last_seen_at": datetime.utcnow().isoformat(),
+        "last_seen_at": _utc_now_iso(),
     }
 
 
@@ -265,5 +269,5 @@ def performance_payload(limit: int = 40) -> dict:
     return {
         "count": len(items),
         "items": items,
-        "generated_at": datetime.utcnow().isoformat(),
+        "generated_at": _utc_now_iso(),
     }

@@ -16,6 +16,16 @@ from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DATABASE_URL = "postgresql://quantbridge:quantbridge@localhost:5432/quantbridge"
+DEFAULT_GOOGLE_KEY_PATH = ROOT / "key.json"
+DEFAULT_DATA_LAKE_DIR = ROOT / "data_lake"
+DEFAULT_API_SQLITE_PATH = ROOT / "api" / "quantbridge.sqlite3"
+DEFAULT_KIWOOM_CREDENTIALS_PATH = ROOT / "kiwoom_credentials.json"
+DEFAULT_PATHS = {
+    "google_key_path": DEFAULT_GOOGLE_KEY_PATH,
+    "data_lake_dir": DEFAULT_DATA_LAKE_DIR,
+    "api_sqlite_path": DEFAULT_API_SQLITE_PATH,
+    "kiwoom_credentials_path": DEFAULT_KIWOOM_CREDENTIALS_PATH,
+}
 
 
 class Settings(BaseSettings):
@@ -27,19 +37,19 @@ class Settings(BaseSettings):
     )
 
     root_dir: Path = ROOT
-    google_key_path: Path = Field(default=ROOT / "key.json", validation_alias="QUANT_GOOGLE_KEY_PATH")
+    google_key_path: Path = Field(default=DEFAULT_GOOGLE_KEY_PATH, validation_alias="QUANT_GOOGLE_KEY_PATH")
     google_key_json: str = Field(default="", validation_alias="QUANT_GOOGLE_KEY_JSON")
     spreadsheet_id: str = Field(
-        default="YOUR_GOOGLE_SHEET_ID",
+        default="1kn0Kp1QESSdwvmphCmaUFHNRh9qVUoN-2m_vMVDYHes",
         validation_alias="QUANT_SPREADSHEET_ID",
     )
-    spreadsheet_name: str = Field(default="QuantBridge_Demo_Workbook", validation_alias="QUANT_SPREADSHEET_NAME")
+    spreadsheet_name: str = Field(default="Jino_Quant_Database", validation_alias="QUANT_SPREADSHEET_NAME")
     database_url: str = Field(default=DEFAULT_DATABASE_URL, validation_alias="QUANT_DATABASE_URL")
     enable_postgres: bool = Field(default=False, validation_alias="QUANT_ENABLE_POSTGRES")
-    data_lake_dir: Path = Field(default=ROOT / "data_lake", validation_alias="QUANT_DATA_LAKE_DIR")
+    data_lake_dir: Path = Field(default=DEFAULT_DATA_LAKE_DIR, validation_alias="QUANT_DATA_LAKE_DIR")
     enable_parquet: bool = Field(default=True, validation_alias="QUANT_ENABLE_PARQUET")
     api_sqlite_path: Path = Field(
-        default=ROOT / "api" / "quantbridge.sqlite3",
+        default=DEFAULT_API_SQLITE_PATH,
         validation_alias="QUANT_API_SQLITE_PATH",
     )
     api_env: str = Field(default="local", validation_alias="QUANT_API_ENV")
@@ -51,26 +61,29 @@ class Settings(BaseSettings):
     naver_client_id: str = Field(default="", validation_alias="NAVER_CLIENT_ID")
     naver_client_secret: str = Field(default="", validation_alias="NAVER_CLIENT_SECRET")
     gemini_api_key: str = Field(default="", validation_alias="GEMINI_API_KEY")
-    news_impact_llm_enabled: bool = Field(default=False, validation_alias="NEWS_IMPACT_LLM_ENABLED")
+    news_impact_llm_enabled: bool = Field(default=True, validation_alias="NEWS_IMPACT_LLM_ENABLED")
     news_impact_llm_model: str = Field(default="gemini-2.5-flash", validation_alias="NEWS_IMPACT_LLM_MODEL")
     news_impact_llm_max_items: int = Field(default=8, validation_alias="NEWS_IMPACT_LLM_MAX_ITEMS")
     news_impact_llm_timeout_seconds: float = Field(default=8.0, validation_alias="NEWS_IMPACT_LLM_TIMEOUT_SECONDS")
     api_allow_external_fetch: bool = Field(default=False, validation_alias="QUANT_API_ALLOW_EXTERNAL_FETCH")
     kiwoom_credentials_path: Path = Field(
-        default=ROOT / "kiwoom_credentials.json",
+        default=DEFAULT_KIWOOM_CREDENTIALS_PATH,
         validation_alias="QUANT_KIWOOM_CREDENTIALS_PATH",
     )
-    pipeline_runner: str = Field(default="legacy", validation_alias="QUANT_PIPELINE_RUNNER")
+    pipeline_runner: str = Field(default="prefect", validation_alias="QUANT_PIPELINE_RUNNER")
     ml_blend_weight: float = Field(default=0.25, validation_alias="QUANT_ML_BLEND_WEIGHT")
     ml_blend_weak_weight: float = Field(default=0.10, validation_alias="QUANT_ML_BLEND_WEAK_WEIGHT")
     ml_blend_strong_weight: float = Field(default=0.35, validation_alias="QUANT_ML_BLEND_STRONG_WEIGHT")
     ml_auto_weight: bool = Field(default=True, validation_alias="QUANT_ML_AUTO_WEIGHT")
     ml_factor_score_col: str = Field(default="Final_Score", validation_alias="QUANT_ML_FACTOR_SCORE_COL")
 
-    @field_validator("google_key_path", "data_lake_dir", "api_sqlite_path", "kiwoom_credentials_path")
+    @field_validator("google_key_path", "data_lake_dir", "api_sqlite_path", "kiwoom_credentials_path", mode="before")
     @classmethod
-    def _resolve_project_path(cls, value: Path) -> Path:
-        path = Path(value).expanduser()
+    def _resolve_project_path(cls, value: Any, info: Any) -> Path:
+        if value is None or str(value).strip() == "":
+            path = DEFAULT_PATHS[info.field_name]
+        else:
+            path = Path(value).expanduser()
         return path if path.is_absolute() else ROOT / path
 
     @field_validator("api_env", "pipeline_runner", mode="before")
@@ -128,7 +141,7 @@ class Settings(BaseSettings):
 
     @property
     def has_google_credentials(self) -> bool:
-        return bool(self.google_key_json.strip()) or self.google_key_path.exists()
+        return bool(self.google_key_json.strip()) or self.google_key_path.is_file()
 
 
 def get_settings() -> Settings:

@@ -21,12 +21,15 @@ public struct QBEtfItem: Codable, JSONEncodable, Hashable {
     public var summary: String?
     public var price: Double?
     public var changePct: Double?
+    public var dailyChangePct: Double?
+    public var dailyPriceChange: Double?
+    public var dailyChangeHorizon: String?
     public var updatedAt: String?
     public var topHoldings: [QBEtfHolding]?
     public var holdings: [QBEtfHolding]?
     public var exposures: [QBEtfExposure]?
 
-    public init(ticker: String, name: String, market: String? = nil, region: String? = nil, category: String? = nil, theme: String? = nil, summary: String? = nil, price: Double? = nil, changePct: Double? = nil, updatedAt: String? = nil, topHoldings: [QBEtfHolding]? = nil, holdings: [QBEtfHolding]? = nil, exposures: [QBEtfExposure]? = nil) {
+    public init(ticker: String, name: String, market: String? = nil, region: String? = nil, category: String? = nil, theme: String? = nil, summary: String? = nil, price: Double? = nil, changePct: Double? = nil, dailyChangePct: Double? = nil, dailyPriceChange: Double? = nil, dailyChangeHorizon: String? = nil, updatedAt: String? = nil, topHoldings: [QBEtfHolding]? = nil, holdings: [QBEtfHolding]? = nil, exposures: [QBEtfExposure]? = nil) {
         self.ticker = ticker
         self.name = name
         self.market = market
@@ -36,6 +39,9 @@ public struct QBEtfItem: Codable, JSONEncodable, Hashable {
         self.summary = summary
         self.price = price
         self.changePct = changePct
+        self.dailyChangePct = dailyChangePct
+        self.dailyPriceChange = dailyPriceChange
+        self.dailyChangeHorizon = dailyChangeHorizon
         self.updatedAt = updatedAt
         self.topHoldings = topHoldings
         self.holdings = holdings
@@ -52,6 +58,9 @@ public struct QBEtfItem: Codable, JSONEncodable, Hashable {
         case summary
         case price
         case changePct
+        case dailyChangePct
+        case dailyPriceChange
+        case dailyChangeHorizon
         case updatedAt
         case topHoldings
         case holdings
@@ -86,6 +95,9 @@ public struct QBEtfItem: Codable, JSONEncodable, Hashable {
         try container.encodeIfPresent(summary, forKey: .summary)
         try container.encodeIfPresent(price, forKey: .price)
         try container.encodeIfPresent(changePct, forKey: .changePct)
+        try container.encodeIfPresent(dailyChangePct, forKey: .dailyChangePct)
+        try container.encodeIfPresent(dailyPriceChange, forKey: .dailyPriceChange)
+        try container.encodeIfPresent(dailyChangeHorizon, forKey: .dailyChangeHorizon)
         try container.encodeIfPresent(updatedAt, forKey: .updatedAt)
         try container.encodeIfPresent(topHoldings, forKey: .topHoldings)
         try container.encodeIfPresent(holdings, forKey: .holdings)
@@ -108,6 +120,9 @@ public struct QBEtfItem: Codable, JSONEncodable, Hashable {
         summary = try container.decodeIfPresent(String.self, forKey: .summary)
         price = try container.decodeIfPresent(Double.self, forKey: .price)
         changePct = try container.decodeIfPresent(Double.self, forKey: .changePct)
+        dailyChangePct = try container.decodeIfPresent(Double.self, forKey: .dailyChangePct)
+        dailyPriceChange = try container.decodeIfPresent(Double.self, forKey: .dailyPriceChange)
+        dailyChangeHorizon = try container.decodeIfPresent(String.self, forKey: .dailyChangeHorizon)
         updatedAt = try container.decodeIfPresent(String.self, forKey: .updatedAt)
         topHoldings = try container.decodeIfPresent([QBEtfHolding].self, forKey: .topHoldings)
         holdings = try container.decodeIfPresent([QBEtfHolding].self, forKey: .holdings)
@@ -122,6 +137,9 @@ public struct QBEtfItem: Codable, JSONEncodable, Hashable {
         nonAdditionalPropertyKeys.insert("summary")
         nonAdditionalPropertyKeys.insert("price")
         nonAdditionalPropertyKeys.insert("changePct")
+        nonAdditionalPropertyKeys.insert("dailyChangePct")
+        nonAdditionalPropertyKeys.insert("dailyPriceChange")
+        nonAdditionalPropertyKeys.insert("dailyChangeHorizon")
         nonAdditionalPropertyKeys.insert("updatedAt")
         nonAdditionalPropertyKeys.insert("topHoldings")
         nonAdditionalPropertyKeys.insert("holdings")
@@ -130,4 +148,3 @@ public struct QBEtfItem: Codable, JSONEncodable, Hashable {
         additionalProperties = try additionalPropertiesContainer.decodeMap(AnyCodable.self, excludedKeys: nonAdditionalPropertyKeys)
     }
 }
-

@@ -1,0 +1,30 @@
+package com.qubit.quantbridge.ui.theme
+
+import androidx.compose.ui.graphics.Color
+
+val QuantBlue = Color(0xFF2563EB)
+val QuantBlueDark = Color(0xFF70A0FF)
+val QuantInk = Color(0xFF172033)
+val QuantMuted = Color(0xFF536171)
+val QuantTertiary = Color(0xFF8491A3)
+val QuantLine = Color(0xFFD7DEE8)
+val QuantSurface = Color(0xFFFFFFFF)
+val QuantBackground = Color(0xFFF7F8FB)
+val QuantSurfaceSoft = Color(0xFFF4F6FA)
+val QuantSurfaceHigh = Color(0xFFF0F3F8)
+val QuantBlueSoft = Color(0x1A2563EB)
+val QuantPositive = Color(0xFFD92D20)
+val QuantNegative = Color(0xFF2563EB)
+val QuantDanger = Color(0xFFD92D20)
+val QuantGreen = Color(0xFF0E7A47)
+val QuantWarning = Color(0xFFB54708)
+val QuantPurple = Color(0xFF7C52AA)
+val QuantTertiaryAccent = Color(0xFF0096CC)
+val QuantFavorite = Color(0xFFFFCC00)
+
+val QuantDarkInk = Color(0xFFF6F8FB)
+val QuantDarkMuted = Color(0xFFCBD5E1)
+val QuantDarkLine = Color(0xFF344152)
+val QuantDarkSurface = Color(0xFF1A222D)
+val QuantDarkBackground = Color(0xFF10151D)
+val QuantDarkSurfaceSoft = Color(0xFF222C38)

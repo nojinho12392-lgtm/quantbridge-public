@@ -730,6 +730,40 @@ class PostgresStore:
         records = [dict(row[0]) for row in rows]
         return pd.DataFrame(records)
 
+    def read_history(self, dataset: str, market: str | None = None) -> pd.DataFrame:
+        """Return all stored snapshots for a generic dataset.
+
+        The generic ``quant_records.snapshot_date`` is the storage snapshot
+        date. Some research datasets also carry a logical date inside the JSON
+        payload, so expose the storage date separately for callers that need to
+        de-duplicate point-in-time rows across multiple storage writes.
+        """
+
+        self.ensure_schema()
+        params = [dataset]
+        market_filter = ""
+        if market:
+            market_filter = "AND market = %s"
+            params.append(market.upper())
+
+        with self._connect() as conn:
+            rows = conn.execute(
+                f"""
+                SELECT payload, snapshot_date
+                FROM quant_records
+                WHERE dataset = %s {market_filter}
+                ORDER BY snapshot_date ASC, market, ticker
+                """,
+                params,
+            ).fetchall()
+
+        records = []
+        for payload, storage_snapshot_date in rows:
+            row = dict(payload)
+            row["_storage_snapshot_date"] = storage_snapshot_date.isoformat() if storage_snapshot_date else None
+            records.append(row)
+        return pd.DataFrame(records)
+
     def read_previous_ranks(self, dataset: str, market: str | None = None) -> pd.DataFrame:
         """Return ticker ranks from the snapshot immediately before the current latest snapshot."""
 

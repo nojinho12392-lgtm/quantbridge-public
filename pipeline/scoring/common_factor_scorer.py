@@ -41,28 +41,51 @@ def _num(df: pd.DataFrame, names: Iterable[str], default=np.nan) -> pd.Series:
     return pd.to_numeric(df[col], errors="coerce")
 
 
-def _rank(series: pd.Series, *, higher_is_better: bool = True, fallback: float = 0.5) -> pd.Series:
-    s = pd.to_numeric(series, errors="coerce")
+def _rank(
+    series: pd.Series,
+    *,
+    higher_is_better: bool = True,
+    fallback: float = 0.5,
+    positive_only: bool = False,
+) -> pd.Series:
+    raw = pd.to_numeric(series, errors="coerce")
+    observed = raw.notna()
+    s = raw.where(raw > 0) if positive_only else raw
     if not higher_is_better:
         s = (1.0 / s).where(s > 0)
     if s.notna().sum() == 0:
-        return pd.Series(fallback, index=series.index, dtype="float64")
-    return s.rank(pct=True, na_option="keep").fillna(fallback).clip(0.0, 1.0)
+        ranked = pd.Series(fallback, index=series.index, dtype="float64")
+    else:
+        ranked = s.rank(pct=True, na_option="keep").fillna(fallback).clip(0.0, 1.0)
+    if positive_only:
+        ranked = ranked.where(raw.gt(0) | ~observed, 0.0)
+    return ranked.clip(0.0, 1.0)
 
 
 def _rank_first_available(
     df: pd.DataFrame,
-    candidates: list[tuple[list[str], bool]],
+    candidates: list[tuple[list[str], bool] | tuple[list[str], bool, bool]],
     *,
     fallback: float = 0.5,
 ) -> tuple[pd.Series, str | None, int]:
     """Rank the first candidate with at least one non-null value."""
-    for names, higher_is_better in candidates:
+    for candidate in candidates:
+        names, higher_is_better = candidate[0], candidate[1]
+        positive_only = bool(candidate[2]) if len(candidate) > 2 else False
         s = _num(df, names)
         coverage = int(s.notna().sum())
         if coverage > 0:
             label = _first_existing(df, names)
-            return _rank(s, higher_is_better=higher_is_better, fallback=fallback), label, coverage
+            return (
+                _rank(
+                    s,
+                    higher_is_better=higher_is_better,
+                    fallback=fallback,
+                    positive_only=positive_only,
+                ),
+                label,
+                coverage,
+            )
     return pd.Series(fallback, index=df.index, dtype="float64"), None, 0
 
 
@@ -124,15 +147,15 @@ def compute_us_factor_scores(
     r_peg, peg_src, peg_cov = _rank_first_available(
         df,
         [
-            (["PEG"], False),
-            (["PER", "pe_ratio"], False),
+            (["PEG"], False, True),
+            (["PER", "pe_ratio"], False, True),
             (["DebtToEquity", "de_ratio"], False),
         ],
     )
     r_ev, ev_src, ev_cov = _rank_first_available(
         df,
         [
-            (["EV_EBITDA", "ev_ebitda"], False),
+            (["EV_EBITDA", "ev_ebitda"], False, True),
             (["Debt_EBITDA", "debt_ebitda"], False),
             (["OperatingMargin", "op_margin"], True),
         ],

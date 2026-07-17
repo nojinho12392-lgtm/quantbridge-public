@@ -31,7 +31,7 @@ cd "$REPO_ROOT"
 API_URL="${API_URL%/}"
 OPENAPI_JSON="api/openapi.json"
 SWIFT_OUT="Stock Analysis/Stock Analysis/Generated"
-KOTLIN_OUT="android/app/src/main/java/com/example/myapplication/generated"
+KOTLIN_OUT="android/app/src/main/java/com/qubit/quantbridge/generated"
 README_TEXT="이 폴더는 scripts/regen-mobile-clients.sh로 생성된 자동 산출물입니다. 직접 편집 금지."
 
 echo "Fetching ${API_URL}/openapi.json"
@@ -81,6 +81,11 @@ run_generator() {
     --volume "$REPO_ROOT:/local" \
     --workdir /local \
     "$OPENAPI_GENERATOR_IMAGE" "$@"
+}
+
+normalize_generated_text() {
+  find "$SWIFT_OUT" "$KOTLIN_OUT" -type f \( -name '*.swift' -o -name '*.kt' -o -name '*.md' \) -print0 | \
+    xargs -0 perl -0pi -e 's/[ \t]+$//mg; s/\n+\z/\n/s;'
 }
 
 echo "Generating Swift models"
@@ -180,7 +185,7 @@ run_generator generate \
   -g kotlin \
   -o "/local/${KOTLIN_OUT}" \
   --model-name-prefix QB \
-  --additional-properties=library=jvm-retrofit2,serializationLibrary=kotlinx_serialization,useCoroutines=true,packageName=com.example.myapplication.generated \
+  --additional-properties=library=jvm-retrofit2,serializationLibrary=kotlinx_serialization,useCoroutines=true,packageName=com.qubit.quantbridge.generated \
   --model-name-mappings ValidationError=APIValidationError \
   --global-property models,modelDocs=false,modelTests=false,supportingFiles=false,apis=false
 find "$KOTLIN_OUT/src/main/kotlin" -type f -name '*.kt' -print0 | \
@@ -192,5 +197,6 @@ rm -rf "$KOTLIN_OUT/.openapi-generator"
 
 printf '%s\n' "$README_TEXT" > "$SWIFT_OUT/README.md"
 printf '%s\n' "$README_TEXT" > "$KOTLIN_OUT/README.md"
+normalize_generated_text
 
 echo "Regenerated mobile clients from ${API_URL}"
