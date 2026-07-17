@@ -22,10 +22,10 @@
     <ID>ComplexCondition:PulseViewModel.kt$PulseViewModel$macro.isEmpty() &amp;&amp; usEarnings.isEmpty() &amp;&amp; krEarnings.isEmpty() &amp;&amp; earningsCalendar.isEmpty()</ID>
     <ID>ComplexCondition:QuantApi.kt$QuantApi$cacheable &amp;&amp; staleCachedRaw != null &amp;&amp; e.canTryNextBaseUrl &amp;&amp; isLatencySensitivePath(path)</ID>
     <ID>ComplexCondition:SectorThemesViewModel.kt$SectorThemesViewModel$!force &amp;&amp; !reloadExisting &amp;&amp; this.market == safeMarket &amp;&amp; themes.isNotEmpty()</ID>
+    <ID>ComplexCondition:StockDetailCards.kt$current != null &amp;&amp; low != null &amp;&amp; high != null &amp;&amp; high &gt; low</ID>
     <ID>ComplexCondition:StockDetailInsightComponents.kt$current != null &amp;&amp; low != null &amp;&amp; high != null &amp;&amp; high &gt; low</ID>
     <ID>ComplexCondition:StockDetailInsightComponents.kt$dailyChange != null &amp;&amp; dailyChange &gt; 0.04 &amp;&amp; (profile.avoidances.any { it.contains("급등락") } || profile.riskTolerance.contains("낮"))</ID>
     <ID>ComplexCondition:StockDetailInsightComponents.kt$info?.totalRevenue == null &amp;&amp; info?.revenueGrowth == null &amp;&amp; metricLabels.none { it.contains("성장") || it.contains("growth") }</ID>
-    <ID>ComplexCondition:StockDetailScreenUi.kt$current != null &amp;&amp; low != null &amp;&amp; high != null &amp;&amp; high &gt; low</ID>
     <ID>ComplexCondition:StockDetailViewModel.kt$StockDetailViewModel$!force &amp;&amp; activeTicker == key &amp;&amp; activePeriod == period &amp;&amp; detail != null</ID>
     <ID>ComplexCondition:WatchScreen.kt$(selectedTab == WatchAssetTab.Indicators || selectedTab == WatchAssetTab.All) &amp;&amp; indicatorCount &gt; 0 &amp;&amp; indicatorQuotes.isEmpty() &amp;&amp; !marketIndicatorsViewModel.loading</ID>
     <ID>ComplexCondition:WatchScreen.kt$portfolio != null || smallCap != null || earnings != null || calendar != null</ID>
@@ -85,6 +85,10 @@
     <ID>CyclomaticComplexMethod:SectorThemesScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun SectorThemesScreen( app: QuantAppState, viewModel: SectorThemesViewModel = hiltViewModel() )</ID>
     <ID>CyclomaticComplexMethod:SectorThemesScreen.kt$private fun sectorThemeIcon(label: String): LucideIcon</ID>
     <ID>CyclomaticComplexMethod:SectorThemesViewModel.kt$SectorThemesViewModel$fun openTheme(theme: SectorTheme, force: Boolean = false)</ID>
+    <ID>CyclomaticComplexMethod:StockDetailCards.kt$@Composable internal fun DetailSummaryCard( info: StockInfo?, updatedAt: String?, currency: String, isEtf: Boolean = false, onTermClick: (String) -&gt; Unit = {} )</ID>
+    <ID>CyclomaticComplexMethod:StockDetailCards.kt$@Composable internal fun MarketInfoCard(info: StockInfo, currency: String, onTermClick: (String) -&gt; Unit = {})</ID>
+    <ID>CyclomaticComplexMethod:StockDetailCards.kt$internal fun DetailRequest.reconciledWithDetail(detail: StockDetail?): DetailRequest</ID>
+    <ID>CyclomaticComplexMethod:StockDetailChart.kt$@Composable @OptIn(ExperimentalMaterial3Api::class) internal fun PriceChart( points: List&lt;PricePoint&gt;, currency: String, period: ChartPeriod, availablePeriods: Set&lt;ChartPeriod&gt;, onPeriodChange: (ChartPeriod) -&gt; Unit )</ID>
     <ID>CyclomaticComplexMethod:StockDetailInsightComponents.kt$private fun detailActionPlanRows(request: DetailRequest, detail: StockDetail?): List&lt;DetailActionPlanModel&gt;</ID>
     <ID>CyclomaticComplexMethod:StockDetailInsightComponents.kt$private fun detailDecisionPills(request: DetailRequest, detail: StockDetail?): List&lt;DecisionPillModel&gt;</ID>
     <ID>CyclomaticComplexMethod:StockDetailInsightComponents.kt$private fun investmentProfileFitRows( profile: InvestmentProfile, request: DetailRequest, detail: StockDetail? ): List&lt;InvestmentProfileFitModel&gt;</ID>
@@ -92,11 +96,7 @@
     <ID>CyclomaticComplexMethod:StockDetailInsightComponents.kt$private fun missingStockDataReasons(request: DetailRequest, info: StockInfo?): List&lt;MissingDataReason&gt;</ID>
     <ID>CyclomaticComplexMethod:StockDetailInsightComponents.kt$private fun profileAvoidanceMatches(avoidance: String, text: String): Boolean</ID>
     <ID>CyclomaticComplexMethod:StockDetailInsightComponents.kt$private fun profileStyleMatches(style: String, text: String): Boolean</ID>
-    <ID>CyclomaticComplexMethod:StockDetailScreenUi.kt$@Composable @OptIn(ExperimentalMaterial3Api::class) internal fun PriceChart( points: List&lt;PricePoint&gt;, currency: String, period: ChartPeriod, availablePeriods: Set&lt;ChartPeriod&gt;, onPeriodChange: (ChartPeriod) -&gt; Unit )</ID>
     <ID>CyclomaticComplexMethod:StockDetailScreenUi.kt$@Composable @OptIn(ExperimentalMaterial3Api::class) internal fun StockDetailScreenContent( app: QuantAppState, request: DetailRequest, detail: StockDetail?, loading: Boolean, error: String?, period: ChartPeriod, availablePeriods: Set&lt;ChartPeriod&gt;, onPeriodChange: (ChartPeriod) -&gt; Unit, onRetry: () -&gt; Unit, onBack: () -&gt; Unit, onOpenDetail: (DetailRequest) -&gt; Unit, comparisonViewModel: ComparisonViewModel )</ID>
-    <ID>CyclomaticComplexMethod:StockDetailScreenUi.kt$@Composable internal fun DetailSummaryCard( info: StockInfo?, updatedAt: String?, currency: String, isEtf: Boolean = false, onTermClick: (String) -&gt; Unit = {} )</ID>
-    <ID>CyclomaticComplexMethod:StockDetailScreenUi.kt$@Composable internal fun MarketInfoCard(info: StockInfo, currency: String, onTermClick: (String) -&gt; Unit = {})</ID>
-    <ID>CyclomaticComplexMethod:StockDetailScreenUi.kt$internal fun DetailRequest.reconciledWithDetail(detail: StockDetail?): DetailRequest</ID>
     <ID>CyclomaticComplexMethod:WatchScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun WatchScreen( app: QuantAppState, marketIndicatorsViewModel: MarketIndicatorsViewModel = hiltViewModel(), watchlistViewModel: WatchlistViewModel = hiltViewModel(), comparisonViewModel: ComparisonViewModel = hiltViewModel() )</ID>
     <ID>CyclomaticComplexMethod:WatchScreen.kt$private fun QuantAppState.companyInsightFor(item: WatchlistItem): WatchCompanyInsight</ID>
     <ID>CyclomaticComplexMethod:WatchScreen.kt$private fun watchIndicatorDescription(item: WatchlistItem, quote: MarketIndicatorQuote): String</ID>
@@ -450,6 +450,40 @@
     <ID>FunctionNaming:SharedComponents.kt$@Composable private fun SoftSegmentSwitchButton( label: String, selected: Boolean, onClick: () -&gt; Unit, modifier: Modifier = Modifier )</ID>
     <ID>FunctionNaming:SharedComponents.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable private fun SegmentedTextOptions( options: List&lt;String&gt;, selected: String, onSelect: (String) -&gt; Unit )</ID>
     <ID>FunctionNaming:SmallCapScreen.kt$@Composable fun SmallCapScreen(app: QuantAppState)</ID>
+    <ID>FunctionNaming:StockDetailCards.kt$@Composable @OptIn(ExperimentalLayoutApi::class) internal fun GlossaryCard(keys: List&lt;String&gt;, onTermClick: (String) -&gt; Unit)</ID>
+    <ID>FunctionNaming:StockDetailCards.kt$@Composable fun DataFreshnessBadge(level: DataFreshnessLevel, compact: Boolean = false)</ID>
+    <ID>FunctionNaming:StockDetailCards.kt$@Composable internal fun CompanyProfileCard(info: StockInfo)</ID>
+    <ID>FunctionNaming:StockDetailCards.kt$@Composable internal fun DataTrustCard(source: String?, updatedAt: String?)</ID>
+    <ID>FunctionNaming:StockDetailCards.kt$@Composable internal fun DetailConclusionActionBar( request: DetailRequest, detail: StockDetail?, watched: Boolean, comparisonSelected: Boolean, onWatch: () -&gt; Unit, onMemo: () -&gt; Unit, onCompare: () -&gt; Unit )</ID>
+    <ID>FunctionNaming:StockDetailCards.kt$@Composable internal fun DetailErrorState(message: String, onRetry: () -&gt; Unit)</ID>
+    <ID>FunctionNaming:StockDetailCards.kt$@Composable internal fun DetailHeroCard(request: DetailRequest, detail: StockDetail?, error: String?)</ID>
+    <ID>FunctionNaming:StockDetailCards.kt$@Composable internal fun DetailHoldingDonutChart( holdings: List&lt;DetailHolding&gt;, otherWeight: Double, modifier: Modifier = Modifier )</ID>
+    <ID>FunctionNaming:StockDetailCards.kt$@Composable internal fun DetailHoldingLegendRow( holding: DetailHolding, color: Color, loading: Boolean, onClick: () -&gt; Unit )</ID>
+    <ID>FunctionNaming:StockDetailCards.kt$@Composable internal fun DetailHoldingLegendRow( title: String, weight: Double, color: Color, loading: Boolean = false, clickable: Boolean = false, onClick: () -&gt; Unit = {} )</ID>
+    <ID>FunctionNaming:StockDetailCards.kt$@Composable internal fun DetailHoldingsCard( holdings: List&lt;DetailHolding&gt;, resolvingHoldingKey: String?, onHoldingClick: (DetailHolding) -&gt; Unit )</ID>
+    <ID>FunctionNaming:StockDetailCards.kt$@Composable internal fun DetailSummaryCard( info: StockInfo?, updatedAt: String?, currency: String, isEtf: Boolean = false, onTermClick: (String) -&gt; Unit = {} )</ID>
+    <ID>FunctionNaming:StockDetailCards.kt$@Composable internal fun DetailSummaryTile( label: String, value: String, detail: String, tone: DetailTone, modifier: Modifier = Modifier, valueColor: Color? = null, onTermClick: (String) -&gt; Unit = {} )</ID>
+    <ID>FunctionNaming:StockDetailCards.kt$@Composable internal fun DetailTopDecisionCard( request: DetailRequest, detail: StockDetail?, error: String?, watched: Boolean, comparisonSelected: Boolean, onWatch: () -&gt; Unit, onMemo: () -&gt; Unit, onCompare: () -&gt; Unit )</ID>
+    <ID>FunctionNaming:StockDetailCards.kt$@Composable internal fun FactorRadarCard(factors: List&lt;FactorScore&gt;)</ID>
+    <ID>FunctionNaming:StockDetailCards.kt$@Composable internal fun FinancialSnapshotCard(info: StockInfo, currency: String, onTermClick: (String) -&gt; Unit = {})</ID>
+    <ID>FunctionNaming:StockDetailCards.kt$@Composable internal fun MarketInfoCard(info: StockInfo, currency: String, onTermClick: (String) -&gt; Unit = {})</ID>
+    <ID>FunctionNaming:StockDetailCards.kt$@Composable internal fun MetricSection(section: DetailSection, onTermClick: (String) -&gt; Unit = {})</ID>
+    <ID>FunctionNaming:StockDetailCards.kt$@Composable internal fun MetricTile(metric: DetailMetric, modifier: Modifier = Modifier, onTermClick: (String) -&gt; Unit = {})</ID>
+    <ID>FunctionNaming:StockDetailCards.kt$@Composable internal fun PriceHeaderCard(request: DetailRequest, info: StockInfo?)</ID>
+    <ID>FunctionNaming:StockDetailCards.kt$@Composable internal fun RangeCard(info: StockInfo, currency: String)</ID>
+    <ID>FunctionNaming:StockDetailCards.kt$@Composable internal fun ReturnStatsCard(points: List&lt;PricePoint&gt;, currency: String, onTermClick: (String) -&gt; Unit = {})</ID>
+    <ID>FunctionNaming:StockDetailCards.kt$@Composable internal fun SignalCards(signals: List&lt;DetailSignal&gt;)</ID>
+    <ID>FunctionNaming:StockDetailCards.kt$@Composable internal fun SkeletonLine( height: androidx.compose.ui.unit.Dp, modifier: Modifier = Modifier, width: androidx.compose.ui.unit.Dp? = null )</ID>
+    <ID>FunctionNaming:StockDetailCards.kt$@Composable internal fun StatusPill(text: String, tone: DetailTone)</ID>
+    <ID>FunctionNaming:StockDetailCards.kt$@Composable internal fun StockDetailSkeleton(request: DetailRequest)</ID>
+    <ID>FunctionNaming:StockDetailCards.kt$@Composable internal fun TermLabel(label: String, termKey: String?, onTermClick: (String) -&gt; Unit)</ID>
+    <ID>FunctionNaming:StockDetailChart.kt$@Composable @OptIn(ExperimentalLayoutApi::class) internal fun ChartRangeSummaryRow( points: List&lt;PricePoint&gt;, currency: String, onSettingsClick: () -&gt; Unit )</ID>
+    <ID>FunctionNaming:StockDetailChart.kt$@Composable @OptIn(ExperimentalMaterial3Api::class) internal fun PriceChart( points: List&lt;PricePoint&gt;, currency: String, period: ChartPeriod, availablePeriods: Set&lt;ChartPeriod&gt;, onPeriodChange: (ChartPeriod) -&gt; Unit )</ID>
+    <ID>FunctionNaming:StockDetailChart.kt$@Composable internal fun ChartModeGlyph(mode: ChartMode, color: Color)</ID>
+    <ID>FunctionNaming:StockDetailChart.kt$@Composable internal fun ChartSummaryPill(label: String, value: String)</ID>
+    <ID>FunctionNaming:StockDetailChart.kt$@Composable internal fun IndicatorLabel(text: String)</ID>
+    <ID>FunctionNaming:StockDetailChart.kt$@Composable internal fun PeriodChip( label: String, selected: Boolean, enabled: Boolean = true, onClick: () -&gt; Unit, modifier: Modifier = Modifier )</ID>
+    <ID>FunctionNaming:StockDetailChart.kt$@Composable internal fun PeriodModeSelector( period: ChartPeriod, availablePeriods: Set&lt;ChartPeriod&gt;, onPeriodChange: (ChartPeriod) -&gt; Unit, mode: ChartMode, tone: Color, onModeChange: (ChartMode) -&gt; Unit )</ID>
     <ID>FunctionNaming:StockDetailInsightComponents.kt$@Composable @OptIn(ExperimentalLayoutApi::class) internal fun DetailFactorCoverageCard(request: DetailRequest)</ID>
     <ID>FunctionNaming:StockDetailInsightComponents.kt$@Composable @OptIn(ExperimentalLayoutApi::class) private fun FitChecklist(items: List&lt;FitChecklistItem&gt;)</ID>
     <ID>FunctionNaming:StockDetailInsightComponents.kt$@Composable internal fun DetailActionPlanCard( request: DetailRequest, detail: StockDetail? )</ID>
@@ -468,41 +502,7 @@
     <ID>FunctionNaming:StockDetailInsightComponents.kt$@Composable private fun FitScoreBar(score: Int, tone: Color)</ID>
     <ID>FunctionNaming:StockDetailInsightComponents.kt$@Composable private fun GuardrailRow(row: DetailGuardrailRow)</ID>
     <ID>FunctionNaming:StockDetailScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun StockDetailScreen( app: QuantAppState, request: DetailRequest, detail: StockDetail?, loading: Boolean, error: String?, period: ChartPeriod, availablePeriods: Set&lt;ChartPeriod&gt;, onPeriodChange: (ChartPeriod) -&gt; Unit, onRetry: () -&gt; Unit, onBack: () -&gt; Unit, onOpenDetail: (DetailRequest) -&gt; Unit, comparisonViewModel: ComparisonViewModel )</ID>
-    <ID>FunctionNaming:StockDetailScreenUi.kt$@Composable @OptIn(ExperimentalLayoutApi::class) internal fun ChartRangeSummaryRow( points: List&lt;PricePoint&gt;, currency: String, onSettingsClick: () -&gt; Unit )</ID>
-    <ID>FunctionNaming:StockDetailScreenUi.kt$@Composable @OptIn(ExperimentalLayoutApi::class) internal fun GlossaryCard(keys: List&lt;String&gt;, onTermClick: (String) -&gt; Unit)</ID>
-    <ID>FunctionNaming:StockDetailScreenUi.kt$@Composable @OptIn(ExperimentalMaterial3Api::class) internal fun PriceChart( points: List&lt;PricePoint&gt;, currency: String, period: ChartPeriod, availablePeriods: Set&lt;ChartPeriod&gt;, onPeriodChange: (ChartPeriod) -&gt; Unit )</ID>
     <ID>FunctionNaming:StockDetailScreenUi.kt$@Composable @OptIn(ExperimentalMaterial3Api::class) internal fun StockDetailScreenContent( app: QuantAppState, request: DetailRequest, detail: StockDetail?, loading: Boolean, error: String?, period: ChartPeriod, availablePeriods: Set&lt;ChartPeriod&gt;, onPeriodChange: (ChartPeriod) -&gt; Unit, onRetry: () -&gt; Unit, onBack: () -&gt; Unit, onOpenDetail: (DetailRequest) -&gt; Unit, comparisonViewModel: ComparisonViewModel )</ID>
-    <ID>FunctionNaming:StockDetailScreenUi.kt$@Composable fun DataFreshnessBadge(level: DataFreshnessLevel, compact: Boolean = false)</ID>
-    <ID>FunctionNaming:StockDetailScreenUi.kt$@Composable internal fun ChartModeGlyph(mode: ChartMode, color: Color)</ID>
-    <ID>FunctionNaming:StockDetailScreenUi.kt$@Composable internal fun ChartSummaryPill(label: String, value: String)</ID>
-    <ID>FunctionNaming:StockDetailScreenUi.kt$@Composable internal fun CompanyProfileCard(info: StockInfo)</ID>
-    <ID>FunctionNaming:StockDetailScreenUi.kt$@Composable internal fun DataTrustCard(source: String?, updatedAt: String?)</ID>
-    <ID>FunctionNaming:StockDetailScreenUi.kt$@Composable internal fun DetailConclusionActionBar( request: DetailRequest, detail: StockDetail?, watched: Boolean, comparisonSelected: Boolean, onWatch: () -&gt; Unit, onMemo: () -&gt; Unit, onCompare: () -&gt; Unit )</ID>
-    <ID>FunctionNaming:StockDetailScreenUi.kt$@Composable internal fun DetailErrorState(message: String, onRetry: () -&gt; Unit)</ID>
-    <ID>FunctionNaming:StockDetailScreenUi.kt$@Composable internal fun DetailHeroCard(request: DetailRequest, detail: StockDetail?, error: String?)</ID>
-    <ID>FunctionNaming:StockDetailScreenUi.kt$@Composable internal fun DetailHoldingDonutChart( holdings: List&lt;DetailHolding&gt;, otherWeight: Double, modifier: Modifier = Modifier )</ID>
-    <ID>FunctionNaming:StockDetailScreenUi.kt$@Composable internal fun DetailHoldingLegendRow( holding: DetailHolding, color: Color, loading: Boolean, onClick: () -&gt; Unit )</ID>
-    <ID>FunctionNaming:StockDetailScreenUi.kt$@Composable internal fun DetailHoldingLegendRow( title: String, weight: Double, color: Color, loading: Boolean = false, clickable: Boolean = false, onClick: () -&gt; Unit = {} )</ID>
-    <ID>FunctionNaming:StockDetailScreenUi.kt$@Composable internal fun DetailHoldingsCard( holdings: List&lt;DetailHolding&gt;, resolvingHoldingKey: String?, onHoldingClick: (DetailHolding) -&gt; Unit )</ID>
-    <ID>FunctionNaming:StockDetailScreenUi.kt$@Composable internal fun DetailSummaryCard( info: StockInfo?, updatedAt: String?, currency: String, isEtf: Boolean = false, onTermClick: (String) -&gt; Unit = {} )</ID>
-    <ID>FunctionNaming:StockDetailScreenUi.kt$@Composable internal fun DetailSummaryTile( label: String, value: String, detail: String, tone: DetailTone, modifier: Modifier = Modifier, valueColor: Color? = null, onTermClick: (String) -&gt; Unit = {} )</ID>
-    <ID>FunctionNaming:StockDetailScreenUi.kt$@Composable internal fun DetailTopDecisionCard( request: DetailRequest, detail: StockDetail?, error: String?, watched: Boolean, comparisonSelected: Boolean, onWatch: () -&gt; Unit, onMemo: () -&gt; Unit, onCompare: () -&gt; Unit )</ID>
-    <ID>FunctionNaming:StockDetailScreenUi.kt$@Composable internal fun FactorRadarCard(factors: List&lt;FactorScore&gt;)</ID>
-    <ID>FunctionNaming:StockDetailScreenUi.kt$@Composable internal fun FinancialSnapshotCard(info: StockInfo, currency: String, onTermClick: (String) -&gt; Unit = {})</ID>
-    <ID>FunctionNaming:StockDetailScreenUi.kt$@Composable internal fun IndicatorLabel(text: String)</ID>
-    <ID>FunctionNaming:StockDetailScreenUi.kt$@Composable internal fun MarketInfoCard(info: StockInfo, currency: String, onTermClick: (String) -&gt; Unit = {})</ID>
-    <ID>FunctionNaming:StockDetailScreenUi.kt$@Composable internal fun MetricSection(section: DetailSection, onTermClick: (String) -&gt; Unit = {})</ID>
-    <ID>FunctionNaming:StockDetailScreenUi.kt$@Composable internal fun MetricTile(metric: DetailMetric, modifier: Modifier = Modifier, onTermClick: (String) -&gt; Unit = {})</ID>
-    <ID>FunctionNaming:StockDetailScreenUi.kt$@Composable internal fun PeriodChip( label: String, selected: Boolean, enabled: Boolean = true, onClick: () -&gt; Unit, modifier: Modifier = Modifier )</ID>
-    <ID>FunctionNaming:StockDetailScreenUi.kt$@Composable internal fun PeriodModeSelector( period: ChartPeriod, availablePeriods: Set&lt;ChartPeriod&gt;, onPeriodChange: (ChartPeriod) -&gt; Unit, mode: ChartMode, tone: Color, onModeChange: (ChartMode) -&gt; Unit )</ID>
-    <ID>FunctionNaming:StockDetailScreenUi.kt$@Composable internal fun PriceHeaderCard(request: DetailRequest, info: StockInfo?)</ID>
-    <ID>FunctionNaming:StockDetailScreenUi.kt$@Composable internal fun RangeCard(info: StockInfo, currency: String)</ID>
-    <ID>FunctionNaming:StockDetailScreenUi.kt$@Composable internal fun ReturnStatsCard(points: List&lt;PricePoint&gt;, currency: String, onTermClick: (String) -&gt; Unit = {})</ID>
-    <ID>FunctionNaming:StockDetailScreenUi.kt$@Composable internal fun SignalCards(signals: List&lt;DetailSignal&gt;)</ID>
-    <ID>FunctionNaming:StockDetailScreenUi.kt$@Composable internal fun SkeletonLine( height: androidx.compose.ui.unit.Dp, modifier: Modifier = Modifier, width: androidx.compose.ui.unit.Dp? = null )</ID>
-    <ID>FunctionNaming:StockDetailScreenUi.kt$@Composable internal fun StatusPill(text: String, tone: DetailTone)</ID>
-    <ID>FunctionNaming:StockDetailScreenUi.kt$@Composable internal fun StockDetailSkeleton(request: DetailRequest)</ID>
-    <ID>FunctionNaming:StockDetailScreenUi.kt$@Composable internal fun TermLabel(label: String, termKey: String?, onTermClick: (String) -&gt; Unit)</ID>
     <ID>FunctionNaming:Theme.kt$@Composable fun QubitTheme( darkTheme: Boolean = false, content: @Composable () -&gt; Unit )</ID>
     <ID>FunctionNaming:UxComponents.kt$@Composable fun AnimatedPriceText( text: String, modifier: Modifier = Modifier, style: TextStyle = MaterialTheme.typography.bodyMedium, fontWeight: FontWeight? = null, color: Color = MaterialTheme.colorScheme.onSurface, textAlign: TextAlign? = null )</ID>
     <ID>FunctionNaming:UxComponents.kt$@Composable fun CompactMetricTile( label: String, value: String, modifier: Modifier = Modifier, color: Color = MaterialTheme.colorScheme.onSurface )</ID>
@@ -556,6 +556,8 @@
     <ID>InvalidPackageDeclaration:SearchScreen.kt$package com.qubit.quantbridge</ID>
     <ID>InvalidPackageDeclaration:SharedComponents.kt$package com.qubit.quantbridge</ID>
     <ID>InvalidPackageDeclaration:SmallCapScreen.kt$package com.qubit.quantbridge</ID>
+    <ID>InvalidPackageDeclaration:StockDetailCards.kt$package com.qubit.quantbridge</ID>
+    <ID>InvalidPackageDeclaration:StockDetailChart.kt$package com.qubit.quantbridge</ID>
     <ID>InvalidPackageDeclaration:StockDetailScreenUi.kt$package com.qubit.quantbridge</ID>
     <ID>LargeClass:AppState.kt$QuantAppState</ID>
     <ID>LongMethod:AccountScreenUi.kt$@Composable internal fun AccountAuthCard( signup: Boolean, name: String, onNameChange: (String) -&gt; Unit, email: String, onEmailChange: (String) -&gt; Unit, password: String, onPasswordChange: (String) -&gt; Unit, passwordVisible: Boolean, onTogglePassword: () -&gt; Unit, errorMessage: String?, successMessage: String?, loading: Boolean, canSubmit: Boolean, onSubmit: () -&gt; Unit )</ID>
@@ -594,11 +596,11 @@
     <ID>LongMethod:PortfolioAnalysisScreen.kt$@Composable internal fun PortfolioScreenContent( app: QuantAppState, portfolioViewModel: PortfolioViewModel, smallCapViewModel: SmallCapViewModel, comparisonViewModel: ComparisonViewModel )</ID>
     <ID>LongMethod:SearchScreen.kt$@Composable fun SearchScreen( app: QuantAppState, showAdvancedModes: Boolean = true, searchViewModel: SearchViewModel = hiltViewModel(), strategyViewModel: StrategyViewModel = hiltViewModel(), opsViewModel: OpsViewModel = hiltViewModel(), comparisonViewModel: ComparisonViewModel = hiltViewModel() )</ID>
     <ID>LongMethod:SectorThemesScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun SectorThemesScreen( app: QuantAppState, viewModel: SectorThemesViewModel = hiltViewModel() )</ID>
+    <ID>LongMethod:StockDetailCards.kt$@Composable internal fun DetailConclusionActionBar( request: DetailRequest, detail: StockDetail?, watched: Boolean, comparisonSelected: Boolean, onWatch: () -&gt; Unit, onMemo: () -&gt; Unit, onCompare: () -&gt; Unit )</ID>
+    <ID>LongMethod:StockDetailCards.kt$@Composable internal fun DetailTopDecisionCard( request: DetailRequest, detail: StockDetail?, error: String?, watched: Boolean, comparisonSelected: Boolean, onWatch: () -&gt; Unit, onMemo: () -&gt; Unit, onCompare: () -&gt; Unit )</ID>
+    <ID>LongMethod:StockDetailChart.kt$@Composable @OptIn(ExperimentalMaterial3Api::class) internal fun PriceChart( points: List&lt;PricePoint&gt;, currency: String, period: ChartPeriod, availablePeriods: Set&lt;ChartPeriod&gt;, onPeriodChange: (ChartPeriod) -&gt; Unit )</ID>
     <ID>LongMethod:StockDetailInsightComponents.kt$private fun detailActionPlanRows(request: DetailRequest, detail: StockDetail?): List&lt;DetailActionPlanModel&gt;</ID>
-    <ID>LongMethod:StockDetailScreenUi.kt$@Composable @OptIn(ExperimentalMaterial3Api::class) internal fun PriceChart( points: List&lt;PricePoint&gt;, currency: String, period: ChartPeriod, availablePeriods: Set&lt;ChartPeriod&gt;, onPeriodChange: (ChartPeriod) -&gt; Unit )</ID>
     <ID>LongMethod:StockDetailScreenUi.kt$@Composable @OptIn(ExperimentalMaterial3Api::class) internal fun StockDetailScreenContent( app: QuantAppState, request: DetailRequest, detail: StockDetail?, loading: Boolean, error: String?, period: ChartPeriod, availablePeriods: Set&lt;ChartPeriod&gt;, onPeriodChange: (ChartPeriod) -&gt; Unit, onRetry: () -&gt; Unit, onBack: () -&gt; Unit, onOpenDetail: (DetailRequest) -&gt; Unit, comparisonViewModel: ComparisonViewModel )</ID>
-    <ID>LongMethod:StockDetailScreenUi.kt$@Composable internal fun DetailConclusionActionBar( request: DetailRequest, detail: StockDetail?, watched: Boolean, comparisonSelected: Boolean, onWatch: () -&gt; Unit, onMemo: () -&gt; Unit, onCompare: () -&gt; Unit )</ID>
-    <ID>LongMethod:StockDetailScreenUi.kt$@Composable internal fun DetailTopDecisionCard( request: DetailRequest, detail: StockDetail?, error: String?, watched: Boolean, comparisonSelected: Boolean, onWatch: () -&gt; Unit, onMemo: () -&gt; Unit, onCompare: () -&gt; Unit )</ID>
     <ID>LongMethod:WatchMetadataComponents.kt$@OptIn(ExperimentalLayoutApi::class) @Composable fun WatchMetadataSheet( item: WatchlistItem, onSave: (tags: List&lt;String&gt;, memo: String, alertOptions: List&lt;String&gt;) -&gt; Unit, onDismiss: () -&gt; Unit )</ID>
     <ID>LongMethod:WatchScreen.kt$@Composable private fun WatchIndicatorGraphCard( item: WatchlistItem, quote: MarketIndicatorQuote, points: List&lt;MarketIndicatorPoint&gt;, onDelete: () -&gt; Unit, modifier: Modifier = Modifier )</ID>
     <ID>LongMethod:WatchScreen.kt$@Composable private fun WatchPriorityRow( priorityItem: WatchPriorityItem, onOpen: () -&gt; Unit )</ID>
@@ -634,13 +636,13 @@
     <ID>LongParameterList:QuantApiService.kt$QuantApiService$( @Query("market") market: String = "ALL", @Query("category") category: String = "ALL", @Query("q") query: String = "", @Query("limit") limit: Int = 500, @Query("refresh") refresh: Boolean = false, @Query("schema") schema: String = "etf-daily-v2" )</ID>
     <ID>LongParameterList:QubitNotificationScheduler.kt$QubitNotificationScheduler$( context: Context, id: String, title: String, body: String, isDaily: Boolean, flags: Int = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE )</ID>
     <ID>LongParameterList:SearchScreen.kt$( app: QuantAppState, showAdvancedModes: Boolean = true, searchViewModel: SearchViewModel = hiltViewModel(), strategyViewModel: StrategyViewModel = hiltViewModel(), opsViewModel: OpsViewModel = hiltViewModel(), comparisonViewModel: ComparisonViewModel = hiltViewModel() )</ID>
+    <ID>LongParameterList:StockDetailCards.kt$( label: String, value: String, detail: String, tone: DetailTone, modifier: Modifier = Modifier, valueColor: Color? = null, onTermClick: (String) -&gt; Unit = {} )</ID>
+    <ID>LongParameterList:StockDetailCards.kt$( request: DetailRequest, detail: StockDetail?, error: String?, watched: Boolean, comparisonSelected: Boolean, onWatch: () -&gt; Unit, onMemo: () -&gt; Unit, onCompare: () -&gt; Unit )</ID>
+    <ID>LongParameterList:StockDetailCards.kt$( request: DetailRequest, detail: StockDetail?, watched: Boolean, comparisonSelected: Boolean, onWatch: () -&gt; Unit, onMemo: () -&gt; Unit, onCompare: () -&gt; Unit )</ID>
+    <ID>LongParameterList:StockDetailCards.kt$( title: String, weight: Double, color: Color, loading: Boolean = false, clickable: Boolean = false, onClick: () -&gt; Unit = {} )</ID>
+    <ID>LongParameterList:StockDetailChart.kt$( period: ChartPeriod, availablePeriods: Set&lt;ChartPeriod&gt;, onPeriodChange: (ChartPeriod) -&gt; Unit, mode: ChartMode, tone: Color, onModeChange: (ChartMode) -&gt; Unit )</ID>
     <ID>LongParameterList:StockDetailScreen.kt$( app: QuantAppState, request: DetailRequest, detail: StockDetail?, loading: Boolean, error: String?, period: ChartPeriod, availablePeriods: Set&lt;ChartPeriod&gt;, onPeriodChange: (ChartPeriod) -&gt; Unit, onRetry: () -&gt; Unit, onBack: () -&gt; Unit, onOpenDetail: (DetailRequest) -&gt; Unit, comparisonViewModel: ComparisonViewModel )</ID>
     <ID>LongParameterList:StockDetailScreenUi.kt$( app: QuantAppState, request: DetailRequest, detail: StockDetail?, loading: Boolean, error: String?, period: ChartPeriod, availablePeriods: Set&lt;ChartPeriod&gt;, onPeriodChange: (ChartPeriod) -&gt; Unit, onRetry: () -&gt; Unit, onBack: () -&gt; Unit, onOpenDetail: (DetailRequest) -&gt; Unit, comparisonViewModel: ComparisonViewModel )</ID>
-    <ID>LongParameterList:StockDetailScreenUi.kt$( label: String, value: String, detail: String, tone: DetailTone, modifier: Modifier = Modifier, valueColor: Color? = null, onTermClick: (String) -&gt; Unit = {} )</ID>
-    <ID>LongParameterList:StockDetailScreenUi.kt$( period: ChartPeriod, availablePeriods: Set&lt;ChartPeriod&gt;, onPeriodChange: (ChartPeriod) -&gt; Unit, mode: ChartMode, tone: Color, onModeChange: (ChartMode) -&gt; Unit )</ID>
-    <ID>LongParameterList:StockDetailScreenUi.kt$( request: DetailRequest, detail: StockDetail?, error: String?, watched: Boolean, comparisonSelected: Boolean, onWatch: () -&gt; Unit, onMemo: () -&gt; Unit, onCompare: () -&gt; Unit )</ID>
-    <ID>LongParameterList:StockDetailScreenUi.kt$( request: DetailRequest, detail: StockDetail?, watched: Boolean, comparisonSelected: Boolean, onWatch: () -&gt; Unit, onMemo: () -&gt; Unit, onCompare: () -&gt; Unit )</ID>
-    <ID>LongParameterList:StockDetailScreenUi.kt$( title: String, weight: Double, color: Color, loading: Boolean = false, clickable: Boolean = false, onClick: () -&gt; Unit = {} )</ID>
     <ID>LongParameterList:UxComponents.kt$( icon: LucideIcon, contentDescription: String?, onClick: () -&gt; Unit, modifier: Modifier = Modifier, tint: Color = MaterialTheme.colorScheme.primary, enabled: Boolean = true )</ID>
     <ID>LongParameterList:UxComponents.kt$( label: String, onClick: () -&gt; Unit, modifier: Modifier = Modifier, enabled: Boolean = true, loading: Boolean = false, complete: Boolean = false, content: (@Composable RowScope.() -&gt; Unit)? = null )</ID>
     <ID>LongParameterList:UxComponents.kt$( text: String, modifier: Modifier = Modifier, style: TextStyle = MaterialTheme.typography.bodyMedium, fontWeight: FontWeight? = null, color: Color = MaterialTheme.colorScheme.onSurface, textAlign: TextAlign? = null )</ID>
@@ -1144,6 +1146,77 @@
     <ID>MagicNumber:SectorThemesScreen.kt$4</ID>
     <ID>MagicNumber:SectorThemesScreen.kt$8</ID>
     <ID>MagicNumber:SecureTokenStore.kt$SecureTokenStore$256</ID>
+    <ID>MagicNumber:StockDetailCards.kt$0.0001</ID>
+    <ID>MagicNumber:StockDetailCards.kt$0.05</ID>
+    <ID>MagicNumber:StockDetailCards.kt$0.10</ID>
+    <ID>MagicNumber:StockDetailCards.kt$0.15</ID>
+    <ID>MagicNumber:StockDetailCards.kt$0.20</ID>
+    <ID>MagicNumber:StockDetailCards.kt$0.20f</ID>
+    <ID>MagicNumber:StockDetailCards.kt$0.25</ID>
+    <ID>MagicNumber:StockDetailCards.kt$0.38f</ID>
+    <ID>MagicNumber:StockDetailCards.kt$0.40</ID>
+    <ID>MagicNumber:StockDetailCards.kt$0.5</ID>
+    <ID>MagicNumber:StockDetailCards.kt$0.75</ID>
+    <ID>MagicNumber:StockDetailCards.kt$0xFF1469AD</ID>
+    <ID>MagicNumber:StockDetailCards.kt$0xFF23A6A6</ID>
+    <ID>MagicNumber:StockDetailCards.kt$0xFF2F80ED</ID>
+    <ID>MagicNumber:StockDetailCards.kt$0xFF45CC96</ID>
+    <ID>MagicNumber:StockDetailCards.kt$0xFF4CB9D6</ID>
+    <ID>MagicNumber:StockDetailCards.kt$0xFFAD14D1</ID>
+    <ID>MagicNumber:StockDetailCards.kt$0xFFD2D8E0</ID>
+    <ID>MagicNumber:StockDetailCards.kt$0xFFE54868</ID>
+    <ID>MagicNumber:StockDetailCards.kt$0xFFE9540A</ID>
+    <ID>MagicNumber:StockDetailCards.kt$0xFFFF980A</ID>
+    <ID>MagicNumber:StockDetailCards.kt$0xFFFFD15A</ID>
+    <ID>MagicNumber:StockDetailCards.kt$10</ID>
+    <ID>MagicNumber:StockDetailCards.kt$100</ID>
+    <ID>MagicNumber:StockDetailCards.kt$100.0</ID>
+    <ID>MagicNumber:StockDetailCards.kt$200.0</ID>
+    <ID>MagicNumber:StockDetailCards.kt$3</ID>
+    <ID>MagicNumber:StockDetailCards.kt$360.0</ID>
+    <ID>MagicNumber:StockDetailCards.kt$4</ID>
+    <ID>MagicNumber:StockDetailCards.kt$4f</ID>
+    <ID>MagicNumber:StockDetailCards.kt$90f</ID>
+    <ID>MagicNumber:StockDetailChart.kt$0.0001</ID>
+    <ID>MagicNumber:StockDetailChart.kt$0.03</ID>
+    <ID>MagicNumber:StockDetailChart.kt$0.075f</ID>
+    <ID>MagicNumber:StockDetailChart.kt$0.08f</ID>
+    <ID>MagicNumber:StockDetailChart.kt$0.15f</ID>
+    <ID>MagicNumber:StockDetailChart.kt$0.24f</ID>
+    <ID>MagicNumber:StockDetailChart.kt$0.25f</ID>
+    <ID>MagicNumber:StockDetailChart.kt$0.30f</ID>
+    <ID>MagicNumber:StockDetailChart.kt$0.32f</ID>
+    <ID>MagicNumber:StockDetailChart.kt$0.36f</ID>
+    <ID>MagicNumber:StockDetailChart.kt$0.38f</ID>
+    <ID>MagicNumber:StockDetailChart.kt$0.42f</ID>
+    <ID>MagicNumber:StockDetailChart.kt$0.46f</ID>
+    <ID>MagicNumber:StockDetailChart.kt$0.52f</ID>
+    <ID>MagicNumber:StockDetailChart.kt$0.57f</ID>
+    <ID>MagicNumber:StockDetailChart.kt$0.58f</ID>
+    <ID>MagicNumber:StockDetailChart.kt$0.5f</ID>
+    <ID>MagicNumber:StockDetailChart.kt$0.70f</ID>
+    <ID>MagicNumber:StockDetailChart.kt$0.727f</ID>
+    <ID>MagicNumber:StockDetailChart.kt$0.734f</ID>
+    <ID>MagicNumber:StockDetailChart.kt$0.75f</ID>
+    <ID>MagicNumber:StockDetailChart.kt$0.76f</ID>
+    <ID>MagicNumber:StockDetailChart.kt$0.94f</ID>
+    <ID>MagicNumber:StockDetailChart.kt$100.0</ID>
+    <ID>MagicNumber:StockDetailChart.kt$10f</ID>
+    <ID>MagicNumber:StockDetailChart.kt$14</ID>
+    <ID>MagicNumber:StockDetailChart.kt$16f</ID>
+    <ID>MagicNumber:StockDetailChart.kt$20</ID>
+    <ID>MagicNumber:StockDetailChart.kt$20f</ID>
+    <ID>MagicNumber:StockDetailChart.kt$28f</ID>
+    <ID>MagicNumber:StockDetailChart.kt$3</ID>
+    <ID>MagicNumber:StockDetailChart.kt$30.0</ID>
+    <ID>MagicNumber:StockDetailChart.kt$34f</ID>
+    <ID>MagicNumber:StockDetailChart.kt$3L</ID>
+    <ID>MagicNumber:StockDetailChart.kt$3f</ID>
+    <ID>MagicNumber:StockDetailChart.kt$4f</ID>
+    <ID>MagicNumber:StockDetailChart.kt$5</ID>
+    <ID>MagicNumber:StockDetailChart.kt$50.0</ID>
+    <ID>MagicNumber:StockDetailChart.kt$60</ID>
+    <ID>MagicNumber:StockDetailChart.kt$70.0</ID>
     <ID>MagicNumber:StockDetailInsightComponents.kt$0.04</ID>
     <ID>MagicNumber:StockDetailInsightComponents.kt$0.25</ID>
     <ID>MagicNumber:StockDetailInsightComponents.kt$0.75</ID>
@@ -1167,72 +1240,6 @@
     <ID>MagicNumber:StockDetailInsightComponents.kt$70.0</ID>
     <ID>MagicNumber:StockDetailInsightComponents.kt$72</ID>
     <ID>MagicNumber:StockDetailInsightComponents.kt$80</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0.0001</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0.03</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0.05</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0.075f</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0.08f</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0.10</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0.15</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0.15f</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0.20</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0.20f</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0.24f</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0.25</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0.25f</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0.30f</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0.32f</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0.36f</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0.38f</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0.40</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0.42f</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0.46f</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0.5</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0.52f</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0.57f</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0.58f</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0.5f</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0.70f</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0.727f</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0.734f</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0.75</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0.75f</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0.76f</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0.94f</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0xFF1469AD</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0xFF23A6A6</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0xFF2F80ED</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0xFF45CC96</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0xFF4CB9D6</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0xFFAD14D1</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0xFFD2D8E0</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0xFFE54868</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0xFFE9540A</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0xFFFF980A</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$0xFFFFD15A</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$10</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$100</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$100.0</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$10f</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$14</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$16f</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$20</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$200.0</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$20f</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$28f</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$3</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$30.0</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$34f</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$360.0</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$3L</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$3f</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$4</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$4f</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$5</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$50.0</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$60</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$70.0</ID>
-    <ID>MagicNumber:StockDetailScreenUi.kt$90f</ID>
     <ID>MagicNumber:StockDetailViewModel.kt$StockDetailViewModel$15</ID>
     <ID>MagicNumber:StockDetailViewModel.kt$StockDetailViewModel$150L</ID>
     <ID>MagicNumber:StockDetailViewModel.kt$StockDetailViewModel$180</ID>
@@ -1378,27 +1385,27 @@
     <ID>MaxLineLength:SectorThemesScreen.kt$Text(title, color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)</ID>
     <ID>MaxLineLength:SectorThemesScreen.kt$Text(value, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.ExtraBold, maxLines = 1, overflow = TextOverflow.Ellipsis)</ID>
     <ID>MaxLineLength:SectorThemesScreen.kt$return "$leaderText 이 ${sectorThemeDisplayLabel(theme.label)} 흐름을 이끌고 있습니다. $direction 인지, 상승 ${theme.risingCount}개와 하락 ${theme.fallingCount}개의 폭이 넓어지는지 확인하세요."</ID>
+    <ID>MaxLineLength:StockDetailCards.kt$"52주 위치" -&gt; rangePosition?.let { if (it &gt;= 0.75) DetailTone.Warning else DetailTone.Neutral } ?: DetailTone.Neutral</ID>
+    <ID>MaxLineLength:StockDetailCards.kt$"당일 흐름" -&gt; changePct?.let { if (it &gt;= 0.0) DetailTone.Positive else DetailTone.Negative } ?: DetailTone.Neutral</ID>
+    <ID>MaxLineLength:StockDetailCards.kt$LucideIconView(icon = if (comparisonSelected) LucideIcon.Check else LucideIcon.GitCompare, contentDescription = null, modifier = Modifier.size(16.dp))</ID>
+    <ID>MaxLineLength:StockDetailCards.kt$Text("업데이트 ${formattedUpdateTimestamp(it)}", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)</ID>
+    <ID>MaxLineLength:StockDetailCards.kt$Text(conclusion.detail, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)</ID>
+    <ID>MaxLineLength:StockDetailCards.kt$Text(conclusion.title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = toneColor(conclusion.tone))</ID>
+    <ID>MaxLineLength:StockDetailCards.kt$Text(detail, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)</ID>
+    <ID>MaxLineLength:StockDetailCards.kt$Text(metric.value, style = MaterialTheme.typography.titleSmall, color = toneColor(metric.tone), fontWeight = FontWeight.Bold, maxLines = 1)</ID>
+    <ID>MaxLineLength:StockDetailCards.kt$Text(value, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = valueColor ?: toneColor(tone), maxLines = 1)</ID>
+    <ID>MaxLineLength:StockDetailCards.kt$add(Triple("52주 위치", rangePosition?.let { "%.0f%%".format(it * 100) } ?: "-", rangePosition?.let { if (it &gt;= 0.75) "고점권" else if (it &lt;= 0.25) "저점권" else "중간권" } ?: "범위 데이터 없음"))</ID>
+    <ID>MaxLineLength:StockDetailCards.kt$normalizedRecommendation(info.recommendation)?.let { DetailMetric("컨센서스", it.replaceFirstChar { c -&gt; c.titlecase(Locale.US) }) }</ID>
+    <ID>MaxLineLength:StockDetailCards.kt$title = if (request.signals.any { it.tone == DetailTone.Warning || it.tone == DetailTone.Negative }) "ETF 조건 확인" else "ETF 추적 후보"</ID>
+    <ID>MaxLineLength:StockDetailCards.kt$tone = if (request.signals.any { it.tone == DetailTone.Warning || it.tone == DetailTone.Negative }) DetailTone.Warning else DetailTone.Primary</ID>
+    <ID>MaxLineLength:StockDetailChart.kt$Text(value, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.SemiBold)</ID>
     <ID>MaxLineLength:StockDetailInsightComponents.kt$Text("연결된 투자 가설", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)</ID>
     <ID>MaxLineLength:StockDetailInsightComponents.kt$Text(row.detail, color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall, lineHeight = 18.sp)</ID>
     <ID>MaxLineLength:StockDetailInsightComponents.kt$Text(row.title, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)</ID>
     <ID>MaxLineLength:StockDetailInsightComponents.kt$Text(thesisLine, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, lineHeight = 16.sp)</ID>
     <ID>MaxLineLength:StockDetailInsightComponents.kt$border = BorderStroke(1.dp, if (item.done) QuantGreen.copy(alpha = 0.22f) else MaterialTheme.colorScheme.outline.copy(alpha = 0.18f))</ID>
     <ID>MaxLineLength:StockDetailInsightComponents.kt$if</ID>
-    <ID>MaxLineLength:StockDetailScreenUi.kt$"52주 위치" -&gt; rangePosition?.let { if (it &gt;= 0.75) DetailTone.Warning else DetailTone.Neutral } ?: DetailTone.Neutral</ID>
-    <ID>MaxLineLength:StockDetailScreenUi.kt$"당일 흐름" -&gt; changePct?.let { if (it &gt;= 0.0) DetailTone.Positive else DetailTone.Negative } ?: DetailTone.Neutral</ID>
-    <ID>MaxLineLength:StockDetailScreenUi.kt$LucideIconView(icon = if (comparisonSelected) LucideIcon.Check else LucideIcon.GitCompare, contentDescription = null, modifier = Modifier.size(16.dp))</ID>
-    <ID>MaxLineLength:StockDetailScreenUi.kt$Text("업데이트 ${formattedUpdateTimestamp(it)}", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)</ID>
-    <ID>MaxLineLength:StockDetailScreenUi.kt$Text(conclusion.detail, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)</ID>
-    <ID>MaxLineLength:StockDetailScreenUi.kt$Text(conclusion.title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = toneColor(conclusion.tone))</ID>
     <ID>MaxLineLength:StockDetailScreenUi.kt$Text(description, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)</ID>
-    <ID>MaxLineLength:StockDetailScreenUi.kt$Text(detail, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)</ID>
-    <ID>MaxLineLength:StockDetailScreenUi.kt$Text(metric.value, style = MaterialTheme.typography.titleSmall, color = toneColor(metric.tone), fontWeight = FontWeight.Bold, maxLines = 1)</ID>
-    <ID>MaxLineLength:StockDetailScreenUi.kt$Text(value, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.SemiBold)</ID>
-    <ID>MaxLineLength:StockDetailScreenUi.kt$Text(value, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = valueColor ?: toneColor(tone), maxLines = 1)</ID>
-    <ID>MaxLineLength:StockDetailScreenUi.kt$add(Triple("52주 위치", rangePosition?.let { "%.0f%%".format(it * 100) } ?: "-", rangePosition?.let { if (it &gt;= 0.75) "고점권" else if (it &lt;= 0.25) "저점권" else "중간권" } ?: "범위 데이터 없음"))</ID>
-    <ID>MaxLineLength:StockDetailScreenUi.kt$normalizedRecommendation(info.recommendation)?.let { DetailMetric("컨센서스", it.replaceFirstChar { c -&gt; c.titlecase(Locale.US) }) }</ID>
-    <ID>MaxLineLength:StockDetailScreenUi.kt$title = if (request.signals.any { it.tone == DetailTone.Warning || it.tone == DetailTone.Negative }) "ETF 조건 확인" else "ETF 추적 후보"</ID>
-    <ID>MaxLineLength:StockDetailScreenUi.kt$tone = if (request.signals.any { it.tone == DetailTone.Warning || it.tone == DetailTone.Negative }) DetailTone.Warning else DetailTone.Primary</ID>
     <ID>MaxLineLength:WatchMetadataComponents.kt$Icon(Icons.Filled.CheckCircle, contentDescription = null, modifier = Modifier.size(14.dp), tint = MaterialTheme.colorScheme.primary)</ID>
     <ID>MaxLineLength:WatchMetadataComponents.kt$Text("${item.ticker} · ${item.market}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)</ID>
     <ID>MaxLineLength:WatchMetadataComponents.kt$Text(item.name, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)</ID>
@@ -1481,15 +1488,15 @@
     <ID>ReturnCount:SectorThemesViewModel.kt$SectorThemesViewModel$fun refreshSectorThemes( market: String = "ALL", force: Boolean = false, reloadExisting: Boolean = false, automatic: Boolean = false )</ID>
     <ID>ReturnCount:SmallCapRepository.kt$SmallCapRepository$private fun QBSmallCapStockModel.toDomain(): SmallCapStock?</ID>
     <ID>ReturnCount:SmallCapViewModel.kt$SmallCapViewModel$fun refreshSmallCap( market: Market, force: Boolean = false, automatic: Boolean = false )</ID>
+    <ID>ReturnCount:StockDetailCards.kt$@Composable internal fun RangeCard(info: StockInfo, currency: String)</ID>
+    <ID>ReturnCount:StockDetailCards.kt$internal fun DetailRequest.reconciledWithDetail(detail: StockDetail?): DetailRequest</ID>
+    <ID>ReturnCount:StockDetailCards.kt$internal fun detailDailyChangeAmount(info: StockInfo, current: Double, changePct: Double?): Double?</ID>
+    <ID>ReturnCount:StockDetailChart.kt$internal fun aggregateChartBucket(bucket: List&lt;PricePoint&gt;): PricePoint?</ID>
     <ID>ReturnCount:StockDetailInsightComponents.kt$internal fun stockValuationUnavailableReason(info: StockInfo?): String</ID>
     <ID>ReturnCount:StockDetailInsightComponents.kt$private fun decisionSummaryText(request: DetailRequest, detail: StockDetail?): String</ID>
     <ID>ReturnCount:StockDetailInsightComponents.kt$private fun detailOneThingToCheck( request: DetailRequest, detail: StockDetail?, watchItem: WatchlistItem?, comparisonSelected: Boolean ): NoBuyFirstRowModel</ID>
     <ID>ReturnCount:StockDetailInsightComponents.kt$private fun detailStillWorthReason( request: DetailRequest, detail: StockDetail? ): NoBuyFirstRowModel</ID>
     <ID>ReturnCount:StockDetailInsightComponents.kt$private fun earningsEventPlanRows(request: DetailRequest): List&lt;DetailActionPlanModel&gt;</ID>
-    <ID>ReturnCount:StockDetailScreenUi.kt$@Composable internal fun RangeCard(info: StockInfo, currency: String)</ID>
-    <ID>ReturnCount:StockDetailScreenUi.kt$internal fun DetailRequest.reconciledWithDetail(detail: StockDetail?): DetailRequest</ID>
-    <ID>ReturnCount:StockDetailScreenUi.kt$internal fun aggregateChartBucket(bucket: List&lt;PricePoint&gt;): PricePoint?</ID>
-    <ID>ReturnCount:StockDetailScreenUi.kt$internal fun detailDailyChangeAmount(info: StockInfo, current: Double, changePct: Double?): Double?</ID>
     <ID>ReturnCount:StockDetailViewModel.kt$StockDetailViewModel$private fun chartPeriodIsEnabled( period: ChartPeriod, historyPoints: List&lt;PricePoint&gt;, fetchedPeriod: ChartPeriod ): Boolean</ID>
     <ID>ReturnCount:StockDetailViewModel.kt$StockDetailViewModel$private fun historySpanDays(points: List&lt;PricePoint&gt;): Long</ID>
     <ID>ReturnCount:WatchScreen.kt$private fun QuantAppState.companyInsightFor(item: WatchlistItem): WatchCompanyInsight</ID>
@@ -1536,8 +1543,9 @@
     <ID>TooManyFunctions:SectorThemesScreen.kt$com.qubit.quantbridge.SectorThemesScreen.kt</ID>
     <ID>TooManyFunctions:SectorThemesViewModel.kt$SectorThemesViewModel : ViewModel</ID>
     <ID>TooManyFunctions:SecureTokenStore.kt$SecureTokenStore</ID>
+    <ID>TooManyFunctions:StockDetailCards.kt$com.qubit.quantbridge.StockDetailCards.kt</ID>
+    <ID>TooManyFunctions:StockDetailChart.kt$com.qubit.quantbridge.StockDetailChart.kt</ID>
     <ID>TooManyFunctions:StockDetailInsightComponents.kt$com.qubit.quantbridge.StockDetailInsightComponents.kt</ID>
-    <ID>TooManyFunctions:StockDetailScreenUi.kt$com.qubit.quantbridge.StockDetailScreenUi.kt</ID>
     <ID>TooManyFunctions:StockDetailViewModel.kt$StockDetailViewModel : ViewModel</ID>
     <ID>TooManyFunctions:StrategyRepository.kt$StrategyRepository</ID>
     <ID>TooManyFunctions:UxComponents.kt$com.qubit.quantbridge.UxComponents.kt</ID>

@@ -67,6 +67,52 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    // Optional release signing via local.properties / env (never commit keystore secrets).
+    // local.properties keys: QUANT_RELEASE_STORE_FILE, QUANT_RELEASE_STORE_PASSWORD,
+    // QUANT_RELEASE_KEY_ALIAS, QUANT_RELEASE_KEY_PASSWORD
+    // env fallbacks: QUANT_RELEASE_STORE_FILE, QUANT_RELEASE_STORE_PASSWORD,
+    // QUANT_RELEASE_KEY_ALIAS, QUANT_RELEASE_KEY_PASSWORD
+    val releaseStoreFilePath = providers.gradleProperty("QUANT_RELEASE_STORE_FILE")
+        .orElse(providers.environmentVariable("QUANT_RELEASE_STORE_FILE"))
+        .orElse(localProperties.getProperty("QUANT_RELEASE_STORE_FILE") ?: "")
+        .orNull
+        ?.trim()
+        .orEmpty()
+    val releaseStorePassword = providers.gradleProperty("QUANT_RELEASE_STORE_PASSWORD")
+        .orElse(providers.environmentVariable("QUANT_RELEASE_STORE_PASSWORD"))
+        .orElse(localProperties.getProperty("QUANT_RELEASE_STORE_PASSWORD") ?: "")
+        .orNull
+        ?.trim()
+        .orEmpty()
+    val releaseKeyAlias = providers.gradleProperty("QUANT_RELEASE_KEY_ALIAS")
+        .orElse(providers.environmentVariable("QUANT_RELEASE_KEY_ALIAS"))
+        .orElse(localProperties.getProperty("QUANT_RELEASE_KEY_ALIAS") ?: "")
+        .orNull
+        ?.trim()
+        .orEmpty()
+    val releaseKeyPassword = providers.gradleProperty("QUANT_RELEASE_KEY_PASSWORD")
+        .orElse(providers.environmentVariable("QUANT_RELEASE_KEY_PASSWORD"))
+        .orElse(localProperties.getProperty("QUANT_RELEASE_KEY_PASSWORD") ?: "")
+        .orNull
+        ?.trim()
+        .orEmpty()
+    val hasReleaseSigning = releaseStoreFilePath.isNotEmpty() &&
+        releaseStorePassword.isNotEmpty() &&
+        releaseKeyAlias.isNotEmpty() &&
+        releaseKeyPassword.isNotEmpty() &&
+        file(releaseStoreFilePath).isFile
+
+    signingConfigs {
+        if (hasReleaseSigning) {
+            create("release") {
+                storeFile = file(releaseStoreFilePath)
+                storePassword = releaseStorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
+            }
+        }
+    }
+
     buildTypes {
         debug {
             manifestPlaceholders["networkSecurityConfig"] = "@xml/network_security_config_debug"
@@ -84,6 +130,9 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            if (hasReleaseSigning) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
     compileOptions {
@@ -145,6 +194,8 @@ dependencies {
 }
 
 tasks.withType<Detekt>().configureEach {
+    // Avoid Gradle configuration-cache / ordering races when baseline is regenerated.
+    mustRunAfter("detektBaseline")
     exclude("**/generated/**")
     reports {
         html.required.set(true)

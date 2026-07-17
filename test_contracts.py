@@ -146,6 +146,8 @@ class WiringContractTests(unittest.TestCase):
                 read("android/app/src/main/java/com/qubit/quantbridge/screens/AccountScreenUi.kt"),
                 read("android/app/src/main/java/com/qubit/quantbridge/screens/AnalysisListComponents.kt"),
                 read("android/app/src/main/java/com/qubit/quantbridge/screens/StockDetailScreenUi.kt"),
+                read("android/app/src/main/java/com/qubit/quantbridge/screens/StockDetailCards.kt"),
+                read("android/app/src/main/java/com/qubit/quantbridge/screens/StockDetailChart.kt"),
                 read("android/app/src/main/java/com/qubit/quantbridge/screens/AppSharedUiComponents.kt"),
                 read("android/app/src/main/java/com/qubit/quantbridge/screens/AppScreenHelpers.kt"),
                 read("android/app/src/main/java/com/qubit/quantbridge/screens/NewsScreen.kt"),

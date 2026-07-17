@@ -148,9 +148,13 @@ ios-build:
 	xcodebuild -project "Stock Analysis/Stock Analysis.xcodeproj" -scheme "Stock Analysis" -configuration Debug -destination "generic/platform=iOS Simulator" CODE_SIGNING_ALLOWED=NO build
 
 ios-test:
+	@dest=$$(xcrun simctl list devices available 2>/dev/null | sed -n 's/.*\(iPhone[^()]*\) (.*/\1/p' | sed 's/[[:space:]]*$$//' | head -1); \
+	if [ -z "$$dest" ]; then dest="generic/platform=iOS Simulator"; \
+	else dest="platform=iOS Simulator,name=$$dest"; fi; \
+	echo "Using iOS test destination: $$dest"; \
 	xcodebuild test -project "Stock Analysis/Stock Analysis.xcodeproj" \
 		-scheme "Stock Analysis" \
-		-destination "platform=iOS Simulator,name=iPhone 15" \
+		-destination "$$dest" \
 		-enableCodeCoverage YES
 
 android-build:

@@ -32,6 +32,18 @@ make export-public-dry
 - Public export helper: `make export-public` writes a secret-free tree to
   `../quantbridge-public-clean`
 
+## Android Release Signing
+
+Release builds are unsigned unless local signing credentials are provided.
+Copy keys into `android/local.properties` using the template comments in
+`android/signing.example.properties`, then:
+
+```bash
+cd android && ./gradlew :app:assembleRelease
+```
+
+Never commit the keystore or passwords.
+
 ## Quality Research Data Lakes
 
 Build a free local SEC CompanyFacts lake for multi-year US quality features:
