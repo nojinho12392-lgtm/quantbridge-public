@@ -201,7 +201,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-private fun QubitScrollEffects(content: @Composable () -> Unit) {
+internal fun QubitScrollEffects(content: @Composable () -> Unit) {
     val overscrollFactory = rememberPlatformOverscrollFactory(
         glowColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.18f)
     )
@@ -223,24 +223,24 @@ private suspend fun PagerState.navigateToMainPage(page: Int) {
     }
 }
 
-private val QuantRouteEasing = CubicBezierEasing(0.20f, 0.00f, 0.00f, 1.00f)
-private const val QUANT_ROUTE_ENTER_MS = 260
-private const val QUANT_ROUTE_EXIT_MS = 210
-private const val QUANT_ROUTE_FADE_MS = 160
-private const val DETAIL_PRICE_AUTO_REFRESH_MS = 300_000L
+internal val QuantRouteEasing = CubicBezierEasing(0.20f, 0.00f, 0.00f, 1.00f)
+internal const val QUANT_ROUTE_ENTER_MS = 260
+internal const val QUANT_ROUTE_EXIT_MS = 210
+internal const val QUANT_ROUTE_FADE_MS = 160
+internal const val DETAIL_PRICE_AUTO_REFRESH_MS = 300_000L
 
-private enum class RootSurfaceType {
+internal enum class RootSurfaceType {
     Main,
     MarketIndicators
 }
 
-private data class RootSurfaceState(
+internal data class RootSurfaceState(
     val type: RootSurfaceType
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun QubitApp() {
+internal fun QubitApp() {
     val context = LocalContext.current
     val app = remember { QuantAppState(context.applicationContext) }
     val accountViewModel: AccountViewModel = hiltViewModel()
@@ -597,7 +597,7 @@ private fun QubitApp() {
 }
 
 @Composable
-private fun QubitStartupSplash() {
+internal fun QubitStartupSplash() {
     var showSignature by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -638,7 +638,7 @@ private fun QubitStartupSplash() {
 }
 
 @Composable
-private fun FloatingBottomNav(
+internal fun FloatingBottomNav(
     tabs: List<AppTab>,
     selectedTab: AppTab,
     onTabSelected: (AppTab) -> Unit,
@@ -719,7 +719,7 @@ private fun FloatingBottomNav(
 }
 
 @Composable
-private fun CompactAppBar(
+internal fun CompactAppBar(
     title: String,
     indices: List<MarketIndexQuote>,
     showSearchAction: Boolean,
@@ -801,7 +801,7 @@ private fun CompactAppBar(
 }
 
 @Composable
-private fun MarketIndexTicker(
+internal fun MarketIndexTicker(
     indices: List<MarketIndexQuote>,
     modifier: Modifier = Modifier
 ) {
@@ -845,7 +845,7 @@ private fun MarketIndexTicker(
 }
 
 @Composable
-private fun MarketIndexTickerContent(
+internal fun MarketIndexTickerContent(
     quote: MarketIndexQuote,
     modifier: Modifier = Modifier
 ) {
@@ -882,7 +882,7 @@ private fun MarketIndexTickerContent(
     }
 }
 
-private fun marketTickerName(quote: MarketIndexQuote): String = when (quote.symbol) {
+internal fun marketTickerName(quote: MarketIndexQuote): String = when (quote.symbol) {
     "^IXIC" -> "NASDAQ"
     "^GSPC" -> "S&P 500"
     "^KS11" -> "KOSPI"
@@ -890,685 +890,12 @@ private fun marketTickerName(quote: MarketIndexQuote): String = when (quote.symb
     else -> quote.label
 }
 
-private fun marketTickerValueText(value: Double): String {
+internal fun marketTickerValueText(value: Double): String {
     return when {
         !value.isFinite() -> "-"
         abs(value) >= 1_000.0 -> String.format(Locale.US, "%,.2f", value)
         abs(value) >= 100.0 -> String.format(Locale.US, "%.2f", value)
         abs(value) >= 1.0 -> String.format(Locale.US, "%.3f", value)
         else -> String.format(Locale.US, "%.4f", value)
-    }
-}
-
-private enum class MarketIndicatorCategory(val apiValue: String, val label: String) {
-    IndexFx("index_fx", "지수·환율"),
-    Bond("bond", "채권"),
-    Commodity("commodity", "원자재"),
-    Crypto("crypto", "가상자산")
-}
-
-private enum class MarketIndicatorRegion(val apiValue: String, val label: String) {
-    All("all", "전체"),
-    Domestic("domestic", "국내"),
-    Overseas("overseas", "해외")
-}
-
-@Composable
-private fun <T> IndicatorSegmentSwitch(
-    options: List<T>,
-    selected: T,
-    label: (T) -> String,
-    onSelect: (T) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(10.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.74f),
-        tonalElevation = 0.dp,
-        shadowElevation = 0.dp
-    ) {
-        Row(
-            modifier = Modifier.padding(4.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            options.forEach { item ->
-                val isSelected = selected == item
-                Surface(
-                    modifier = Modifier
-                        .weight(1f)
-                        .clip(RoundedCornerShape(8.dp))
-                        .clickable { onSelect(item) },
-                    shape = RoundedCornerShape(8.dp),
-                    color = if (isSelected) MaterialTheme.colorScheme.surface else Color.Transparent,
-                    tonalElevation = 0.dp,
-                    shadowElevation = 0.dp
-                ) {
-                    Text(
-                        label(item),
-                        modifier = Modifier.padding(vertical = 10.dp),
-                        color = if (isSelected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        textAlign = TextAlign.Center,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun MarketIndicatorsScreen(
-    app: QuantAppState,
-    onBack: () -> Unit,
-    marketIndicatorsViewModel: MarketIndicatorsViewModel = hiltViewModel()
-) {
-    val scope = rememberCoroutineScope()
-    var category by remember { mutableStateOf(MarketIndicatorCategory.IndexFx) }
-    var region by remember { mutableStateOf(MarketIndicatorRegion.All) }
-    val showRegionFilter = category == MarketIndicatorCategory.IndexFx || category == MarketIndicatorCategory.Bond
-    val indicatorQuotes = marketIndicatorsViewModel.marketIndicators
-    val indicatorHistory = marketIndicatorsViewModel.marketIndicatorHistory
-
-    LaunchedEffect(category) {
-        if (indicatorQuotes.none { it.category == category.apiValue } && !marketIndicatorsViewModel.loading) {
-            marketIndicatorsViewModel.refreshMarketIndicators(category = category.apiValue)
-        }
-        if (indicatorQuotes.any { isMarketSessionOpen(it, Instant.now()) }) {
-            marketIndicatorsViewModel.refreshMarketIndicators(refresh = true, category = category.apiValue)
-        }
-    }
-
-    LaunchedEffect(category) {
-        while (true) {
-            delay(60_000)
-            val now = Instant.now()
-            if (marketIndicatorsViewModel.marketIndicators.any { isMarketSessionOpen(it, now) }) {
-                marketIndicatorsViewModel.refreshMarketIndicators(category = category.apiValue, automatic = true)
-            }
-        }
-    }
-
-    val filtered = remember(indicatorQuotes, category, region) {
-        indicatorQuotes.filter { item ->
-            item.category == category.apiValue &&
-                (!showRegionFilter || region == MarketIndicatorRegion.All || item.region == region.apiValue)
-        }
-    }
-
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
-            Surface(color = MaterialTheme.colorScheme.background) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .windowInsetsPadding(WindowInsets.statusBars)
-                        .height(56.dp)
-                        .padding(horizontal = 6.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "뒤로")
-                    }
-                    Text(
-                        "주요 지수",
-                        modifier = Modifier.weight(1f),
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                    IconButton(onClick = {
-                        marketIndicatorsViewModel.refreshMarketIndicators(refresh = true, category = category.apiValue)
-                    }) {
-                        Icon(Icons.Filled.Refresh, contentDescription = "새로고침")
-                    }
-                }
-            }
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-        ) {
-            IndicatorSegmentSwitch(
-                options = MarketIndicatorCategory.entries,
-                selected = category,
-                label = { it.label },
-                onSelect = { category = it },
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
-            )
-
-            if (showRegionFilter) {
-                IndicatorSegmentSwitch(
-                    options = MarketIndicatorRegion.entries,
-                    selected = region,
-                    label = { it.label },
-                    onSelect = { region = it },
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
-                )
-            }
-
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                if (filtered.isEmpty()) {
-                    item {
-                        MarketIndicatorEmptyState(
-                            loading = marketIndicatorsViewModel.loading,
-                            error = marketIndicatorsViewModel.error,
-                            category = category,
-                            region = if (showRegionFilter) region else null,
-                            onRetry = {
-                                marketIndicatorsViewModel.refreshMarketIndicators(refresh = true, category = category.apiValue)
-                            }
-                        )
-                    }
-                }
-                items(filtered, key = { it.symbol }) { item ->
-                    MarketIndicatorRow(
-                        item = item,
-                        points = indicatorHistory[item.symbol].orEmpty(),
-                        watched = app.isWatched(item.symbol),
-                        onWatchToggle = {
-                            scope.launchSafely { app.toggleWatch(marketIndicatorWatchItem(item)) }
-                        }
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun MarketIndicatorEmptyState(
-    loading: Boolean,
-    error: String?,
-    category: MarketIndicatorCategory,
-    region: MarketIndicatorRegion?,
-    onRetry: () -> Unit
-) {
-    val title = when {
-        loading -> "주요 지수 로딩 중"
-        error != null -> "지수 데이터를 불러오지 못했습니다"
-        else -> "표시할 지수 없음"
-    }
-    val detail = when {
-        loading -> "${category.label} 데이터를 확인하고 있습니다."
-        error != null -> error
-        region != null -> "${category.label} · ${region.label} 조건에 맞는 지수가 없습니다."
-        else -> "${category.label} 조건에 맞는 지수가 없습니다."
-    }
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 16.dp),
-        shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.45f)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(18.dp),
-            verticalArrangement = Arrangement.spacedBy(9.dp),
-            horizontalAlignment = Alignment.Start
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                if (loading) {
-                    CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
-                } else {
-                    Icon(
-                        Icons.Filled.AutoGraph,
-                        contentDescription = null,
-                        tint = if (error == null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-                Text(
-                    title,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-            }
-            Text(
-                detail,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            if (!loading) {
-                OutlinedButton(onClick = onRetry) {
-                    Icon(Icons.Filled.Refresh, contentDescription = null, modifier = Modifier.size(16.dp))
-                    Spacer(Modifier.width(6.dp))
-                    Text("새로고침")
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun MarketIndicatorRow(
-    item: MarketIndicatorQuote,
-    points: List<MarketIndicatorPoint>,
-    watched: Boolean,
-    onWatchToggle: () -> Unit
-) {
-    val positive = (item.changePct ?: 0.0) >= 0.0
-    val color = if (positive) QuantPositive else QuantNegative
-    val chartPoints = remember(item, points) {
-        displayMarketIndicatorPoints(item, points)
-    }
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        IndicatorSparkline(
-            item = item,
-            points = chartPoints,
-            color = color,
-            modifier = Modifier.size(width = 86.dp, height = 58.dp)
-        )
-        Spacer(Modifier.width(16.dp))
-        Column(Modifier.weight(1f)) {
-            Text(
-                item.label,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Spacer(Modifier.height(5.dp))
-            Row(verticalAlignment = Alignment.Bottom) {
-                Text(
-                    indicatorValueText(item.value),
-                    color = color,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 1
-                )
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    "${signedNumber(item.changeAbs)} (${pct(item.changePct)})",
-                    color = color,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-        }
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-                .quantClickable(role = QuantPressRole.Icon, onClick = onWatchToggle),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                if (watched) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                contentDescription = if (watched) "관심 지수 삭제" else "관심 지수 추가",
-                tint = if (watched) QuantFavorite else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.45f),
-                modifier = Modifier.size(30.dp)
-            )
-        }
-    }
-}
-
-@Composable
-fun IndicatorSparkline(
-    item: MarketIndicatorQuote,
-    points: List<MarketIndicatorPoint>,
-    color: Color,
-    modifier: Modifier = Modifier
-) {
-    val samples = remember(item, points) { sparklineSamples(item, points) }
-    val values = remember(samples) { samples.map { it.close }.filter { it.isFinite() } }
-    var now by remember { mutableStateOf(Instant.now()) }
-    LaunchedEffect(item.symbol) {
-        while (true) {
-            now = Instant.now()
-            delay(30_000)
-        }
-    }
-    val showLiveEndpoint = remember(item.symbol, samples, now) {
-        shouldShowLiveEndpoint(item, samples, now)
-    }
-    val endpointPulse by rememberInfiniteTransition(label = "indicatorEndpointPulse").animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1_150),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "indicatorEndpointHalo"
-    )
-    Canvas(modifier) {
-        val referenceClose = previousClose(item)
-        val domainValues = values + listOf(item.value).filter { it.isFinite() }
-        val domain = sparklineDomain(domainValues, referenceClose)
-        fun yPosition(value: Double): Float {
-            val span = max(domain.second - domain.first, 0.0001)
-            val usableHeight = max(size.height - 8.dp.toPx(), 1f)
-            return size.height - (((value - domain.first) / span).toFloat() * usableHeight) - 4.dp.toPx()
-        }
-        val baselineY = referenceClose?.let(::yPosition) ?: (size.height * 0.72f)
-        drawLine(
-            color = color.copy(alpha = 0.14f),
-            start = Offset(0f, baselineY),
-            end = Offset(size.width, baselineY),
-            strokeWidth = 1.dp.toPx()
-        )
-
-        if (samples.size == 1) {
-            val sample = samples.first()
-            val x = sample.progress.coerceIn(0f, 1f) * size.width
-            val y = yPosition(sample.close)
-            drawCircle(color = color, radius = 2.4.dp.toPx(), center = Offset(x, y))
-            return@Canvas
-        }
-
-        if (values.size < 2) {
-            drawLine(
-                color = color.copy(alpha = 0.45f),
-                start = Offset(0f, baselineY),
-                end = Offset(size.width, baselineY),
-                strokeWidth = 1.5.dp.toPx(),
-                cap = StrokeCap.Round
-            )
-            return@Canvas
-        }
-
-        val line = Path()
-        val fill = Path()
-        var lastX = 0f
-        var lastPoint: Offset? = null
-        val fillAnchorY = sparklineFillAnchorY(
-            samples = samples,
-            referenceClose = referenceClose,
-            baselineY = baselineY,
-            chartBottom = size.height
-        )
-
-        samples.forEachIndexed { index, sample ->
-            val value = sample.close
-            val x = sample.progress.coerceIn(0f, 1f) * size.width
-            lastX = x
-            val y = yPosition(value)
-            lastPoint = Offset(x, y)
-            if (index == 0) {
-                line.moveTo(x, y)
-                fill.moveTo(x, fillAnchorY)
-                fill.lineTo(x, y)
-            } else {
-                line.lineTo(x, y)
-                fill.lineTo(x, y)
-            }
-        }
-        fill.lineTo(lastX, fillAnchorY)
-        fill.close()
-
-        drawPath(
-            fill,
-            brush = Brush.verticalGradient(
-                colors = listOf(color.copy(alpha = 0.14f), color.copy(alpha = 0.01f))
-            )
-        )
-        drawPath(line, color = color, style = Stroke(width = 1.55.dp.toPx(), cap = StrokeCap.Round))
-        if (showLiveEndpoint) {
-            lastPoint?.let { point ->
-                val haloRadius = (5.0f + 3.3f * endpointPulse).dp.toPx()
-                val haloAlpha = 0.22f - 0.07f * endpointPulse
-                drawCircle(color = color.copy(alpha = haloAlpha), radius = haloRadius, center = point)
-                drawCircle(color = color, radius = 3.1.dp.toPx(), center = point)
-            }
-        }
-    }
-}
-
-private data class SparklineSample(
-    val close: Double,
-    val progress: Float,
-    val instant: Instant?
-)
-
-private const val INDICATOR_SPARKLINE_MAX_SAMPLE_COUNT = 48
-private const val INDICATOR_SPARKLINE_MIN_RELATIVE_SPAN = 0.024
-private const val INDICATOR_SPARKLINE_PADDING_RATIO = 0.10
-
-private fun previousClose(item: MarketIndicatorQuote): Double? {
-    val changeAbs = item.changeAbs
-    if (item.value.isFinite() && changeAbs != null && changeAbs.isFinite()) {
-        return item.value - changeAbs
-    }
-    val changePct = item.changePct
-    if (item.value.isFinite() && changePct != null && changePct.isFinite() && changePct > -0.9999) {
-        return item.value / (1.0 + changePct)
-    }
-    return null
-}
-
-private fun sparklineDomain(values: List<Double>, referenceClose: Double?): Pair<Double, Double> {
-    val clean = values.filter { it.isFinite() } + listOfNotNull(referenceClose).filter { it.isFinite() }
-    val minValue = clean.minOrNull() ?: return 0.0 to 1.0
-    val maxValue = clean.maxOrNull() ?: return 0.0 to 1.0
-    val anchor = clean.firstOrNull { it.isFinite() && abs(it) > 0.0001 } ?: max(abs(maxValue), 1.0)
-    val minimumSpan = max(abs(anchor) * INDICATOR_SPARKLINE_MIN_RELATIVE_SPAN, 0.0001)
-    val spread = max(maxValue - minValue, minimumSpan)
-    val midpoint = (minValue + maxValue) / 2.0
-    val padding = spread * INDICATOR_SPARKLINE_PADDING_RATIO
-    return (midpoint - spread / 2.0 - padding) to (midpoint + spread / 2.0 + padding)
-}
-
-private fun sparklineFillAnchorY(
-    samples: List<SparklineSample>,
-    referenceClose: Double?,
-    baselineY: Float,
-    chartBottom: Float
-): Float {
-    return chartBottom
-}
-
-private data class MarketSession(
-    val zone: ZoneId,
-    val start: LocalTime,
-    val end: LocalTime
-)
-
-private val fallbackSparklineProgress = listOf(0f, 0.18f, 0.33f, 0.48f, 0.62f, 0.78f, 1f)
-
-private fun sparklineSamples(
-    item: MarketIndicatorQuote,
-    points: List<MarketIndicatorPoint>
-): List<SparklineSample> {
-    val clean = stableMarketIndicatorPoints(points, item)
-    if (clean.isEmpty()) return emptyList()
-
-    val session = marketSessionFor(item)
-    if (session != null) {
-        val rawSessionSamples = clean.mapNotNull { point ->
-            val instant = parseMarketInstant(point.timestamp) ?: return@mapNotNull null
-            val progress = sessionProgress(instant, session) ?: return@mapNotNull null
-            SparklineSample(
-                close = point.close,
-                progress = progress,
-                instant = instant
-            )
-        }
-        val latestSessionDate = rawSessionSamples
-            .mapNotNull { sample -> sample.instant?.atZone(session.zone)?.toLocalDate() }
-            .maxOrNull()
-        val sessionSamples = rawSessionSamples
-            .filter { sample ->
-                latestSessionDate == null || sample.instant?.atZone(session.zone)?.toLocalDate() == latestSessionDate
-            }
-            .sortedBy { it.progress }
-        val now = Instant.now()
-        if (isMarketSessionOpen(item, now) && latestSessionDate != now.atZone(session.zone).toLocalDate()) {
-            fallbackSessionSamples(item, session, now)?.let { return it }
-        }
-        if (hasUsableTimeline(sessionSamples)) {
-            return downsampleSparklineSamples(sessionSamples)
-        }
-    }
-
-    return indexedSparklineSamples(clean)
-}
-
-private fun fallbackSessionSamples(
-    item: MarketIndicatorQuote,
-    session: MarketSession,
-    now: Instant
-): List<SparklineSample>? {
-    val points = stableMarketIndicatorPoints(fallbackMarketIndicatorPoints(item), item)
-    if (points.isEmpty()) return null
-
-    val interval = marketSessionInterval(now, session)
-    if (now.isBefore(interval.first) || now.isAfter(interval.second)) return null
-    val progressCap = (sessionProgress(now, session) ?: return null).coerceAtLeast(0.01f)
-    val totalMillis = (interval.second.toEpochMilli() - interval.first.toEpochMilli()).coerceAtLeast(1L)
-    val denominator = (points.size - 1).coerceAtLeast(1)
-    val samples = points.mapIndexed { index, point ->
-        val baseProgress = fallbackSparklineProgress.getOrElse(index) {
-            index.toFloat() / denominator
-        }
-        val progress = (baseProgress * progressCap).coerceIn(0f, 1f)
-        SparklineSample(
-            close = point.close,
-            progress = progress,
-            instant = interval.first.plusMillis((totalMillis * progress).roundToLong())
-        )
-    }
-    return if (hasUsableTimeline(samples)) downsampleSparklineSamples(samples) else null
-}
-
-private fun indexedSparklineSamples(points: List<MarketIndicatorPoint>): List<SparklineSample> {
-    val clean = points.filter { it.close.isFinite() }
-    if (clean.size == 1) {
-        return listOf(SparklineSample(clean.first().close, 0f, parseMarketInstant(clean.first().timestamp)))
-    }
-    val samples = clean.mapIndexed { index, point ->
-        SparklineSample(
-            close = point.close,
-            progress = index.toFloat() / (clean.size - 1).coerceAtLeast(1),
-            instant = parseMarketInstant(point.timestamp)
-        )
-    }
-    return downsampleSparklineSamples(samples)
-}
-
-private fun downsampleSparklineSamples(samples: List<SparklineSample>): List<SparklineSample> {
-    if (samples.size <= INDICATOR_SPARKLINE_MAX_SAMPLE_COUNT || INDICATOR_SPARKLINE_MAX_SAMPLE_COUNT <= 1) {
-        return samples
-    }
-
-    val lastIndex = samples.lastIndex
-    val targetLastIndex = INDICATOR_SPARKLINE_MAX_SAMPLE_COUNT - 1
-    val output = ArrayList<SparklineSample>(INDICATOR_SPARKLINE_MAX_SAMPLE_COUNT)
-
-    for (targetIndex in 0..targetLastIndex) {
-        val sourceIndex = ((targetIndex.toDouble() * lastIndex.toDouble()) / targetLastIndex.toDouble())
-            .toInt()
-            .coerceIn(0, lastIndex)
-        val sample = samples[sourceIndex]
-        if (output.lastOrNull() != sample) {
-            output.add(sample)
-        }
-    }
-
-    val last = samples.last()
-    if (output.lastOrNull() != last) {
-        output.add(last)
-    }
-    return output
-}
-
-private fun hasUsableTimeline(samples: List<SparklineSample>): Boolean {
-    if (samples.size <= 1) return samples.isNotEmpty()
-    val distinctProgressCount = samples
-        .map { it.progress }
-        .fold(mutableListOf<Float>()) { distinct, progress ->
-            if (distinct.none { abs(it - progress) < 0.0001f }) {
-                distinct.add(progress)
-            }
-            distinct
-        }
-        .size
-    return distinctProgressCount >= min(2, samples.size)
-}
-
-private fun marketSessionFor(item: MarketIndicatorQuote): MarketSession? {
-    return when (item.symbol.uppercase(Locale.US)) {
-        "^IXIC", "NQ=F", "^GSPC", "ES=F", "RTY=F", "^DJI", "^SOX", "^VIX" -> MarketSession(
-            zone = ZoneId.of("America/New_York"),
-            start = LocalTime.of(9, 30),
-            end = LocalTime.of(16, 0)
-        )
-        "^KS11", "^KQ11" -> MarketSession(
-            zone = ZoneId.of("Asia/Seoul"),
-            start = LocalTime.of(9, 0),
-            end = LocalTime.of(15, 30)
-        )
-        else -> null
-    }
-}
-
-private fun sessionProgress(instant: Instant, session: MarketSession): Float? {
-    val (start, end) = marketSessionInterval(instant, session)
-    if (instant.isBefore(start) || instant.isAfter(end)) return null
-    val totalMillis = (end.toEpochMilli() - start.toEpochMilli()).coerceAtLeast(1L)
-    val elapsedMillis = instant.toEpochMilli() - start.toEpochMilli()
-    return (elapsedMillis.toDouble() / totalMillis.toDouble()).toFloat().coerceIn(0f, 1f)
-}
-
-private fun marketSessionInterval(instant: Instant, session: MarketSession): Pair<Instant, Instant> {
-    val local = instant.atZone(session.zone)
-    val start = ZonedDateTime.of(local.toLocalDate(), session.start, session.zone).toInstant()
-    val end = ZonedDateTime.of(local.toLocalDate(), session.end, session.zone).toInstant()
-    return start to end
-}
-
-private fun shouldShowLiveEndpoint(
-    item: MarketIndicatorQuote,
-    samples: List<SparklineSample>,
-    now: Instant
-): Boolean {
-    val session = marketSessionFor(item) ?: return false
-    val lastInstant = samples.lastOrNull()?.instant ?: return false
-    if (!isMarketSessionOpen(item, now)) return false
-    if (lastInstant.atZone(session.zone).toLocalDate() != now.atZone(session.zone).toLocalDate()) return false
-    val ageMillis = now.toEpochMilli() - lastInstant.toEpochMilli()
-    return ageMillis in -60_000L..(2 * 60 * 60 * 1000L)
-}
-
-private fun isMarketSessionOpen(item: MarketIndicatorQuote, now: Instant = Instant.now()): Boolean {
-    val session = marketSessionFor(item) ?: return false
-    val local = now.atZone(session.zone)
-    if (local.dayOfWeek.value !in 1..5) return false
-    val start = ZonedDateTime.of(local.toLocalDate(), session.start, session.zone)
-    val end = ZonedDateTime.of(local.toLocalDate(), session.end, session.zone)
-    return !now.isBefore(start.toInstant()) && !now.isAfter(end.toInstant())
-}
-
-fun parseMarketInstant(raw: String): Instant? {
-    if (raw.isBlank()) return null
-    return try {
-        OffsetDateTime.parse(raw).toInstant()
-    } catch (_: DateTimeParseException) {
-        runCatching { Instant.parse(raw) }.getOrNull()
     }
 }
