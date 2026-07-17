@@ -80,68 +80,103 @@ import java.util.Locale
 import kotlinx.coroutines.delay
 
 @Composable
-internal fun WatchPriorityQueueCard(
-    items: List<WatchPriorityItem>,
-    itemCount: Int,
-    loading: Boolean,
-    onOpen: (WatchlistItem) -> Unit,
-    onRefresh: () -> Unit
-) {
-    val visibleItems = items.take(3)
-    val urgentCount = items.count { it.insight.priority >= 3 }
-    val summary = when {
-        visibleItems.isEmpty() && loading -> "관심 항목의 후보, 실적, 가격 데이터를 맞추고 있습니다."
-        visibleItems.isEmpty() -> "큰 변화가 없으면 감시만 유지합니다."
-        urgentCount > 0 -> "지금 확인할 신호 ${urgentCount}개"
-        else -> "가격, 실적, 후보 신호가 큰 항목부터 정렬했습니다."
-    }
-
+internal fun WatchJudgmentTimelineCard(items: List<WatchJudgmentTimelineItem>) {
     WatchCard {
-        Row(
-            verticalAlignment = Alignment.Top,
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
-                Text(
-                    "오늘 확인할 관심 3개",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 1
-                )
-                Text(
-                    summary,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-            IconButton(onClick = onRefresh, modifier = Modifier.size(38.dp)) {
-                if (loading) {
-                    CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
-                } else {
-                    LucideIconView(
-                        icon = LucideIcon.RefreshCw,
-                        contentDescription = "오늘 확인할 관심 새로고침",
-                        modifier = Modifier.size(19.dp),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            LucideIconView(
+                icon = LucideIcon.Bell,
+                contentDescription = null,
+                modifier = Modifier.size(17.dp),
+                tint = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                "판단 업데이트 타임라인",
+                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                "${items.size}개",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1
+            )
+        }
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            items.take(6).forEach { item ->
+                WatchJudgmentTimelineRow(item)
             }
         }
+    }
+}
 
-        if (visibleItems.isEmpty()) {
-            WatchPriorityEmptyState(itemCount = itemCount, loading = loading)
-        } else {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                visibleItems.forEach { priorityItem ->
-                    WatchPriorityRow(
-                        priorityItem = priorityItem,
-                        onOpen = { onOpen(priorityItem.item) }
-                    )
-                }
+@Composable
+internal fun WatchJudgmentTimelineRow(item: WatchJudgmentTimelineItem) {
+    val timeText = item.recordedAtMillis?.let {
+        DateUtils.getRelativeTimeSpanString(
+            it,
+            System.currentTimeMillis(),
+            DateUtils.MINUTE_IN_MILLIS,
+            DateUtils.FORMAT_ABBREV_RELATIVE
+        ).toString()
+    } ?: "현재"
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.58f))
+            .semantics(mergeDescendants = true) {
+                contentDescription = "${item.title}. ${item.detail}. $timeText"
             }
+            .padding(10.dp),
+        verticalAlignment = Alignment.Top,
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(top = 7.dp)
+                .size(9.dp)
+                .clip(CircleShape)
+                .background(item.color)
+        )
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                Text(
+                    item.title,
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    timeText,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 1
+                )
+            }
+            Text(
+                item.detail,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                lineHeight = 18.sp,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                item.source,
+                style = MaterialTheme.typography.labelSmall,
+                color = item.color,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1
+            )
         }
     }
 }

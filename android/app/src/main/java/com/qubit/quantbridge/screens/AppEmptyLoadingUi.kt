@@ -1,0 +1,269 @@
+package com.qubit.quantbridge
+
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
+import com.qubit.quantbridge.ui.theme.QuantFavorite
+import com.qubit.quantbridge.ui.theme.QuantMuted
+import com.qubit.quantbridge.ui.theme.QuantNegative
+import com.qubit.quantbridge.ui.theme.QuantPositive
+import java.util.Locale
+
+@Composable
+fun EmptyCard(
+    title: String,
+    message: String,
+    icon: ImageVector? = null,
+    lucideIcon: LucideIcon? = null,
+    actionLabel: String? = null,
+    onAction: (() -> Unit)? = null
+) {
+    val resolvedMessage = if (message.isBlank()) {
+        "필터를 바꾸거나 새로고침하면 다시 확인할 수 있습니다."
+    } else {
+        message
+    }
+    CardBlock {
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
+            if (lucideIcon != null || icon != null) {
+                Surface(
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.10f),
+                    shape = CircleShape
+                ) {
+                    if (lucideIcon != null) {
+                        LucideIconView(
+                            icon = lucideIcon,
+                            contentDescription = null,
+                            modifier = Modifier.padding(11.dp).size(22.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    } else if (icon != null) {
+                        Icon(
+                            icon,
+                            contentDescription = null,
+                            modifier = Modifier.padding(11.dp).size(22.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+            }
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.weight(1f)) {
+                Text(
+                    title,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    resolvedMessage,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.bodyMedium,
+                    lineHeight = 20.sp
+                )
+                if (actionLabel != null && onAction != null) {
+                    OutlinedButton(
+                        onClick = onAction,
+                        modifier = Modifier.padding(top = 6.dp)
+                    ) {
+                        LucideIconView(
+                            icon = LucideIcon.RefreshCw,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(Modifier.width(6.dp))
+                        Text(actionLabel)
+                    }
+                }
+            }
+        }
+    }
+}
+
+internal fun listEmptyMessage(
+    query: String,
+    emptyDataMessage: String,
+    filteredMessage: String
+): String {
+    val clean = query.trim()
+    return if (clean.isBlank()) {
+        "$emptyDataMessage 큐빗은 모든 종목을 얕게 보여주지 않고, 분석 가능한 기업만 깊게 봅니다. 새로고침 후에도 계속 비어 있으면 서버 데이터 생성을 확인해주세요."
+    } else {
+        "\"$clean\"는 아직 큐빗 커버리지 밖일 수 있습니다. 데이터 품질과 추적 기준을 통과한 기업만 먼저 보여줍니다. $filteredMessage"
+    }
+}
+
+@Composable
+internal fun WatchlistSyncBanner(
+    message: String,
+    syncing: Boolean,
+    onRetry: () -> Unit
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 10.dp),
+        color = if (syncing) {
+            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.62f)
+        } else {
+            MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.74f)
+        },
+        shape = RoundedCornerShape(8.dp),
+        border = BorderStroke(
+            1.dp,
+            if (syncing) MaterialTheme.colorScheme.primary.copy(alpha = 0.18f) else MaterialTheme.colorScheme.error.copy(alpha = 0.18f)
+        )
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            if (syncing) {
+                CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
+            } else {
+                Icon(Icons.Filled.Refresh, contentDescription = null, modifier = Modifier.size(20.dp))
+            }
+            Text(
+                message,
+                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.bodySmall,
+                color = if (syncing) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onErrorContainer
+            )
+            if (!syncing) {
+                TextButton(onClick = onRetry, contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)) {
+                    Text("재시도")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun LoadingSurface(message: String, detail: String? = null) {
+    Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+        Box(contentAlignment = Alignment.Center) {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth(0.82f),
+                color = MaterialTheme.colorScheme.surface,
+                shape = RoundedCornerShape(24.dp),
+                border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.14f))
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    modifier = Modifier.padding(horizontal = 22.dp, vertical = 24.dp)
+                ) {
+                    CircularProgressIndicator()
+                    Text(
+                        message,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        textAlign = TextAlign.Center
+                    )
+                    detail?.let {
+                        Text(
+                            it,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center,
+                            lineHeight = 20.sp
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ErrorBanner(message: String, modifier: Modifier = Modifier) {
+    Surface(
+        modifier = modifier
+            .fillMaxWidth(0.92f)
+            .padding(12.dp),
+        color = MaterialTheme.colorScheme.errorContainer,
+        shape = RoundedCornerShape(8.dp)
+    ) {
+        Text(
+            message,
+            Modifier.padding(12.dp),
+            color = MaterialTheme.colorScheme.onErrorContainer,
+            style = MaterialTheme.typography.bodySmall,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+internal fun <T> compareByFor(sort: String, selector: (T) -> Double?): Comparator<T> {
+    return Comparator { left, right ->
+        val l = selector(left)
+        val r = selector(right)
+        if (sort == "Rank" || sort == "랭킹") {
+            (l ?: Double.POSITIVE_INFINITY).compareTo(r ?: Double.POSITIVE_INFINITY)
+        } else {
+            (r ?: Double.NEGATIVE_INFINITY).compareTo(l ?: Double.NEGATIVE_INFINITY)
+        }
+    }
+}

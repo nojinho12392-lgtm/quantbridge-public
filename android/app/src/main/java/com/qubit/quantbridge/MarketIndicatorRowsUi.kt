@@ -176,189 +176,144 @@ import kotlin.math.roundToLong
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-internal enum class MarketIndicatorCategory(val apiValue: String, val label: String) {
-    IndexFx("index_fx", "지수·환율"),
-    Bond("bond", "채권"),
-    Commodity("commodity", "원자재"),
-    Crypto("crypto", "가상자산")
-}
-
-internal enum class MarketIndicatorRegion(val apiValue: String, val label: String) {
-    All("all", "전체"),
-    Domestic("domestic", "국내"),
-    Overseas("overseas", "해외")
-}
-
 @Composable
-internal fun <T> IndicatorSegmentSwitch(
-    options: List<T>,
-    selected: T,
-    label: (T) -> String,
-    onSelect: (T) -> Unit,
-    modifier: Modifier = Modifier
+internal fun MarketIndicatorEmptyState(
+    loading: Boolean,
+    error: String?,
+    category: MarketIndicatorCategory,
+    region: MarketIndicatorRegion?,
+    onRetry: () -> Unit
 ) {
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(10.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.74f),
-        tonalElevation = 0.dp,
-        shadowElevation = 0.dp
+    val title = when {
+        loading -> "주요 지수 로딩 중"
+        error != null -> "지수 데이터를 불러오지 못했습니다"
+        else -> "표시할 지수 없음"
+    }
+    val detail = when {
+        loading -> "${category.label} 데이터를 확인하고 있습니다."
+        error != null -> error
+        region != null -> "${category.label} · ${region.label} 조건에 맞는 지수가 없습니다."
+        else -> "${category.label} 조건에 맞는 지수가 없습니다."
+    }
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp),
+        shape = RoundedCornerShape(8.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.45f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
-        Row(
-            modifier = Modifier.padding(4.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            options.forEach { item ->
-                val isSelected = selected == item
-                Surface(
-                    modifier = Modifier
-                        .weight(1f)
-                        .clip(RoundedCornerShape(8.dp))
-                        .clickable { onSelect(item) },
-                    shape = RoundedCornerShape(8.dp),
-                    color = if (isSelected) MaterialTheme.colorScheme.surface else Color.Transparent,
-                    tonalElevation = 0.dp,
-                    shadowElevation = 0.dp
-                ) {
-                    Text(
-                        label(item),
-                        modifier = Modifier.padding(vertical = 10.dp),
-                        color = if (isSelected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        textAlign = TextAlign.Center,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-internal fun MarketIndicatorsScreen(
-    app: QuantAppState,
-    onBack: () -> Unit,
-    marketIndicatorsViewModel: MarketIndicatorsViewModel = hiltViewModel()
-) {
-    val scope = rememberCoroutineScope()
-    var category by remember { mutableStateOf(MarketIndicatorCategory.IndexFx) }
-    var region by remember { mutableStateOf(MarketIndicatorRegion.All) }
-    val showRegionFilter = category == MarketIndicatorCategory.IndexFx || category == MarketIndicatorCategory.Bond
-    val indicatorQuotes = marketIndicatorsViewModel.marketIndicators
-    val indicatorHistory = marketIndicatorsViewModel.marketIndicatorHistory
-
-    LaunchedEffect(category) {
-        if (indicatorQuotes.none { it.category == category.apiValue } && !marketIndicatorsViewModel.loading) {
-            marketIndicatorsViewModel.refreshMarketIndicators(category = category.apiValue)
-        }
-        if (indicatorQuotes.any { isMarketSessionOpen(it, Instant.now()) }) {
-            marketIndicatorsViewModel.refreshMarketIndicators(refresh = true, category = category.apiValue)
-        }
-    }
-
-    LaunchedEffect(category) {
-        while (true) {
-            delay(60_000)
-            val now = Instant.now()
-            if (marketIndicatorsViewModel.marketIndicators.any { isMarketSessionOpen(it, now) }) {
-                marketIndicatorsViewModel.refreshMarketIndicators(category = category.apiValue, automatic = true)
-            }
-        }
-    }
-
-    val filtered = remember(indicatorQuotes, category, region) {
-        indicatorQuotes.filter { item ->
-            item.category == category.apiValue &&
-                (!showRegionFilter || region == MarketIndicatorRegion.All || item.region == region.apiValue)
-        }
-    }
-
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
-            Surface(color = MaterialTheme.colorScheme.background) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .windowInsetsPadding(WindowInsets.statusBars)
-                        .height(56.dp)
-                        .padding(horizontal = 6.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "뒤로")
-                    }
-                    Text(
-                        "주요 지수",
-                        modifier = Modifier.weight(1f),
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                    IconButton(onClick = {
-                        marketIndicatorsViewModel.refreshMarketIndicators(refresh = true, category = category.apiValue)
-                    }) {
-                        Icon(Icons.Filled.Refresh, contentDescription = "새로고침")
-                    }
-                }
-            }
-        }
-    ) { padding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
+            modifier = Modifier.padding(18.dp),
+            verticalArrangement = Arrangement.spacedBy(9.dp),
+            horizontalAlignment = Alignment.Start
         ) {
-            IndicatorSegmentSwitch(
-                options = MarketIndicatorCategory.entries,
-                selected = category,
-                label = { it.label },
-                onSelect = { category = it },
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
-            )
-
-            if (showRegionFilter) {
-                IndicatorSegmentSwitch(
-                    options = MarketIndicatorRegion.entries,
-                    selected = region,
-                    label = { it.label },
-                    onSelect = { region = it },
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                if (loading) {
+                    CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
+                } else {
+                    Icon(
+                        Icons.Filled.AutoGraph,
+                        contentDescription = null,
+                        tint = if (error == null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+                Text(
+                    title,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
-
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                if (filtered.isEmpty()) {
-                    item {
-                        MarketIndicatorEmptyState(
-                            loading = marketIndicatorsViewModel.loading,
-                            error = marketIndicatorsViewModel.error,
-                            category = category,
-                            region = if (showRegionFilter) region else null,
-                            onRetry = {
-                                marketIndicatorsViewModel.refreshMarketIndicators(refresh = true, category = category.apiValue)
-                            }
-                        )
-                    }
-                }
-                items(filtered, key = { it.symbol }) { item ->
-                    MarketIndicatorRow(
-                        item = item,
-                        points = indicatorHistory[item.symbol].orEmpty(),
-                        watched = app.isWatched(item.symbol),
-                        onWatchToggle = {
-                            scope.launchSafely { app.toggleWatch(marketIndicatorWatchItem(item)) }
-                        }
-                    )
+            Text(
+                detail,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            if (!loading) {
+                OutlinedButton(onClick = onRetry) {
+                    Icon(Icons.Filled.Refresh, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Spacer(Modifier.width(6.dp))
+                    Text("새로고침")
                 }
             }
+        }
+    }
+}
+
+@Composable
+internal fun MarketIndicatorRow(
+    item: MarketIndicatorQuote,
+    points: List<MarketIndicatorPoint>,
+    watched: Boolean,
+    onWatchToggle: () -> Unit
+) {
+    val positive = (item.changePct ?: 0.0) >= 0.0
+    val color = if (positive) QuantPositive else QuantNegative
+    val chartPoints = remember(item, points) {
+        displayMarketIndicatorPoints(item, points)
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        IndicatorSparkline(
+            item = item,
+            points = chartPoints,
+            color = color,
+            modifier = Modifier.size(width = 86.dp, height = 58.dp)
+        )
+        Spacer(Modifier.width(16.dp))
+        Column(Modifier.weight(1f)) {
+            Text(
+                item.label,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Spacer(Modifier.height(5.dp))
+            Row(verticalAlignment = Alignment.Bottom) {
+                Text(
+                    indicatorValueText(item.value),
+                    color = color,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1
+                )
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    "${signedNumber(item.changeAbs)} (${pct(item.changePct)})",
+                    color = color,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+        Box(
+            modifier = Modifier
+                .size(40.dp)
+                .clip(CircleShape)
+                .quantClickable(role = QuantPressRole.Icon, onClick = onWatchToggle),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                if (watched) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                contentDescription = if (watched) "관심 지수 삭제" else "관심 지수 추가",
+                tint = if (watched) QuantFavorite else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.45f),
+                modifier = Modifier.size(30.dp)
+            )
         }
     }
 }
