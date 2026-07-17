@@ -176,134 +176,28 @@ import kotlin.math.roundToLong
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun QubitApp() {
-    val context = LocalContext.current
-    val app = remember { QuantAppState(context.applicationContext) }
-    val accountViewModel: AccountViewModel = hiltViewModel()
-    val stockDetailViewModel: StockDetailViewModel = hiltViewModel()
-    val comparisonViewModel: ComparisonViewModel = hiltViewModel()
-    val newsViewModel: NewsViewModel = hiltViewModel()
-    val scope = rememberCoroutineScope()
-    val comparisonSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val mainTabs = remember {
-        listOf(AppTab.Home, AppTab.Portfolio, AppTab.Pulse, AppTab.Watch, AppTab.Account)
-    }
-    val auxiliaryTabs = remember {
-        listOf(AppTab.Search, AppTab.News, AppTab.SmallCap, AppTab.Etf)
-    }
-    val isNewsTab = auxiliaryTabs.any { it == AppTab.News && app.selectedTab == it }
-    val isSmallCapTab = auxiliaryTabs.any { it == AppTab.SmallCap && app.selectedTab == it }
-    val pagerState = rememberPagerState(
-        initialPage = mainTabs.indexOf(app.selectedTab).coerceAtLeast(0),
-        pageCount = { mainTabs.size }
-    )
-
-    LaunchedEffect(Unit) { app.bootstrap() }
-
-    LaunchedEffect(pagerState.settledPage) {
-        val tab = mainTabs[pagerState.settledPage]
-        if (
-            app.selectedDetail == null &&
-            !auxiliaryTabs.contains(app.selectedTab) &&
-            app.selectedTab != tab
-        ) {
-            app.selectedTab = tab
-        }
-    }
-
-    LaunchedEffect(app.selectedTab) {
-        val targetPage = mainTabs.indexOf(app.selectedTab)
-        if (targetPage >= 0 && targetPage != pagerState.currentPage) {
-            pagerState.navigateToMainPage(targetPage)
-        }
-    }
-
-    var showDeleteDialog by remember { mutableStateOf(false) }
-    var routeDirection by remember { mutableStateOf(1) }
-    var showMarketIndicators by remember { mutableStateOf(false) }
-    var showStartupBranding by remember { mutableStateOf(true) }
-    var detailReturnTab by remember { mutableStateOf<AppTab?>(null) }
-    var detailReturnPage by remember { mutableStateOf(pagerState.currentPage) }
-    var wasDetailVisible by remember { mutableStateOf(false) }
-    val selectedDetail = app.selectedDetail
-    val closeDetail: () -> Unit = {
-        routeDirection = -1
-        if (app.detailBackStack.isNotEmpty()) {
-            app.selectedDetail = app.detailBackStack.removeAt(app.detailBackStack.lastIndex)
-        } else {
-            val returnTab = detailReturnTab
-            val returnPage = detailReturnPage
-            app.selectedDetail = null
-            if (returnTab != null) {
-                app.selectedTab = returnTab
-                val targetPage = mainTabs.indexOf(returnTab)
-                if (targetPage >= 0 && targetPage != pagerState.currentPage) {
-                    scope.launch { pagerState.navigateToMainPage(targetPage) }
-                } else if (returnTab in auxiliaryTabs && returnPage != pagerState.currentPage) {
-                    scope.launch { pagerState.navigateToMainPage(returnPage.coerceIn(mainTabs.indices)) }
-                }
-            }
-        }
-    }
-    val openNestedDetail: (DetailRequest) -> Unit = { next ->
-        routeDirection = 1
-        selectedDetail?.let { app.detailBackStack.add(it) }
-        app.selectedDetail = next
-    }
-
-    LaunchedEffect(Unit) {
-        delay(1_050)
-        showStartupBranding = false
-    }
-
-    LaunchedEffect(selectedDetail) {
-        if (selectedDetail != null && !wasDetailVisible) {
-            detailReturnTab = app.selectedTab
-            detailReturnPage = pagerState.currentPage
-            wasDetailVisible = true
-        } else if (selectedDetail == null) {
-            wasDetailVisible = false
-            detailReturnTab = null
-            detailReturnPage = pagerState.currentPage
-        }
-    }
-
-    LaunchedEffect(selectedDetail == null) {
-        if (selectedDetail == null) {
-            app.detailBackStack.clear()
-        }
-    }
-
-    LaunchedEffect(selectedDetail?.ticker) {
-        stockDetailViewModel.resetPeriod()
-    }
-
-    LaunchedEffect(selectedDetail?.ticker, stockDetailViewModel.period) {
-        selectedDetail?.let { stockDetailViewModel.load(it) } ?: stockDetailViewModel.clear()
-    }
-    LaunchedEffect("detail-price-auto", selectedDetail?.ticker, stockDetailViewModel.period) {
-        val request = selectedDetail ?: return@LaunchedEffect
-        while (true) {
-            delay(DETAIL_PRICE_AUTO_REFRESH_MS)
-            if (app.selectedDetail?.ticker == request.ticker) {
-                stockDetailViewModel.refreshCurrent(request)
-            }
-        }
-    }
-
-    val rootSurface = when {
-        showMarketIndicators -> RootSurfaceState(RootSurfaceType.MarketIndicators)
-        else -> RootSurfaceState(RootSurfaceType.Main)
-    }
-
-    Box(Modifier.fillMaxSize()) {
+internal fun QubitDetailOverlay(
+    app: QuantAppState,
+    currentDetail: DetailRequest,
+    stockDetailViewModel: StockDetailViewModel,
+    comparisonViewModel: ComparisonViewModel,
+    routeDirection: Int,
+    onClose: () -> Unit,
+    onOpenNested: (DetailRequest) -> Unit
+) {
+    Dialog(
+        onDismissRequest = onClose,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false,
+            decorFitsSystemWindows = false
+        )
+    ) {
         AnimatedContent(
-            targetState = rootSurface,
+            targetState = currentDetail,
             modifier = Modifier.fillMaxSize(),
             transitionSpec = {
-                val forwardRoute = targetState.type != RootSurfaceType.Main
+                val forwardRoute = routeDirection >= 0
                 val direction = if (forwardRoute) 1 else -1
                 val enter = slideInHorizontally(
                     animationSpec = tween(durationMillis = QUANT_ROUTE_ENTER_MS, easing = QuantRouteEasing),
@@ -318,85 +212,25 @@ internal fun QubitApp() {
                     scaleOut(targetScale = 0.992f, animationSpec = tween(durationMillis = QUANT_ROUTE_EXIT_MS, easing = QuantRouteEasing))
                 enter.togetherWith(exit)
             },
-            label = "root-surface-transition"
-        ) { surface ->
-            when (surface.type) {
-                RootSurfaceType.MarketIndicators -> {
-                BackHandler {
-                    showMarketIndicators = false
-                }
-                MarketIndicatorsScreen(
-                    app = app,
-                    onBack = { showMarketIndicators = false }
-                )
-            }
-
-                RootSurfaceType.Main -> {
-                    QubitMainScaffold(
-                        app = app,
-                        accountViewModel = accountViewModel,
-                        pagerState = pagerState,
-                        mainTabs = mainTabs,
-                        auxiliaryTabs = auxiliaryTabs,
-                        scope = scope,
-                        onShowDeleteDialog = { showDeleteDialog = true },
-                        onShowMarketIndicators = { showMarketIndicators = true }
-                    )
-            }
+            label = "detail-overlay-transition"
+        ) { detailRequest ->
+        BackHandler {
+            onClose()
         }
-    }
-
-        selectedDetail?.let { currentDetail ->
-            QubitDetailOverlay(
-                app = app,
-                currentDetail = currentDetail,
-                stockDetailViewModel = stockDetailViewModel,
-                comparisonViewModel = comparisonViewModel,
-                routeDirection = routeDirection,
-                onClose = closeDetail,
-                onOpenNested = openNestedDetail
-            )
-        }
-    }
-
-    if (showDeleteDialog) {
-        AlertDialog(
-            onDismissRequest = { showDeleteDialog = false },
-            title = { Text("계정을 삭제할까요?") },
-            text = { Text("서버에 저장된 계정 정보와 관심 종목이 삭제됩니다.") },
-            confirmButton = {
-                TextButton(onClick = {
-                    showDeleteDialog = false
-                    scope.launchSafely {
-                        if (accountViewModel.deleteAccount()) {
-                            app.clearAccountSession(clearWatchlist = true)
-                        }
-                    }
-                }) { Text("삭제") }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDeleteDialog = false }) { Text("취소") }
-            }
+        StockDetailScreen(
+            app = app,
+            request = detailRequest,
+            detail = stockDetailViewModel.detail,
+            loading = stockDetailViewModel.loading,
+            error = stockDetailViewModel.error,
+            period = stockDetailViewModel.period,
+            availablePeriods = stockDetailViewModel.availablePeriods,
+            onPeriodChange = { stockDetailViewModel.updatePeriod(it) },
+            onRetry = { stockDetailViewModel.load(detailRequest, force = true) },
+            onBack = onClose,
+            onOpenDetail = onOpenNested,
+            comparisonViewModel = comparisonViewModel
         )
     }
-
-    if (comparisonViewModel.showSheet) {
-        ModalBottomSheet(
-            onDismissRequest = { comparisonViewModel.closeSheet() },
-            sheetState = comparisonSheetState
-        ) {
-            StockComparisonSheet(
-                items = comparisonViewModel.items,
-                newsItems = newsViewModel.items.ifEmpty { app.newsItems }
-            )
-        }
-    }
-
-    AnimatedVisibility(
-        visible = showStartupBranding,
-        enter = fadeIn(animationSpec = tween(160)),
-        exit = fadeOut(animationSpec = tween(220))
-    ) {
-        QubitStartupSplash()
     }
 }
