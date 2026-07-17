@@ -177,112 +177,39 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 
 @Composable
-fun IndicatorSparkline(
-    item: MarketIndicatorQuote,
-    points: List<MarketIndicatorPoint>,
-    color: Color,
-    modifier: Modifier = Modifier
-) {
-    val samples = remember(item, points) { sparklineSamples(item, points) }
-    val values = remember(samples) { samples.map { it.close }.filter { it.isFinite() } }
-    var now by remember { mutableStateOf(Instant.now()) }
-    LaunchedEffect(item.symbol) {
-        while (true) {
-            now = Instant.now()
-            delay(30_000)
-        }
-    }
-    val showLiveEndpoint = remember(item.symbol, samples, now) {
-        shouldShowLiveEndpoint(item, samples, now)
-    }
-    val endpointPulse by rememberInfiniteTransition(label = "indicatorEndpointPulse").animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1_150),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "indicatorEndpointHalo"
+internal fun QubitScrollEffects(content: @Composable () -> Unit) {
+    val overscrollFactory = rememberPlatformOverscrollFactory(
+        glowColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.18f)
     )
-    Canvas(modifier) {
-        val referenceClose = previousClose(item)
-        val domainValues = values + listOf(item.value).filter { it.isFinite() }
-        val domain = sparklineDomain(domainValues, referenceClose)
-        fun yPosition(value: Double): Float {
-            val span = max(domain.second - domain.first, 0.0001)
-            val usableHeight = max(size.height - 8.dp.toPx(), 1f)
-            return size.height - (((value - domain.first) / span).toFloat() * usableHeight) - 4.dp.toPx()
-        }
-        val baselineY = referenceClose?.let(::yPosition) ?: (size.height * 0.72f)
-        drawLine(
-            color = color.copy(alpha = 0.14f),
-            start = Offset(0f, baselineY),
-            end = Offset(size.width, baselineY),
-            strokeWidth = 1.dp.toPx()
-        )
 
-        if (samples.size == 1) {
-            val sample = samples.first()
-            val x = sample.progress.coerceIn(0f, 1f) * size.width
-            val y = yPosition(sample.close)
-            drawCircle(color = color, radius = 2.4.dp.toPx(), center = Offset(x, y))
-            return@Canvas
-        }
-
-        if (values.size < 2) {
-            drawLine(
-                color = color.copy(alpha = 0.45f),
-                start = Offset(0f, baselineY),
-                end = Offset(size.width, baselineY),
-                strokeWidth = 1.5.dp.toPx(),
-                cap = StrokeCap.Round
-            )
-            return@Canvas
-        }
-
-        val line = Path()
-        val fill = Path()
-        var lastX = 0f
-        var lastPoint: Offset? = null
-        val fillAnchorY = sparklineFillAnchorY(
-            samples = samples,
-            referenceClose = referenceClose,
-            baselineY = baselineY,
-            chartBottom = size.height
-        )
-
-        samples.forEachIndexed { index, sample ->
-            val value = sample.close
-            val x = sample.progress.coerceIn(0f, 1f) * size.width
-            lastX = x
-            val y = yPosition(value)
-            lastPoint = Offset(x, y)
-            if (index == 0) {
-                line.moveTo(x, y)
-                fill.moveTo(x, fillAnchorY)
-                fill.lineTo(x, y)
-            } else {
-                line.lineTo(x, y)
-                fill.lineTo(x, y)
-            }
-        }
-        fill.lineTo(lastX, fillAnchorY)
-        fill.close()
-
-        drawPath(
-            fill,
-            brush = Brush.verticalGradient(
-                colors = listOf(color.copy(alpha = 0.14f), color.copy(alpha = 0.01f))
-            )
-        )
-        drawPath(line, color = color, style = Stroke(width = 1.55.dp.toPx(), cap = StrokeCap.Round))
-        if (showLiveEndpoint) {
-            lastPoint?.let { point ->
-                val haloRadius = (5.0f + 3.3f * endpointPulse).dp.toPx()
-                val haloAlpha = 0.22f - 0.07f * endpointPulse
-                drawCircle(color = color.copy(alpha = haloAlpha), radius = haloRadius, center = point)
-                drawCircle(color = color, radius = 3.1.dp.toPx(), center = point)
-            }
-        }
+    CompositionLocalProvider(LocalOverscrollFactory provides overscrollFactory) {
+        content()
     }
 }
+
+internal suspend fun PagerState.navigateToMainPage(page: Int) {
+    if (page == currentPage) return
+    if (abs(page - currentPage) <= 1) {
+        animateScrollToPage(
+            page = page,
+            animationSpec = tween(durationMillis = QUANT_ROUTE_ENTER_MS, easing = QuantRouteEasing)
+        )
+    } else {
+        scrollToPage(page)
+    }
+}
+
+internal val QuantRouteEasing = CubicBezierEasing(0.20f, 0.00f, 0.00f, 1.00f)
+internal const val QUANT_ROUTE_ENTER_MS = 260
+internal const val QUANT_ROUTE_EXIT_MS = 210
+internal const val QUANT_ROUTE_FADE_MS = 160
+internal const val DETAIL_PRICE_AUTO_REFRESH_MS = 300_000L
+
+internal enum class RootSurfaceType {
+    Main,
+    MarketIndicators
+}
+
+internal data class RootSurfaceState(
+    val type: RootSurfaceType
+)

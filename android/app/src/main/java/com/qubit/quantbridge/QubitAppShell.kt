@@ -176,44 +176,6 @@ import kotlin.math.roundToLong
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-@Composable
-internal fun QubitScrollEffects(content: @Composable () -> Unit) {
-    val overscrollFactory = rememberPlatformOverscrollFactory(
-        glowColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.18f)
-    )
-
-    CompositionLocalProvider(LocalOverscrollFactory provides overscrollFactory) {
-        content()
-    }
-}
-
-internal suspend fun PagerState.navigateToMainPage(page: Int) {
-    if (page == currentPage) return
-    if (abs(page - currentPage) <= 1) {
-        animateScrollToPage(
-            page = page,
-            animationSpec = tween(durationMillis = QUANT_ROUTE_ENTER_MS, easing = QuantRouteEasing)
-        )
-    } else {
-        scrollToPage(page)
-    }
-}
-
-internal val QuantRouteEasing = CubicBezierEasing(0.20f, 0.00f, 0.00f, 1.00f)
-internal const val QUANT_ROUTE_ENTER_MS = 260
-internal const val QUANT_ROUTE_EXIT_MS = 210
-internal const val QUANT_ROUTE_FADE_MS = 160
-internal const val DETAIL_PRICE_AUTO_REFRESH_MS = 300_000L
-
-internal enum class RootSurfaceType {
-    Main,
-    MarketIndicators
-}
-
-internal data class RootSurfaceState(
-    val type: RootSurfaceType
-)
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun QubitApp() {

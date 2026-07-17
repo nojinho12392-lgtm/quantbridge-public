@@ -23,6 +23,7 @@ import java.time.Instant
 import java.time.LocalTime
 import java.time.ZoneId
 import java.util.Locale
+
 internal const val APP_REQUEST_TIMEOUT_MS = 12_000L
 internal val DOMESTIC_INTRADAY_INDICATOR_SYMBOLS = setOf("^KS11", "^KQ11")
 
