@@ -176,24 +176,204 @@ import kotlin.math.roundToLong
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-@AndroidEntryPoint
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.light(
-                scrim = QuantBackground.toArgb(),
-                darkScrim = QuantDarkBackground.toArgb()
-            ),
-            navigationBarStyle = SystemBarStyle.light(
-                scrim = QuantSurface.toArgb(),
-                darkScrim = QuantDarkBackground.toArgb()
-            )
+@Composable
+internal fun QubitStartupSplash() {
+    var showSignature by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        delay(260)
+        showSignature = true
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .windowInsetsPadding(WindowInsets.statusBars)
+            .windowInsetsPadding(WindowInsets.navigationBars),
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.quantbridge_splash_mark),
+            contentDescription = "큐빗",
+            modifier = Modifier.size(112.dp),
+            contentScale = ContentScale.Fit
         )
-        setContent {
-            QubitTheme {
-                QubitScrollEffects {
-                    QubitApp()
+        AnimatedVisibility(
+            visible = showSignature,
+            modifier = Modifier
+                .align(Alignment.Center)
+                .offset(y = 86.dp),
+            enter = fadeIn(animationSpec = tween(220)) +
+                slideInVertically(animationSpec = tween(260), initialOffsetY = { it / 3 })
+        ) {
+            Text(
+                "made by Jinho",
+                color = Color(0xFF5C6B73),
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Medium
+            )
+        }
+    }
+}
+
+@Composable
+internal fun FloatingBottomNav(
+    tabs: List<AppTab>,
+    selectedTab: AppTab,
+    onTabSelected: (AppTab) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(
+                Brush.verticalGradient(
+                    listOf(
+                        Color.Transparent,
+                        MaterialTheme.colorScheme.outline.copy(alpha = 0.10f),
+                        Color.Transparent
+                    )
+                )
+            )
+            .padding(top = 10.dp, bottom = 6.dp)
+            .windowInsetsPadding(WindowInsets.navigationBars)
+    ) {
+        Surface(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .fillMaxWidth(0.90f)
+                .height(61.dp),
+            color = MaterialTheme.colorScheme.surface,
+            shape = RoundedCornerShape(50),
+            shadowElevation = 12.dp,
+            tonalElevation = 0.dp,
+            border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.18f))
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                tabs.forEach { tab ->
+                    val selected = selectedTab == tab
+                    val tint = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .clip(RoundedCornerShape(28.dp))
+                            .quantClickable(role = QuantPressRole.Icon) { onTabSelected(tab) }
+                            .clearAndSetSemantics {
+                                role = Role.Tab
+                                contentDescription = "${tab.label} 탭"
+                                stateDescription = if (selected) "선택됨" else "선택 안 됨"
+                                this.selected = selected
+                                onClick(label = "${tab.label} 탭 열기") {
+                                    onTabSelected(tab)
+                                    true
+                                }
+                            },
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        LucideIconView(
+                            icon = tab.icon,
+                            contentDescription = null,
+                            modifier = Modifier.size(if (selected) 23.dp else 22.dp),
+                            tint = tint
+                        )
+                        Text(
+                            tab.label,
+                            maxLines = 1,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = tint
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+internal fun CompactAppBar(
+    title: String,
+    indices: List<MarketIndexQuote>,
+    showSearchAction: Boolean,
+    onSearch: () -> Unit,
+    onMarketIndicators: () -> Unit
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = MaterialTheme.colorScheme.background,
+        tonalElevation = 0.dp,
+        shadowElevation = 0.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .windowInsetsPadding(WindowInsets.statusBars)
+                .height(48.dp)
+                .padding(start = 16.dp, end = 6.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (title == "큐빗") {
+                Row(
+                    modifier = Modifier.width(86.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.quantbridge_splash_mark),
+                        contentDescription = null,
+                        modifier = Modifier.size(26.dp),
+                        contentScale = ContentScale.Fit
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    Text(
+                        title,
+                        modifier = Modifier.weight(1f),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF21111C),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            } else {
+                Text(
+                    title,
+                    modifier = Modifier.width(146.dp),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+            Spacer(Modifier.width(6.dp))
+            MarketIndexTicker(
+                indices = indices,
+                modifier = Modifier
+                    .weight(1f)
+                    .quantClickable(role = QuantPressRole.Row, onClick = onMarketIndicators)
+            )
+            if (showSearchAction) {
+                Box(
+                    modifier = Modifier.size(40.dp)
+                        .clip(CircleShape)
+                        .quantClickable(role = QuantPressRole.Icon, onClick = onSearch),
+                    contentAlignment = Alignment.Center
+                ) {
+                    LucideIconView(
+                        icon = LucideIcon.Search,
+                        contentDescription = "검색",
+                        modifier = Modifier.size(22.dp),
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
                 }
             }
         }

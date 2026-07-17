@@ -176,26 +176,102 @@ import kotlin.math.roundToLong
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-@AndroidEntryPoint
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.light(
-                scrim = QuantBackground.toArgb(),
-                darkScrim = QuantDarkBackground.toArgb()
-            ),
-            navigationBarStyle = SystemBarStyle.light(
-                scrim = QuantSurface.toArgb(),
-                darkScrim = QuantDarkBackground.toArgb()
-            )
-        )
-        setContent {
-            QubitTheme {
-                QubitScrollEffects {
-                    QubitApp()
-                }
-            }
+@Composable
+internal fun MarketIndexTicker(
+    indices: List<MarketIndexQuote>,
+    modifier: Modifier = Modifier
+) {
+    var currentIndex by remember(indices) { mutableStateOf(0) }
+    val current = indices.getOrNull(currentIndex.coerceAtMost((indices.size - 1).coerceAtLeast(0)))
+
+    LaunchedEffect(indices) {
+        currentIndex = 0
+        if (indices.size <= 1) return@LaunchedEffect
+        while (true) {
+            delay(2_500)
+            currentIndex = (currentIndex + 1) % indices.size
         }
+    }
+
+    if (current == null) {
+        Text(
+            "S&P 500 대기중",
+            modifier = modifier,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.labelMedium,
+            maxLines = 1,
+            textAlign = TextAlign.End
+        )
+        return
+    }
+
+    Box(
+        modifier = modifier
+            .height(26.dp)
+            .clipToBounds(),
+        contentAlignment = Alignment.CenterEnd
+    ) {
+        MarketIndexTickerContent(
+            quote = current,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+        )
+    }
+}
+
+@Composable
+internal fun MarketIndexTickerContent(
+    quote: MarketIndexQuote,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            marketTickerName(quote),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.labelMedium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        Spacer(Modifier.width(5.dp))
+        Text(
+            marketTickerValueText(quote.value),
+            modifier = Modifier.weight(1f, fill = false),
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.SemiBold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        Spacer(Modifier.width(5.dp))
+        Text(
+            pct(quote.changePct),
+            color = if (quote.changePct >= 0.0) QuantPositive else QuantNegative,
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.Bold,
+            maxLines = 1
+        )
+    }
+}
+
+internal fun marketTickerName(quote: MarketIndexQuote): String = when (quote.symbol) {
+    "^IXIC" -> "NASDAQ"
+    "^GSPC" -> "S&P 500"
+    "^KS11" -> "KOSPI"
+    "^KQ11" -> "KOSDAQ"
+    else -> quote.label
+}
+
+internal fun marketTickerValueText(value: Double): String {
+    return when {
+        !value.isFinite() -> "-"
+        abs(value) >= 1_000.0 -> String.format(Locale.US, "%,.2f", value)
+        abs(value) >= 100.0 -> String.format(Locale.US, "%.2f", value)
+        abs(value) >= 1.0 -> String.format(Locale.US, "%.3f", value)
+        else -> String.format(Locale.US, "%.4f", value)
     }
 }

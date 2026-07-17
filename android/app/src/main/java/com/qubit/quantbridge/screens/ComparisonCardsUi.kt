@@ -190,110 +190,94 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 
 @Composable
-internal fun StockComparisonBar(
-    isComparing: Boolean,
-    selectedCount: Int,
-    totalCount: Int,
-    canCompare: Boolean,
-    onStart: () -> Unit,
-    onCompare: () -> Unit,
-    onClear: () -> Unit,
-    onCancel: () -> Unit
-) {
-    if (isComparing) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 10.dp, bottom = 2.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
+internal fun ComparisonSummaryCard(items: List<StockComparisonItem>) {
+    val bestScore = items.maxByOrNull { it.scoreValue ?: Double.NEGATIVE_INFINITY }
+    val bestReturn = items.maxByOrNull { it.expectedReturn ?: Double.NEGATIVE_INFINITY }
+    val bestGrowth = items.maxByOrNull { it.revenueGrowth ?: Double.NEGATIVE_INFINITY }
+
+    Card(
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        shape = RoundedCornerShape(24.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.32f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Text("비교 요약", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
             Text(
-                "비교 $selectedCount/4",
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.width(72.dp)
+                bestScore?.let { "${it.name}이 현재 비교군에서 종합점수가 가장 앞섭니다. 기대수익, 성장성, 수익성이 함께 받쳐주는지 확인하세요." }
+                    ?: "비교 가능한 점수 데이터가 부족합니다. 비어 있지 않은 지표 중심으로 확인하세요.",
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodySmall
             )
-            TextButton(onClick = onClear) {
-                Text("초기화", style = MaterialTheme.typography.labelMedium)
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                SummaryChip("점수 우위", bestScore?.name ?: "-", Modifier.weight(1f))
+                SummaryChip("기대수익", bestReturn?.name ?: "-", Modifier.weight(1f))
             }
-            Spacer(Modifier.weight(1f))
-            TextButton(onClick = onCancel) {
-                Text("취소", style = MaterialTheme.typography.labelMedium)
-            }
-            Button(onClick = onCompare, enabled = canCompare) {
-                Text("비교 보기", style = MaterialTheme.typography.labelMedium)
-            }
-        }
-    } else {
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 10.dp, bottom = 2.dp)
-                .clip(RoundedCornerShape(999.dp))
-                .quantClickable(enabled = totalCount >= 2, role = QuantPressRole.Row, onClick = onStart)
-                .alpha(if (totalCount >= 2) 1f else 0.45f),
-            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.62f),
-            shape = RoundedCornerShape(999.dp)
-        ) {
-            Row(
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                LucideIconView(
-                    icon = LucideIcon.GitCompare,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(16.dp)
-                )
-                Text("종목 비교", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
-                Text(
-                    if (totalCount == 0) "데이터 대기" else "2~4개 선택",
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.labelMedium
-                )
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                SummaryChip("성장성", bestGrowth?.name ?: "-", Modifier.weight(1f))
+                SummaryChip("비교 개수", "${items.size}개", Modifier.weight(1f))
             }
         }
     }
 }
 
 @Composable
-fun StockComparisonSheet(items: List<StockComparisonItem>, newsItems: List<NewsItem> = emptyList()) {
-    val metrics = remember(newsItems) {
-        listOf(
-            CompareMetric("현재가", { comparePriceText(it) }, { null }),
-            CompareMetric("1개월", { pct(it.return1M) }, { it.return1M }),
-            CompareMetric("순위변화", { compareRankChangeText(it.rankChange) }, { it.rankChange?.toDouble() }),
-            CompareMetric("종합점수", { it.scoreText }, { it.scoreValue }),
-            CompareMetric("기대수익", { pct(it.expectedReturn) }, { it.expectedReturn }),
-            CompareMetric("매출성장", { pct(it.revenueGrowth) }, { it.revenueGrowth }),
-            CompareMetric("ROIC", { pct(it.roic, signed = false) }, { it.roic }),
-            CompareMetric("마진", { pct(it.grossMargin, signed = false) }, { it.grossMargin }),
-            CompareMetric("시가총액", { cap(it.marketCap, it.currency) }, { it.marketCap }),
-            CompareMetric("비중", { pct(it.weight, signed = false) }, { it.weight }),
-            CompareMetric("FCF", { pct(it.fcfMargin, signed = false) }, { it.fcfMargin }),
-            CompareMetric("거래량", { compareVolumeText(it.volumeSurge) }, { it.volumeSurge }),
-            CompareMetric("리스크", { comparisonRiskText(it) }, { comparisonRiskScore(it) }, higherIsBetter = false),
-            CompareMetric("뉴스반응", { comparisonNewsText(it, newsItems) }, { comparisonNewsScore(it, newsItems) })
-        )
-    }
-
+internal fun SummaryChip(title: String, value: String, modifier: Modifier = Modifier) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(0.8f)
-            .verticalScroll(rememberScrollState())
-            .padding(start = 16.dp, end = 16.dp, bottom = 28.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp)
+        modifier = modifier
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.54f))
+            .padding(10.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        Text("종목 비교", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-        ComparisonSummaryCard(items)
-        ComparisonVerdictCard(items)
-        ComparisonMomentumCard(items)
-        ComparisonNewsReactionCard(items, newsItems)
-        ComparisonTable(items = items, metrics = metrics)
-        ComparisonCheckpoints(items)
+        Text(title, color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.SemiBold)
+        Text(value, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+    }
+}
+
+@Composable
+internal fun ComparisonVerdictCard(items: List<StockComparisonItem>) {
+    val balanced = bestComparisonItem(items) { it.scoreValue }
+    val aggressive = bestComparisonItem(items) { averageComparisonValue(it.expectedReturn, it.revenueGrowth) }
+    val stable = bestComparisonItem(items) { averageComparisonValue(it.roic, it.grossMargin, it.fcfMargin) }
+    val caution = items.firstOrNull { (it.expectedReturn ?: 0.0) < 0.0 }
+        ?: items.maxByOrNull { comparisonMissingMetricCount(it) }
+
+    Card(
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        shape = RoundedCornerShape(24.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.32f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Text("다음 판단", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            Text(
+                comparisonVerdictText(balanced, aggressive, stable),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodySmall
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                ComparisonRoleChip("균형형", balanced?.name ?: "-", MaterialTheme.colorScheme.primary, Modifier.weight(1f))
+                ComparisonRoleChip("공격형", aggressive?.name ?: "-", QuantWarning, Modifier.weight(1f))
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                ComparisonRoleChip("안정형", stable?.name ?: "-", QuantPositive, Modifier.weight(1f))
+                ComparisonRoleChip("주의", caution?.name ?: "-", QuantNegative, Modifier.weight(1f))
+            }
+        }
+    }
+}
+
+@Composable
+internal fun ComparisonRoleChip(title: String, value: String, color: Color, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier
+            .clip(RoundedCornerShape(8.dp))
+            .background(color.copy(alpha = 0.08f))
+            .padding(9.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Text(title, color = color, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.SemiBold)
+        Text(value, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
 }
