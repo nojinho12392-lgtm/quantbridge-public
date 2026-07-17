@@ -43,12 +43,12 @@
     <ID>CyclomaticComplexMethod:ApiParsers.kt$fun parseNewsItems(array: JSONArray): List&lt;NewsItem&gt;</ID>
     <ID>CyclomaticComplexMethod:ApiParsers.kt$fun parseSignalEvents(array: JSONArray): List&lt;SignalEvent&gt;</ID>
     <ID>CyclomaticComplexMethod:ApiParsers.kt$private fun parseSectorThemeMember(o: JSONObject): SectorThemeMember?</ID>
-    <ID>CyclomaticComplexMethod:AppScreenHelpers.kt$fun earningsDetail(stock: EarningsStock): DetailRequest</ID>
-    <ID>CyclomaticComplexMethod:AppScreenHelpers.kt$fun smallCapDetail(stock: SmallCapStock, currency: String): DetailRequest</ID>
+    <ID>CyclomaticComplexMethod:AppScreenDetailMappers.kt$fun earningsDetail(stock: EarningsStock): DetailRequest</ID>
+    <ID>CyclomaticComplexMethod:AppScreenDetailMappers.kt$fun smallCapDetail(stock: SmallCapStock, currency: String): DetailRequest</ID>
+    <ID>CyclomaticComplexMethod:AppScreenDetailMappers.kt$internal fun scoredDetail(stock: ScoredStock): DetailRequest</ID>
     <ID>CyclomaticComplexMethod:AppScreenHelpers.kt$internal fun glossaryInfo(rawKey: String): DiagnosticInfo?</ID>
     <ID>CyclomaticComplexMethod:AppScreenHelpers.kt$internal fun glossaryKeyForLabel(label: String?): String?</ID>
     <ID>CyclomaticComplexMethod:AppScreenHelpers.kt$internal fun regimeReasons(macro: Map&lt;String, String&gt;): List&lt;RegimeReason&gt;</ID>
-    <ID>CyclomaticComplexMethod:AppScreenHelpers.kt$internal fun scoredDetail(stock: ScoredStock): DetailRequest</ID>
     <ID>CyclomaticComplexMethod:AppState.kt$QuantAppState$suspend fun loadExplore(mode: String, query: String = "", force: Boolean = false)</ID>
     <ID>CyclomaticComplexMethod:AppState.kt$QuantAppState$suspend fun refreshWatchPriceMetrics(force: Boolean = false, automatic: Boolean = false)</ID>
     <ID>CyclomaticComplexMethod:ComparisonTargetPicker.kt$private fun comparisonCandidatePriority(item: StockComparisonItem, anchor: StockComparisonItem): Int</ID>
@@ -547,6 +547,7 @@
     <ID>FunctionOnlyReturningConstant:AppState.kt$QuantAppState$private fun partialFailureMessage(failures: List&lt;String&gt;): String</ID>
     <ID>InvalidPackageDeclaration:AccountScreenUi.kt$package com.qubit.quantbridge</ID>
     <ID>InvalidPackageDeclaration:AnalysisListComponents.kt$package com.qubit.quantbridge</ID>
+    <ID>InvalidPackageDeclaration:AppScreenDetailMappers.kt$package com.qubit.quantbridge</ID>
     <ID>InvalidPackageDeclaration:AppScreenHelpers.kt$package com.qubit.quantbridge</ID>
     <ID>InvalidPackageDeclaration:AppSharedUiComponents.kt$package com.qubit.quantbridge</ID>
     <ID>InvalidPackageDeclaration:ComparisonSheet.kt$package com.qubit.quantbridge</ID>
@@ -675,42 +676,46 @@
     <ID>MagicNumber:AnalysisListComponents.kt$3</ID>
     <ID>MagicNumber:AnalysisListComponents.kt$8</ID>
     <ID>MagicNumber:ApiParsers.kt$100.0</ID>
-    <ID>MagicNumber:AppScreenHelpers.kt$0.05</ID>
-    <ID>MagicNumber:AppScreenHelpers.kt$0.10</ID>
+    <ID>MagicNumber:AppScreenDetailMappers.kt$0.05</ID>
+    <ID>MagicNumber:AppScreenDetailMappers.kt$0.10</ID>
+    <ID>MagicNumber:AppScreenDetailMappers.kt$0.15</ID>
+    <ID>MagicNumber:AppScreenDetailMappers.kt$0.20</ID>
+    <ID>MagicNumber:AppScreenDetailMappers.kt$0.25</ID>
+    <ID>MagicNumber:AppScreenDetailMappers.kt$0.30</ID>
+    <ID>MagicNumber:AppScreenDetailMappers.kt$0.35</ID>
+    <ID>MagicNumber:AppScreenDetailMappers.kt$0.40</ID>
+    <ID>MagicNumber:AppScreenDetailMappers.kt$0.45</ID>
+    <ID>MagicNumber:AppScreenDetailMappers.kt$0.5</ID>
+    <ID>MagicNumber:AppScreenDetailMappers.kt$0.50</ID>
+    <ID>MagicNumber:AppScreenDetailMappers.kt$0.60</ID>
+    <ID>MagicNumber:AppScreenDetailMappers.kt$0.7</ID>
+    <ID>MagicNumber:AppScreenDetailMappers.kt$0.8</ID>
+    <ID>MagicNumber:AppScreenDetailMappers.kt$0.80</ID>
+    <ID>MagicNumber:AppScreenDetailMappers.kt$1.5</ID>
+    <ID>MagicNumber:AppScreenDetailMappers.kt$1e11</ID>
+    <ID>MagicNumber:AppScreenDetailMappers.kt$3.0</ID>
+    <ID>MagicNumber:AppScreenDetailMappers.kt$30.0</ID>
+    <ID>MagicNumber:AppScreenDetailMappers.kt$4.0</ID>
+    <ID>MagicNumber:AppScreenDetailMappers.kt$45.0</ID>
+    <ID>MagicNumber:AppScreenDetailMappers.kt$5.0</ID>
+    <ID>MagicNumber:AppScreenDetailMappers.kt$7</ID>
+    <ID>MagicNumber:AppScreenDetailMappers.kt$7.0</ID>
+    <ID>MagicNumber:AppScreenDetailMappers.kt$70.0</ID>
+    <ID>MagicNumber:AppScreenDetailMappers.kt$99</ID>
+    <ID>MagicNumber:AppScreenDetailMappers.kt$999.0</ID>
     <ID>MagicNumber:AppScreenHelpers.kt$0.15</ID>
-    <ID>MagicNumber:AppScreenHelpers.kt$0.20</ID>
     <ID>MagicNumber:AppScreenHelpers.kt$0.25</ID>
     <ID>MagicNumber:AppScreenHelpers.kt$0.30</ID>
-    <ID>MagicNumber:AppScreenHelpers.kt$0.35</ID>
-    <ID>MagicNumber:AppScreenHelpers.kt$0.40</ID>
     <ID>MagicNumber:AppScreenHelpers.kt$0.45</ID>
-    <ID>MagicNumber:AppScreenHelpers.kt$0.5</ID>
-    <ID>MagicNumber:AppScreenHelpers.kt$0.50</ID>
-    <ID>MagicNumber:AppScreenHelpers.kt$0.60</ID>
-    <ID>MagicNumber:AppScreenHelpers.kt$0.7</ID>
-    <ID>MagicNumber:AppScreenHelpers.kt$0.8</ID>
-    <ID>MagicNumber:AppScreenHelpers.kt$0.80</ID>
-    <ID>MagicNumber:AppScreenHelpers.kt$1.5</ID>
     <ID>MagicNumber:AppScreenHelpers.kt$10</ID>
     <ID>MagicNumber:AppScreenHelpers.kt$100.0</ID>
     <ID>MagicNumber:AppScreenHelpers.kt$126</ID>
-    <ID>MagicNumber:AppScreenHelpers.kt$1e11</ID>
     <ID>MagicNumber:AppScreenHelpers.kt$21</ID>
     <ID>MagicNumber:AppScreenHelpers.kt$252</ID>
     <ID>MagicNumber:AppScreenHelpers.kt$252.0</ID>
-    <ID>MagicNumber:AppScreenHelpers.kt$3.0</ID>
-    <ID>MagicNumber:AppScreenHelpers.kt$30.0</ID>
-    <ID>MagicNumber:AppScreenHelpers.kt$4.0</ID>
-    <ID>MagicNumber:AppScreenHelpers.kt$45.0</ID>
     <ID>MagicNumber:AppScreenHelpers.kt$5</ID>
-    <ID>MagicNumber:AppScreenHelpers.kt$5.0</ID>
     <ID>MagicNumber:AppScreenHelpers.kt$50.0</ID>
     <ID>MagicNumber:AppScreenHelpers.kt$63</ID>
-    <ID>MagicNumber:AppScreenHelpers.kt$7</ID>
-    <ID>MagicNumber:AppScreenHelpers.kt$7.0</ID>
-    <ID>MagicNumber:AppScreenHelpers.kt$70.0</ID>
-    <ID>MagicNumber:AppScreenHelpers.kt$99</ID>
-    <ID>MagicNumber:AppScreenHelpers.kt$999.0</ID>
     <ID>MagicNumber:AppSharedUiComponents.kt$0.02f</ID>
     <ID>MagicNumber:AppSharedUiComponents.kt$0.04f</ID>
     <ID>MagicNumber:AppSharedUiComponents.kt$0.06f</ID>
@@ -1278,17 +1283,17 @@
     <ID>MaxLineLength:AnalysisListComponents.kt$color = if (quiet) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.78f)</ID>
     <ID>MaxLineLength:AnalysisListComponents.kt$tint = if (comparisonSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant</ID>
     <ID>MaxLineLength:ApiParsers.kt$return1M = o.cleanDouble("return1M") ?: o.cleanDouble("Return_1M") ?: o.cleanDouble("return_1m") ?: o.cleanDouble("1M_Return") ?: o.cleanDouble("Mom_1M")</ID>
+    <ID>MaxLineLength:AppScreenDetailMappers.kt$DetailMetric("Debt/EBITDA", stock.debtEbitda?.let { "%.2fx".format(it) } ?: "-", inverseTone(stock.debtEbitda, 2.0, 4.0))</ID>
+    <ID>MaxLineLength:AppScreenDetailMappers.kt$DetailMetric("남은 기간", daysUntilText(item.daysUntil), if ((item.daysUntil ?: 99) &lt;= 7) DetailTone.Warning else DetailTone.Neutral)</ID>
+    <ID>MaxLineLength:AppScreenDetailMappers.kt$DetailMetric("최종 점수", bestScoredValue(stock)?.let { "%.3f".format(it) } ?: "-", scoreTone(bestScoredValue(stock), 0.7, 0.45))</ID>
+    <ID>MaxLineLength:AppScreenDetailMappers.kt$if ((stock.expectedReturn ?: 0.0) &lt; 0.0) DetailSignal("기대수익률 주의", "모델 기대수익률이 음수라 진입 타이밍을 확인해야 합니다.", DetailTone.Warning) else null</ID>
+    <ID>MaxLineLength:AppScreenDetailMappers.kt$if ((stock.investabilityScore ?: 0.0) &gt;= 0.7) DetailSignal("투자가능성 우수", "기업 품질, 밸류에이션, 타이밍을 함께 반영한 전문가형 품질 점수가 높습니다.", DetailTone.Positive) else null</ID>
+    <ID>MaxLineLength:AppScreenDetailMappers.kt$if ((stock.returnSince ?: 0.0) &gt; 0.0) DetailSignal("발표 후 주가 반응", "실적 발표 이후 수익률이 플러스로 유지되고 있습니다.", DetailTone.Positive) else null</ID>
+    <ID>MaxLineLength:AppScreenDetailMappers.kt$if ((stock.surprisePct ?: 0.0) &gt; 0.0) DetailSignal("실적 서프라이즈", "예상보다 좋은 실적이 확인되어 단기 모멘텀에 긍정적입니다.", DetailTone.Positive) else null</ID>
+    <ID>MaxLineLength:AppScreenDetailMappers.kt$if ((stock.totalScore ?: 0.0) &gt;= 0.7) DetailSignal("상위 팩터 점수", "종합 점수가 높아 현재 분석 후보군에서 우선순위가 높습니다.", DetailTone.Primary) else null</ID>
+    <ID>MaxLineLength:AppScreenDetailMappers.kt$if ((stock.totalScore ?: 0.0) &gt;= 70.0) DetailSignal("SmallCap 상위 점수", "소형주 스캐너 기준으로 종합 매력이 높습니다.", DetailTone.Primary) else null</ID>
+    <ID>MaxLineLength:AppScreenDetailMappers.kt$if ((stock.valueScore ?: 0.0) &gt;= 0.7) DetailSignal("가치 팩터 우수", "Value 점수가 높아 저평가 매력이 상대적으로 큽니다.", DetailTone.Positive) else null</ID>
     <ID>MaxLineLength:AppScreenHelpers.kt$"WARN", "WATCH", "DEGRADED", "INSUFFICIENT", "STALE", "UNKNOWN", "UNAVAILABLE", "REVIEW", "HOLD", "ML_OFF", "ML_WEAK" -&gt; DetailTone.Warning</ID>
-    <ID>MaxLineLength:AppScreenHelpers.kt$DetailMetric("Debt/EBITDA", stock.debtEbitda?.let { "%.2fx".format(it) } ?: "-", inverseTone(stock.debtEbitda, 2.0, 4.0))</ID>
-    <ID>MaxLineLength:AppScreenHelpers.kt$DetailMetric("남은 기간", daysUntilText(item.daysUntil), if ((item.daysUntil ?: 99) &lt;= 7) DetailTone.Warning else DetailTone.Neutral)</ID>
-    <ID>MaxLineLength:AppScreenHelpers.kt$DetailMetric("최종 점수", bestScoredValue(stock)?.let { "%.3f".format(it) } ?: "-", scoreTone(bestScoredValue(stock), 0.7, 0.45))</ID>
-    <ID>MaxLineLength:AppScreenHelpers.kt$if ((stock.expectedReturn ?: 0.0) &lt; 0.0) DetailSignal("기대수익률 주의", "모델 기대수익률이 음수라 진입 타이밍을 확인해야 합니다.", DetailTone.Warning) else null</ID>
-    <ID>MaxLineLength:AppScreenHelpers.kt$if ((stock.investabilityScore ?: 0.0) &gt;= 0.7) DetailSignal("투자가능성 우수", "기업 품질, 밸류에이션, 타이밍을 함께 반영한 전문가형 품질 점수가 높습니다.", DetailTone.Positive) else null</ID>
-    <ID>MaxLineLength:AppScreenHelpers.kt$if ((stock.returnSince ?: 0.0) &gt; 0.0) DetailSignal("발표 후 주가 반응", "실적 발표 이후 수익률이 플러스로 유지되고 있습니다.", DetailTone.Positive) else null</ID>
-    <ID>MaxLineLength:AppScreenHelpers.kt$if ((stock.surprisePct ?: 0.0) &gt; 0.0) DetailSignal("실적 서프라이즈", "예상보다 좋은 실적이 확인되어 단기 모멘텀에 긍정적입니다.", DetailTone.Positive) else null</ID>
-    <ID>MaxLineLength:AppScreenHelpers.kt$if ((stock.totalScore ?: 0.0) &gt;= 0.7) DetailSignal("상위 팩터 점수", "종합 점수가 높아 현재 분석 후보군에서 우선순위가 높습니다.", DetailTone.Primary) else null</ID>
-    <ID>MaxLineLength:AppScreenHelpers.kt$if ((stock.totalScore ?: 0.0) &gt;= 70.0) DetailSignal("SmallCap 상위 점수", "소형주 스캐너 기준으로 종합 매력이 높습니다.", DetailTone.Primary) else null</ID>
-    <ID>MaxLineLength:AppScreenHelpers.kt$if ((stock.valueScore ?: 0.0) &gt;= 0.7) DetailSignal("가치 팩터 우수", "Value 점수가 높아 저평가 매력이 상대적으로 큽니다.", DetailTone.Positive) else null</ID>
     <ID>MaxLineLength:ComparisonSheet.kt$Text(comparePointText(item), color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)</ID>
     <ID>MaxLineLength:ComparisonSheet.kt$Text(item.name, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)</ID>
     <ID>MaxLineLength:ComparisonSheet.kt$Text(item.name, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false))</ID>
@@ -1521,6 +1526,7 @@
     <ID>TooManyFunctions:AccountScreenUi.kt$com.qubit.quantbridge.AccountScreenUi.kt</ID>
     <ID>TooManyFunctions:AnalysisListComponents.kt$com.qubit.quantbridge.AnalysisListComponents.kt</ID>
     <ID>TooManyFunctions:ApiParsers.kt$com.qubit.quantbridge.ApiParsers.kt</ID>
+    <ID>TooManyFunctions:AppScreenDetailMappers.kt$com.qubit.quantbridge.AppScreenDetailMappers.kt</ID>
     <ID>TooManyFunctions:AppScreenHelpers.kt$com.qubit.quantbridge.AppScreenHelpers.kt</ID>
     <ID>TooManyFunctions:AppSharedUiComponents.kt$com.qubit.quantbridge.AppSharedUiComponents.kt</ID>
     <ID>TooManyFunctions:AppState.kt$QuantAppState</ID>

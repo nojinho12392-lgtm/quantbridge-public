@@ -20,7 +20,7 @@ MOBILE_SMOKE_EXTRA ?=
 ANDROID_EMULATOR_SMOKE_EXTRA ?=
 STAGING_ANDROID_SMOKE_EXTRA ?=
 
-.PHONY: venv postgres server stop bootstrap warm-cache warm-sector-cache precompute-app-snapshots price-snapshots kr-rank-local kr-rank-health us-rank-local refresh-app-data-local refresh-app-data-staging backfill-snapshots quality-gates factor-policy policy-backtest repair-scored-quality policy-adjusted-rankings remediation-plan research-quality research-quality-docker research-health data-quality ops-health workspace-audit secret-audit cleanup-duplicates cleanup-duplicates-apply export-public-dry export-public ci-local regen-mobile-clients ios-build ios-test android-build mobile-smoke ios-simulator-qa account-watchlist-smoke staging-url staging-readiness staging-smoke staging-android-smoke staging-android-smoke-quick staging-android-smoke-full staging-ops-health staging-status idle-staging stop-staging start-staging restart-staging delete-staging create-staging-resources sync-staging-secrets deploy-staging-local bootstrap-staging-data staging-research-quality android-device-qa android-emulator-smoke android-emulator-smoke-quick android-emulator-smoke-full linux-deploy linux-price-refresh linux-install-systemd print-ops-schedule install-ops-schedule uninstall-ops-schedule ops-schedule-status print-price-schedule install-price-schedule uninstall-price-schedule price-schedule-status print-kr-rank-schedule install-kr-rank-schedule uninstall-kr-rank-schedule kr-rank-schedule-status print-staging-ops-schedule install-staging-ops-schedule print-research-schedule install-research-schedule uninstall-research-schedule research-schedule-status configure-app-api app-smoke user-flow qa api dag-dry-run test
+.PHONY: venv postgres server stop bootstrap warm-cache warm-sector-cache precompute-app-snapshots price-snapshots kr-rank-local kr-rank-health us-rank-local refresh-app-data-local refresh-app-data-staging backfill-snapshots quality-gates factor-policy policy-backtest repair-scored-quality policy-adjusted-rankings remediation-plan research-quality research-quality-docker research-health data-quality ops-health workspace-audit secret-audit cleanup-duplicates cleanup-duplicates-apply export-public-dry export-public ci-local regen-mobile-clients ios-build ios-test android-build android-release android-unit-test android-detekt mobile-smoke ios-simulator-qa account-watchlist-smoke staging-url staging-readiness staging-smoke staging-android-smoke staging-android-smoke-quick staging-android-smoke-full staging-ops-health staging-status idle-staging stop-staging start-staging restart-staging delete-staging create-staging-resources sync-staging-secrets deploy-staging-local bootstrap-staging-data staging-research-quality android-device-qa android-emulator-smoke android-emulator-smoke-quick android-emulator-smoke-full linux-deploy linux-price-refresh linux-install-systemd print-ops-schedule install-ops-schedule uninstall-ops-schedule ops-schedule-status print-price-schedule install-price-schedule uninstall-price-schedule price-schedule-status print-kr-rank-schedule install-kr-rank-schedule uninstall-kr-rank-schedule kr-rank-schedule-status print-staging-ops-schedule install-staging-ops-schedule print-research-schedule install-research-schedule uninstall-research-schedule research-schedule-status configure-app-api app-smoke user-flow qa api dag-dry-run test
 
 venv:
 	python3 -m venv .venv
@@ -159,6 +159,15 @@ ios-test:
 
 android-build:
 	cd android && ./gradlew :app:assembleDebug --stacktrace
+
+android-release:
+	cd android && ./gradlew :app:assembleRelease --stacktrace
+
+android-unit-test:
+	cd android && ./gradlew :app:testDebugUnitTest --stacktrace
+
+android-detekt:
+	cd android && ./gradlew :app:detektBaseline :app:detekt --stacktrace
 
 mobile-smoke:
 	$(PYTHON) tools/mobile_smoke_qa.py $(MOBILE_SMOKE_EXTRA)
