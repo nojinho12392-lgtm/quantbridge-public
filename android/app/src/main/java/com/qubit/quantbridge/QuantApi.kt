@@ -23,12 +23,6 @@ private const val COMPARISON_RECOMMENDATION_CACHE_MS = 5 * 60 * 1000L
 private const val MARKET_LAST_SUCCESS_CACHE_MS = 30 * 60 * 1000L
 private const val EMULATOR_LOCAL_BASE_URL = "http://10.0.2.2:8000"
 
-private fun Throwable.throwIfCancellation() {
-    if (this is CancellationException) throw this
-}
-
-private fun <T> Result<T>.rethrowCancellation(): Result<T> =
-    onFailure { it.throwIfCancellation() }
 
 data class CachedJsonResponse(
     val loadedAt: Long,
