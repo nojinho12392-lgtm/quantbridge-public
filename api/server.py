@@ -1840,23 +1840,35 @@ _kr_rank_health_check = _ops_check_builder.kr_rank_health_check
 _data_source_check = _ops_check_builder.data_source_check
 
 
-_ops_health_builder = OpsHealthPayloadBuilder(
-    settings=_SETTINGS,
-    check=lambda name, status, message, detail=None: _check(name, status, message, detail),
-    utc_now=lambda: _utc_now(),
-    ready_payload=lambda: _ready_payload(),
-    storage_config_checks_loader=lambda: _storage_config_checks(),
-    macro_check=lambda: _macro_check(),
-    core_dataset_checks=lambda: _core_dataset_checks(),
-    data_source_check=lambda: _data_source_check(),
-    data_quality_check=lambda: _data_quality_check(),
-    kr_rank_health_check=lambda: _kr_rank_health_check(),
-    factor_quality_check=lambda: _factor_quality_check(),
-    research_health_payload=lambda **kwargs: _research_health_payload(**kwargs),
-    cache_warm_state_payload=lambda: _cache_warm_state(),
-)
-_storage_config_checks = _ops_health_builder.storage_config_checks
-_ops_health_payload = _ops_health_builder.ops_health_payload
+def _ops_health_builder() -> OpsHealthPayloadBuilder:
+    """Build ops health helpers against the *current* runtime settings.
+
+    Tests and local overrides reassign ``_SETTINGS``; a frozen builder captured at
+    import-time would ignore those overrides and report stale storage checks.
+    """
+    return OpsHealthPayloadBuilder(
+        settings=_SETTINGS,
+        check=lambda name, status, message, detail=None: _check(name, status, message, detail),
+        utc_now=lambda: _utc_now(),
+        ready_payload=lambda: _ready_payload(),
+        storage_config_checks_loader=lambda: _storage_config_checks(),
+        macro_check=lambda: _macro_check(),
+        core_dataset_checks=lambda: _core_dataset_checks(),
+        data_source_check=lambda: _data_source_check(),
+        data_quality_check=lambda: _data_quality_check(),
+        kr_rank_health_check=lambda: _kr_rank_health_check(),
+        factor_quality_check=lambda: _factor_quality_check(),
+        research_health_payload=lambda **kwargs: _research_health_payload(**kwargs),
+        cache_warm_state_payload=lambda: _cache_warm_state(),
+    )
+
+
+def _storage_config_checks() -> list[dict]:
+    return _ops_health_builder().storage_config_checks()
+
+
+def _ops_health_payload(*args, **kwargs):
+    return _ops_health_builder().ops_health_payload(*args, **kwargs)
 
 
 # ── Stock detail (price history + company info) ───────────────────────────────

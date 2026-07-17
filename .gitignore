@@ -64,3 +64,8 @@ Stock Analysis/**/xcuserdata/
 Stock Analysis/**/*.xcuserstate
 DerivedData/
 .derivedData/
+
+*.jks
+*.keystore
+
+node_modules/

@@ -189,7 +189,7 @@ import kotlin.math.roundToLong
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-private data class CompareMetric(
+internal data class CompareMetric(
     val label: String,
     val value: (StockComparisonItem) -> String,
     val number: (StockComparisonItem) -> Double?,
@@ -359,7 +359,7 @@ fun StockComparisonSheet(items: List<StockComparisonItem>, newsItems: List<NewsI
 }
 
 @Composable
-private fun ComparisonSummaryCard(items: List<StockComparisonItem>) {
+internal fun ComparisonSummaryCard(items: List<StockComparisonItem>) {
     val bestScore = items.maxByOrNull { it.scoreValue ?: Double.NEGATIVE_INFINITY }
     val bestReturn = items.maxByOrNull { it.expectedReturn ?: Double.NEGATIVE_INFINITY }
     val bestGrowth = items.maxByOrNull { it.revenueGrowth ?: Double.NEGATIVE_INFINITY }
@@ -391,7 +391,7 @@ private fun ComparisonSummaryCard(items: List<StockComparisonItem>) {
 }
 
 @Composable
-private fun SummaryChip(title: String, value: String, modifier: Modifier = Modifier) {
+internal fun SummaryChip(title: String, value: String, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
@@ -405,7 +405,7 @@ private fun SummaryChip(title: String, value: String, modifier: Modifier = Modif
 }
 
 @Composable
-private fun ComparisonVerdictCard(items: List<StockComparisonItem>) {
+internal fun ComparisonVerdictCard(items: List<StockComparisonItem>) {
     val balanced = bestComparisonItem(items) { it.scoreValue }
     val aggressive = bestComparisonItem(items) { averageComparisonValue(it.expectedReturn, it.revenueGrowth) }
     val stable = bestComparisonItem(items) { averageComparisonValue(it.roic, it.grossMargin, it.fcfMargin) }
@@ -438,7 +438,7 @@ private fun ComparisonVerdictCard(items: List<StockComparisonItem>) {
 }
 
 @Composable
-private fun ComparisonRoleChip(title: String, value: String, color: Color, modifier: Modifier = Modifier) {
+internal fun ComparisonRoleChip(title: String, value: String, color: Color, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
@@ -451,7 +451,7 @@ private fun ComparisonRoleChip(title: String, value: String, color: Color, modif
     }
 }
 
-private fun comparisonVerdictText(
+internal fun comparisonVerdictText(
     balanced: StockComparisonItem?,
     aggressive: StockComparisonItem?,
     stable: StockComparisonItem?
@@ -465,7 +465,7 @@ private fun comparisonVerdictText(
     return "기준 후보는 ${balanced.name}입니다. 수익률을 더 보려면 ${aggressive?.name ?: "-"}, 안정성을 더 보려면 ${stable?.name ?: "-"}을 대조하세요."
 }
 
-private fun bestComparisonItem(
+internal fun bestComparisonItem(
     items: List<StockComparisonItem>,
     value: (StockComparisonItem) -> Double?
 ): StockComparisonItem? {
@@ -474,13 +474,13 @@ private fun bestComparisonItem(
     }.maxByOrNull { it.second }?.first
 }
 
-private fun averageComparisonValue(vararg values: Double?): Double? {
+internal fun averageComparisonValue(vararg values: Double?): Double? {
     val clean = values.mapNotNull { value -> value?.takeIf { it.isFinite() } }
     if (clean.isEmpty()) return null
     return clean.sum() / clean.size
 }
 
-private fun comparisonMissingMetricCount(item: StockComparisonItem): Int {
+internal fun comparisonMissingMetricCount(item: StockComparisonItem): Int {
     return listOf(
         item.scoreValue,
         item.expectedReturn,
@@ -492,7 +492,7 @@ private fun comparisonMissingMetricCount(item: StockComparisonItem): Int {
 }
 
 @Composable
-private fun ComparisonMomentumCard(items: List<StockComparisonItem>) {
+internal fun ComparisonMomentumCard(items: List<StockComparisonItem>) {
     val chartItems = items.filter { it.return1M?.isFinite() == true }
     val maxAbsMove = chartItems
         .mapNotNull { it.return1M?.let(::abs) }
@@ -545,7 +545,7 @@ private fun ComparisonMomentumCard(items: List<StockComparisonItem>) {
 }
 
 @Composable
-private fun ComparisonNewsReactionCard(items: List<StockComparisonItem>, newsItems: List<NewsItem>) {
+internal fun ComparisonNewsReactionCard(items: List<StockComparisonItem>, newsItems: List<NewsItem>) {
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         shape = RoundedCornerShape(24.dp),
@@ -591,7 +591,7 @@ private fun ComparisonNewsReactionCard(items: List<StockComparisonItem>, newsIte
 }
 
 @Composable
-private fun ComparisonTable(items: List<StockComparisonItem>, metrics: List<CompareMetric>) {
+internal fun ComparisonTable(items: List<StockComparisonItem>, metrics: List<CompareMetric>) {
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         shape = RoundedCornerShape(24.dp),
@@ -638,7 +638,7 @@ private fun ComparisonTable(items: List<StockComparisonItem>, metrics: List<Comp
 }
 
 @Composable
-private fun ComparisonCell(
+internal fun ComparisonCell(
     text: String,
     width: Dp,
     isHeader: Boolean = false,
@@ -664,7 +664,7 @@ private fun ComparisonCell(
 }
 
 @Composable
-private fun ComparisonCheckpoints(items: List<StockComparisonItem>) {
+internal fun ComparisonCheckpoints(items: List<StockComparisonItem>) {
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         shape = RoundedCornerShape(24.dp),
@@ -689,7 +689,7 @@ private fun ComparisonCheckpoints(items: List<StockComparisonItem>) {
     }
 }
 
-private fun bestMetricId(items: List<StockComparisonItem>, metric: CompareMetric): String? {
+internal fun bestMetricId(items: List<StockComparisonItem>, metric: CompareMetric): String? {
     val values = items.mapNotNull { item ->
         metric.number(item)?.takeIf { it.isFinite() }?.let { item.id to it }
     }
@@ -697,16 +697,16 @@ private fun bestMetricId(items: List<StockComparisonItem>, metric: CompareMetric
     return if (metric.higherIsBetter) values.maxByOrNull { it.second }?.first else values.minByOrNull { it.second }?.first
 }
 
-private fun compareVolumeText(value: Double?): String {
+internal fun compareVolumeText(value: Double?): String {
     return value?.takeIf { it.isFinite() }?.let { "x%.1f".format(it) } ?: "-"
 }
 
-private fun comparePriceText(item: StockComparisonItem): String {
+internal fun comparePriceText(item: StockComparisonItem): String {
     val value = item.currentPrice?.takeIf { it.isFinite() } ?: return "-"
     return fmtPx(value, item.currency)
 }
 
-private fun compareRankChangeText(value: Int?): String {
+internal fun compareRankChangeText(value: Int?): String {
     return when {
         value == null -> "-"
         value > 0 -> "▲$value"
@@ -715,7 +715,7 @@ private fun compareRankChangeText(value: Int?): String {
     }
 }
 
-private fun comparisonRiskScore(item: StockComparisonItem): Double? {
+internal fun comparisonRiskScore(item: StockComparisonItem): Double? {
     val values = listOf(
         item.scoreValue,
         item.expectedReturn,
@@ -741,7 +741,7 @@ private fun comparisonRiskScore(item: StockComparisonItem): Double? {
     return risk
 }
 
-private fun comparisonRiskText(item: StockComparisonItem): String {
+internal fun comparisonRiskText(item: StockComparisonItem): String {
     val score = comparisonRiskScore(item) ?: return "데이터 부족"
     return when {
         score >= 32.0 -> "높음"
@@ -750,7 +750,7 @@ private fun comparisonRiskText(item: StockComparisonItem): String {
     }
 }
 
-private fun comparisonNewsItem(item: StockComparisonItem, newsItems: List<NewsItem>): NewsItem? {
+internal fun comparisonNewsItem(item: StockComparisonItem, newsItems: List<NewsItem>): NewsItem? {
     val itemKeys = comparisonMatchKeys(item.ticker)
     val tickerKey = normalizedTicker(item.ticker)
     return newsItems.mapNotNull { news ->
@@ -766,7 +766,7 @@ private fun comparisonNewsItem(item: StockComparisonItem, newsItems: List<NewsIt
     }.maxByOrNull { it.second }?.first
 }
 
-private fun comparisonNewsText(item: StockComparisonItem, newsItems: List<NewsItem>): String {
+internal fun comparisonNewsText(item: StockComparisonItem, newsItems: List<NewsItem>): String {
     val news = comparisonNewsItem(item, newsItems) ?: return "-"
     val change = news.relatedChangePct
     if (change != null && change.isFinite()) {
@@ -775,7 +775,7 @@ private fun comparisonNewsText(item: StockComparisonItem, newsItems: List<NewsIt
     return news.impactLabelKo.ifBlank { newsImpactFallbackLabel(news.impactLabel) }
 }
 
-private fun comparisonNewsScore(item: StockComparisonItem, newsItems: List<NewsItem>): Double? {
+internal fun comparisonNewsScore(item: StockComparisonItem, newsItems: List<NewsItem>): Double? {
     val news = comparisonNewsItem(item, newsItems) ?: return null
     val change = news.relatedChangePct
     if (change != null && change.isFinite()) {
@@ -789,7 +789,7 @@ private fun comparisonNewsScore(item: StockComparisonItem, newsItems: List<NewsI
     }
 }
 
-private fun comparisonNewsColor(item: StockComparisonItem, newsItems: List<NewsItem>): Color {
+internal fun comparisonNewsColor(item: StockComparisonItem, newsItems: List<NewsItem>): Color {
     val score = comparisonNewsScore(item, newsItems) ?: return QuantMuted
     return when {
         score > 0.0 -> QuantPositive
@@ -798,7 +798,7 @@ private fun comparisonNewsColor(item: StockComparisonItem, newsItems: List<NewsI
     }
 }
 
-private fun comparisonMatchKeys(value: String): Set<String> {
+internal fun comparisonMatchKeys(value: String): Set<String> {
     val normalized = normalizedTicker(value)
     if (normalized.isBlank()) return emptySet()
     val keys = mutableSetOf(normalized)
@@ -812,7 +812,7 @@ private fun comparisonMatchKeys(value: String): Set<String> {
     return keys
 }
 
-private fun comparePointText(item: StockComparisonItem): String {
+internal fun comparePointText(item: StockComparisonItem): String {
     return when {
         item.expectedReturn == null && item.fcfMargin == null ->
             "일부 핵심 지표가 비어 있어 점수와 성장성만으로 판단하지 않도록 주의하세요."

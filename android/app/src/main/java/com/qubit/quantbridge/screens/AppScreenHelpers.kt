@@ -776,6 +776,6 @@ internal fun regimeColor(regime: String): Color {
     }
 }
 
-fun kotlinx.coroutines.CoroutineScope.launchSafely(block: suspend () -> Unit) {
+internal fun kotlinx.coroutines.CoroutineScope.launchSafely(block: suspend () -> Unit) {
     launch { block() }
 }

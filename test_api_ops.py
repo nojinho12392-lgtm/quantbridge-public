@@ -269,7 +269,6 @@ class DataSourceTelemetryTests(unittest.TestCase):
         self.assertIn("Cache warm", [check["name"] for check in payload["checks"]])
 
     def test_ops_health_warns_when_cache_warm_is_missing_mobile_job(self):
-        builder = server._ops_health_builder
         original = server._cache_warm_state
         server._cache_warm_state = lambda: {
             "running": False,
@@ -282,7 +281,8 @@ class DataSourceTelemetryTests(unittest.TestCase):
             ],
         }
         try:
-            check = builder.cache_warm_check()
+            # _ops_health_builder is a factory so live settings/overrides are honored.
+            check = server._ops_health_builder().cache_warm_check()
         finally:
             server._cache_warm_state = original
 

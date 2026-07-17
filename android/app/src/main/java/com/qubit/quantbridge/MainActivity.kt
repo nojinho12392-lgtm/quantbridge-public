@@ -227,8 +227,6 @@ private val QuantRouteEasing = CubicBezierEasing(0.20f, 0.00f, 0.00f, 1.00f)
 private const val QUANT_ROUTE_ENTER_MS = 260
 private const val QUANT_ROUTE_EXIT_MS = 210
 private const val QUANT_ROUTE_FADE_MS = 160
-private const val SEARCH_DEBOUNCE_MS = 400L
-private const val SEARCH_MIN_QUERY_LENGTH = 2
 private const val DETAIL_PRICE_AUTO_REFRESH_MS = 300_000L
 
 private enum class RootSurfaceType {

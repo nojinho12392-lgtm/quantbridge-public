@@ -40,7 +40,10 @@ python3 - <<'PY'
 import json
 from pathlib import Path
 
-spec = json.loads(Path("api/openapi.json").read_text())
+path = Path("api/openapi.json")
+spec = json.loads(path.read_text())
+# Stable pretty formatting so CI diffs are content-based, not minify noise.
+path.write_text(json.dumps(spec, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 schemas = spec.get("components", {}).get("schemas", {})
 missing = []
 
@@ -51,7 +54,7 @@ def has_ref(value):
         return any(has_ref(child) for child in value)
     return False
 
-for path, methods in spec.get("paths", {}).items():
+for path_key, methods in spec.get("paths", {}).items():
     for method, operation in methods.items():
         if method.lower() not in {"get", "post", "put", "patch", "delete"}:
             continue
@@ -63,24 +66,85 @@ for path, methods in spec.get("paths", {}).items():
             .get("schema")
         )
         if not has_ref(schema):
-            missing.append(f"{method.upper()} {path}")
+            missing.append(f"{method.upper()} {path_key}")
 
 if len(schemas) < 60 or missing:
     raise SystemExit(
         "OpenAPI spec is not ready for mobile codegen: "
         f"{len(schemas)} schemas, missing typed 200 responses={missing}"
     )
+print(f"OpenAPI ready: {len(schemas)} schemas")
 PY
 
 rm -rf "$SWIFT_OUT" "$KOTLIN_OUT"
 mkdir -p "$SWIFT_OUT" "$KOTLIN_OUT"
 
 run_generator() {
-  docker run --rm \
-    --user "$(id -u):$(id -g)" \
-    --volume "$REPO_ROOT:/local" \
-    --workdir /local \
-    "$OPENAPI_GENERATOR_IMAGE" "$@"
+  # Prefer Docker image; fall back to local openapi-generator-cli (npm/jar).
+  if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
+    docker run --rm \
+      --user "$(id -u):$(id -g)" \
+      --volume "$REPO_ROOT:/local" \
+      --workdir /local \
+      "$OPENAPI_GENERATOR_IMAGE" "$@"
+    return
+  fi
+
+  local cli=""
+  if [[ -x "$REPO_ROOT/node_modules/.bin/openapi-generator-cli" ]]; then
+    cli="$REPO_ROOT/node_modules/.bin/openapi-generator-cli"
+  elif command -v openapi-generator-cli >/dev/null 2>&1; then
+    cli="$(command -v openapi-generator-cli)"
+  elif command -v openapi-generator >/dev/null 2>&1; then
+    cli="$(command -v openapi-generator)"
+  else
+    echo "Neither Docker nor openapi-generator-cli is available." >&2
+    echo "Install Docker or run: npm install @openapitools/openapi-generator-cli" >&2
+    exit 1
+  fi
+
+  # Translate docker-style /local paths to repo-relative paths for local CLI.
+  local args=()
+  local arg
+  for arg in "$@"; do
+    case "$arg" in
+      /local/*) args+=("${arg#/local/}") ;;
+      *) args+=("$arg") ;;
+    esac
+  done
+  # openapi-generator-cli npm wrapper mishandles paths with spaces; map
+  # output dirs to temporary space-free paths when needed.
+  local fixed_args=()
+  local i=0
+  local out_dir=""
+  local tmp_out=""
+  while [[ $i -lt ${#args[@]} ]]; do
+    local a="${args[$i]}"
+    if [[ "$a" == "-o" || "$a" == "--output" ]]; then
+      fixed_args+=("$a")
+      i=$((i + 1))
+      out_dir="${args[$i]}"
+      if [[ "$out_dir" == *" "* ]]; then
+        tmp_out="$(mktemp -d "${TMPDIR:-/tmp}/qb-openapi-out.XXXXXX")"
+        fixed_args+=("$tmp_out")
+      else
+        fixed_args+=("$out_dir")
+        tmp_out=""
+      fi
+    else
+      fixed_args+=("$a")
+    fi
+    i=$((i + 1))
+  done
+  echo "Using local OpenAPI generator: $cli"
+  "$cli" "${fixed_args[@]}"
+  if [[ -n "${tmp_out:-}" && -n "${out_dir:-}" ]]; then
+    mkdir -p "$out_dir"
+    # Replace destination with generated contents.
+    rm -rf "${out_dir:?}/"*
+    cp -R "$tmp_out"/. "$out_dir"/
+    rm -rf "$tmp_out"
+  fi
 }
 
 normalize_generated_text() {
